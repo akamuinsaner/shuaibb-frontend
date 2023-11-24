@@ -1,0 +1,1 @@
+export const DEVHOST = 'http://localhost:8000'

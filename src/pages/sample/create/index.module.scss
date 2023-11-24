@@ -1,0 +1,14 @@
+.create {
+    position: relative;
+
+    .tabsBox {
+        position: sticky;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    .formContent {
+        padding: 16px;
+    }
+}
