@@ -1,9 +1,11 @@
 import { create } from 'zustand';
-import { User } from 'common/types';
+import { User } from 'declare/user';
 
 export type state = {
     token: string;
-    user?: User
+    user?: User;
+    languages?: null;
+    curLang?: 'ch' | 'en'
 }
 
 export type action = {
@@ -12,11 +14,19 @@ export type action = {
 
 const token = localStorage.getItem('__token__')
 
+const curLang: state["curLang"] = (localStorage.getItem('__lang__') || 'ch') as state["curLang"];
+
+
 
 const useGlobalStore = create<state & action>((set) => ({
     token: token,
     user: null,
-    updateState: (data) => set((state) => ({ ...data })),
+    languages: null,
+    curLang: curLang,
+    updateState: (data) => set((state) => {
+        if ('curLang' in data) localStorage.setItem('__lang__', data["curLang"])
+       return {...data }
+    }),
 }))
 
 

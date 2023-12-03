@@ -8,10 +8,11 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import {
   QueryClient,
-  QueryClientProvider
+  QueryClientProvider,
 } from '@tanstack/react-query';
 import App from './app';
 import { BrowserRouter } from 'react-router-dom';
+import LanguageProvider from 'components/Language';
 
 const queryClient = new QueryClient();
 
@@ -23,7 +24,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <LanguageProvider >
+        <App />
+      </LanguageProvider>
     </QueryClientProvider>
   </BrowserRouter>
 );

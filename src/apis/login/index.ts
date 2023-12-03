@@ -1,7 +1,8 @@
 import request from 'utils/request';
 
 export const loginAPI = (data: {
-    mobile: string;
+    email?: string;
+    mobile?: string;
     password: string;
 }) => request(
     `/api/users/login/`,
@@ -12,9 +13,11 @@ export const loginAPI = (data: {
 )
 
 export const signupApi = (data: {
-    mobile: string;
+    loginType: 'mobile' | 'email'
+    mobile?: string;
+    email?: string;
     password: string;
-    password_confirm: string
+    passwordConfirm: string
 }) => request(
     `/api/users/signup/`,
     {

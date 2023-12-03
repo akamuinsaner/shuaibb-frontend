@@ -11,14 +11,14 @@ import FormControl from '@mui/material/FormControl';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Visibility from '@mui/icons-material/Visibility'
 import FormHelperText from '@mui/material/FormHelperText';
-import { SamplePriceState } from './store';
+import { SampleData } from 'declare/sample';
 
 const SamplePrice = ({
     data,
     updateData
 }: {
-    data: SamplePriceState;
-    updateData: (data: Partial<SamplePriceState>)  => void
+    data: SampleData;
+    updateData: (data: Partial<SampleData>)  => void
 }) => {
     return (
         <Item>
@@ -32,8 +32,8 @@ const SamplePrice = ({
                         fullWidth
                         label="价格"
                         placeholder='请输入套系价格'
-                        type={data.priceVisible ? 'number' : 'password'}
-                        value={data.price}
+                        type={data.priceVisible ? 'text' : 'password'}
+                        value={`${data.price}`}
                         onChange={(e) => updateData({ price: Number(e.target.value) })}
                         endAdornment={
                             <InputAdornment position="end">
@@ -57,8 +57,8 @@ const SamplePrice = ({
                         size="small"
                         label="定金"
                         placeholder='请输入套系定金价格'
-                        type={data.depositVisible ? 'number' : 'password'}
-                        value={data.deposit}
+                        type={data.depositVisible ? 'text' : 'password'}
+                        value={`${data.deposit}`}
                         onChange={(e) => updateData({ deposit: Number(e.target.value) })}
                         endAdornment={
                             <InputAdornment position="end">

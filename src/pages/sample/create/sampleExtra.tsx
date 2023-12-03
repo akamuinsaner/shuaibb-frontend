@@ -5,14 +5,14 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { SampleExtraState } from './store';
+import { SampleData } from 'declare/sample';
 
 const SampleExtra = ({
     data,
     updateData
 }: {
-    data: SampleExtraState,
-    updateData: (data: Partial<SampleExtraState>)  => void
+    data: SampleData,
+    updateData: (data: Partial<SampleData>)  => void
 }) => {
     return (
         <Item>
@@ -21,7 +21,7 @@ const SampleExtra = ({
                 <FormControlLabel
                     control={<Switch
                         color="primary"
-                        value={data.public}
+                        checked={data.public}
                         onChange={(e) => updateData({ public: e.target.checked })}
                     />}
                     label="对外公开"

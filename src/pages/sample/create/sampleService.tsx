@@ -4,39 +4,60 @@ import { Item } from './item';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
-import { SampleServiceState } from './store';
+import { SampleData, SampleTemplate } from 'declare/sample';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormLabel from '@mui/material/FormLabel';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
+import Template from './components/template';
+import { useSampleCreateStore } from './store';
 
 const SampleService = ({
     data,
-    updateData
+    updateData,
 }: {
-    data: SampleServiceState;
-    updateData: (data: Partial<SampleServiceState>) => void
+    data: SampleData;
+    updateData: (data: Partial<SampleData>) => void;
 }) => {
-    console.log(data)
+    const templateState = useSampleCreateStore(state => state.templateState);
+    const tempData = templateState.curTemp
+    const updateTemplateState = useSampleCreateStore(state => state.updateTemplateState);
+    let showData: SampleData;
+    const update = React.useRef(updateData);
+    const updateTemp = React.useCallback((data: Partial<SampleTemplate>) => {
+        updateTemplateState({ curTemp: Object.assign({}, tempData, data) })
+    }, [tempData])
+    if (tempData) {
+        showData = tempData as SampleData
+        update.current = updateTemp;
+    } else {
+        showData = data
+        update.current = updateData;
+    }
     return (
         <Item>
             <Stack spacing={2}>
-                <Typography>服务内容</Typography>
+                <Typography
+                    sx={{ display: 'flex', alignItems: 'center' }}
+                >
+                    服务内容
+                    <Template />
+                </Typography>
                 <FormControl >
                     <FormLabel>基础服务内容</FormLabel>
                     <RadioGroup
                         row
-                        value={`${Number(data.basicInfoVisible)}`}
-                        onChange={(e) => updateData({ basicInfoVisible: !!Number(e.target.value) })}
+                        value={`${Number(showData.basicInfoVisible)}`}
+                        onChange={(e) => update.current({ basicInfoVisible: !!Number(e.target.value) })}
                     >
                         <FormControlLabel value={`1`} control={<Radio />} label="显示信息" />
                         <FormControlLabel value={`0`} control={<Radio />} label="暂不显示" />
                     </RadioGroup>
                 </FormControl>
                 {
-                    data.basicInfoVisible ? (
+                    showData.basicInfoVisible ? (
                         <Item>
                             <Grid
                                 spacing={2}
@@ -49,22 +70,22 @@ const SampleService = ({
                                         fullWidth
                                         size='small'
                                         select
-                                        value={data.costumeOffer ? '1' : '0'}
-                                        onChange={(e) => updateData({ costumeOffer: !!Number(e.target.value) })}
+                                        value={showData.costumeOffer ? '1' : '0'}
+                                        onChange={(e) => update.current({ costumeOffer: !!Number(e.target.value) })}
                                     >
                                         <MenuItem value={`0`}>不提供</MenuItem>
                                         <MenuItem value={`1`}>提供</MenuItem>
                                     </TextField>
                                 </Grid>
                                 <Grid xs={4} item>
-                                    {data.costumeOffer ? <TextField
+                                    {showData.costumeOffer ? <TextField
                                         required
                                         label="服装套数"
                                         fullWidth
                                         size='small'
                                         select
-                                        value={`${data.costumeCount}`}
-                                        onChange={(e) => updateData({ costumeCount: Number(e.target.value) })}
+                                        value={`${showData.costumeCount}`}
+                                        onChange={(e) => update.current({ costumeCount: Number(e.target.value) })}
                                     >
                                         <MenuItem value={`1`}>1套</MenuItem>
                                         <MenuItem value={`2`}>2套</MenuItem>
@@ -75,14 +96,14 @@ const SampleService = ({
                                     </TextField> : null}
                                 </Grid>
                                 <Grid xs={4} item>
-                                    {data.costumeCount === 0 ? <TextField
+                                    {showData.costumeCount === 0 ? <TextField
                                         required
                                         label="自定义套数"
                                         fullWidth
                                         size='small'
                                         placeholder='请填写套系数量'
-                                        value={data.customCostumeCount}
-                                        onChange={(e) => updateData({ customCostumeCount: Number(e.target.value) })}
+                                        value={`${showData.customCostumeCount}`}
+                                        onChange={(e) => update.current({ customCostumeCount: Number(e.target.value) })}
                                     /> : null}
                                 </Grid>
                                 <Grid xs={4} item>
@@ -91,8 +112,8 @@ const SampleService = ({
                                         label="底片数量"
                                         fullWidth
                                         size='small'
-                                        value={data.negativeFilmCount}
-                                        onChange={(e) => updateData({ negativeFilmCount: Number(e.target.value) })}
+                                        value={`${showData.negativeFilmCount}`}
+                                        onChange={(e) => update.current({ negativeFilmCount: Number(e.target.value) })}
                                     />
                                 </Grid>
                                 <Grid xs={4} item>
@@ -102,8 +123,8 @@ const SampleService = ({
                                         fullWidth
                                         size='small'
                                         select
-                                        value={data.negaFilmAllOffer ? '1' : '0'}
-                                        onChange={(e) => updateData({ negaFilmAllOffer: !!Number(e.target.value) })}
+                                        value={showData.negaFilmAllOffer ? '1' : '0'}
+                                        onChange={(e) => update.current({ negaFilmAllOffer: !!Number(e.target.value) })}
                                     >
                                         <MenuItem value={`0`}>否</MenuItem>
                                         <MenuItem value={`1`}>是</MenuItem>
@@ -117,8 +138,8 @@ const SampleService = ({
                                         fullWidth
                                         size='small'
                                         select
-                                        value={`${data.shootingTime}`}
-                                        onChange={(e) => updateData({ shootingTime: Number(e.target.value) })}
+                                        value={`${showData.shootingTime}`}
+                                        onChange={(e) => update.current({ shootingTime: Number(e.target.value) })}
                                     >
                                         <MenuItem value={`0.5`}>半小时</MenuItem>
                                         <MenuItem value={`1`}>1小时</MenuItem>
@@ -129,14 +150,14 @@ const SampleService = ({
                                     </TextField>
                                 </Grid>
                                 <Grid xs={4} item>
-                                    {data.shootingTime === 0 ? <TextField
+                                    {showData.shootingTime === 0 ? <TextField
                                         required
                                         label="自定义时长"
                                         fullWidth
                                         size='small'
                                         placeholder='请填写拍摄时长'
-                                        value={data.customShootingTime}
-                                        onChange={(e) => updateData({ customShootingTime: Number(e.target.value) })}
+                                        value={`${showData.customShootingTime}`}
+                                        onChange={(e) => update.current({ customShootingTime: Number(e.target.value) })}
                                     /> : null}
                                 </Grid>
                                 <Grid xs={4} item></Grid>
@@ -146,8 +167,8 @@ const SampleService = ({
                                         label="精修数量"
                                         fullWidth
                                         size='small'
-                                        value={data.refineCount}
-                                        onChange={(e) => updateData({ refineCount: Number(e.target.value) })}
+                                        value={`${showData.refineCount}`}
+                                        onChange={(e) => update.current({ refineCount: Number(e.target.value) })}
                                     />
                                 </Grid>
                                 <Grid xs={4} item>
@@ -157,21 +178,21 @@ const SampleService = ({
                                         fullWidth
                                         size='small'
                                         select
-                                        value={(`${Number(data.shootingIndoor)}`)}
-                                        onChange={(e) => updateData({ shootingIndoor: !!Number(e.target.value) })}
+                                        value={(`${Number(showData.shootingIndoor)}`)}
+                                        onChange={(e) => update.current({ shootingIndoor: !!Number(e.target.value) })}
                                     >
                                         <MenuItem value={`1`}>内景</MenuItem>
                                         <MenuItem value={`0`}>外景</MenuItem>
                                     </TextField>
                                 </Grid>
                                 <Grid xs={4} item>
-                                    {data.shootingIndoor ? <TextField
+                                    {showData.shootingIndoor ? <TextField
                                         required
                                         label="内景数量"
                                         fullWidth
                                         size='small'
-                                        value={data.shootingSceneIndoorCount}
-                                        onChange={(e) => updateData({ shootingSceneIndoorCount: Number(e.target.value) })}
+                                        value={`${showData.shootingSceneIndoorCount}`}
+                                        onChange={(e) => update.current({ shootingSceneIndoorCount: Number(e.target.value) })}
                                     /> : null}
                                 </Grid>
                             </Grid>

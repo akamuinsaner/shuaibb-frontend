@@ -1,38 +1,66 @@
 import { DEVHOST } from 'common/contants';
+import camelcaseKeys from 'camelcase-keys';
+import decamelizeKeys from 'decamelize-keys';
 
 const HOST = DEVHOST;
 
 type options = {
     method?: string;
     data?: any;
+    deCamelize?: boolean
+    camelize?: boolean
 }
 
-let headers = {
+let defaultHeaders = {
     "content-type": "application/json",
 }
 
-export default (url: string, {
-    method,
-    data
-}: options = {
-    method: 'GET',
-    data: {}
-}) => {
+
+const getBody = (data: any, deCamelize: boolean) => {
+    if (data instanceof FormData) {
+        return data;
+    } else {
+        return JSON.stringify(
+            deCamelize
+                ? decamelizeKeys(data, { deep: true })
+                : data)
+    }
+}
+
+const getHeaders = (data: any) => {
+    let headers = defaultHeaders;
     const token = localStorage.getItem("__token__");
     if (token) {
-        headers = Object.assign({}, headers, { Authorization: `Token ${token}` })
+        headers = Object.assign({}, defaultHeaders, { Authorization: `Token ${token}` })
     }
+    if (data instanceof FormData) {
+        delete headers['content-type']
+    }
+    return headers;
+}
+
+export default (url: string, {
+    method = 'GET',
+    data,
+    deCamelize = true,
+    camelize = true
+}: options = {
+        method: 'GET',
+        data: {},
+        deCamelize: true,
+        camelize: true
+    }) => {
     return fetch(`${HOST}${url}`, {
         method,
-        body: method === 'GET' ? null : JSON.stringify(data),
-        headers 
+        body: method === 'GET' ? null : getBody(data, deCamelize),
+        headers: getHeaders(data)
     }).then((res) => {
         return res.json();
     }).then(res => {
         if (res.code === 0) {
-            return res.data;
+            return camelize ? camelcaseKeys(res.data, { deep: true }) : res.data;
         } else {
-            throw(new Error(res.message))
+            throw (new Error(res.message))
         }
     })
 }

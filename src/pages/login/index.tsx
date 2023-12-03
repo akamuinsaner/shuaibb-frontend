@@ -9,21 +9,27 @@ import Link from '@mui/material/Link';
 import { loginAPI } from 'apis/login';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { MOBILE_REXP } from 'common/rexps';
+import { MOBILE_REXP, EMAIL_REXP } from 'common/rexps';
 import { message } from 'components/globalMessage'
+import { useLoginStore } from './store';
 
 const LoginPage = () => {
-    const [mobile, setMobile] = React.useState<string>('');
-    const [password, setPassword] = React.useState<string>('');
-    const [mbErrText, setMbErrText] = React.useState<string>('');
-    const [pwErrText, setPwErrText] = React.useState<string>('');
+    const {
+        uField,
+        password,
+        uFieldErrText,
+        pwErrText
+    } = useLoginStore(state => state);
+    const updateState = useLoginStore(state => state.updateState);
     React.useEffect(() => {
-        if (mobile && !MOBILE_REXP.test(mobile)) {
-            setMbErrText('请输入正确的手机号');
+        if (uField &&
+            !MOBILE_REXP.test(uField) &&
+            !EMAIL_REXP.test(uField)) {
+            updateState({ uFieldErrText: '请输入正确的账号' })
         } else {
-            setMbErrText('');
+            updateState({ uFieldErrText: '' })
         }
-    }, [mobile]);
+    }, [uField]);
     const navigate = useNavigate();
     const loginMutation = useMutation({
         mutationFn: loginAPI,
@@ -34,19 +40,17 @@ const LoginPage = () => {
             })
         },
         onError: (error) => {
-            setMbErrText(error.message);
+            message.error(error.message)
         }
     });
     const onLoginClick = () => {
-        if (!mobile) {
-            setMbErrText('手机号码不能为空');
-            return;
-        }
-        if (!password) {
-            setPwErrText('密码不能为空');
-            return;
-        }
-        loginMutation.mutate({ mobile, password })
+        if (uFieldErrText || pwErrText) return;
+        if (!uField) { updateState({ uFieldErrText: '账号不能为空' }); return; }
+        if (!password) { updateState({ pwErrText: '密码不能为空' }); return; }
+        loginMutation.mutate({
+            [MOBILE_REXP.test(uField) ? "mobile" : "email"]: uField,
+            password
+        })
     }
     return (
         <Box className={styles.loginPage}>
@@ -58,14 +62,15 @@ const LoginPage = () => {
                     <Typography variant='h5' >登录</Typography>
                     <Box sx={{ marginTop: '8px', width: '100%' }}>
                         <TextField
-                            error={!!mbErrText}
+                            error={!!uFieldErrText}
                             required
-                            label="手机号"
+                            label="手机号或邮箱"
                             fullWidth
                             margin="normal"
-                            value={mobile}
-                            onChange={(e) => setMobile(e.target.value)}
-                            helperText={mbErrText}
+                            value={uField}
+                            placeholder="请输入手机号或邮箱登录"
+                            onChange={(e) => updateState({ uField: e.target.value })}
+                            helperText={uFieldErrText}
                         />
                         <TextField
                             error={!!pwErrText}
@@ -76,7 +81,7 @@ const LoginPage = () => {
                             margin="normal"
                             autoComplete="current-password"
                             value={password}
-                            onChange={e => setPassword(e.target.value)}
+                            onChange={e => updateState({ password: e.target.value })}
                             helperText={pwErrText}
                         />
                         <Button

@@ -15,8 +15,12 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import { SampleNameState } from './store';
+import { SampleData } from 'declare/sample';
 import SortModal from './components/SortModal'
+import { SampleLabel } from 'declare/sample';
+import MenuItem from '@mui/material/MenuItem';
+import { uploadFileCommon } from 'apis/upload';
+import { useMutation } from '@tanstack/react-query';
 
 const StyledImgMask = styled('div')({
     width: '100%',
@@ -48,14 +52,31 @@ const VisuallyHiddenInput = styled('input')({
 
 const SampleName = ({
     data,
-    updateData
+    updateData,
+    labels = []
 }: {
-    data: SampleNameState,
-    updateData: (data: Partial<SampleNameState>)  => void
+    data: SampleData;
+    updateData: (data: Partial<SampleData>)  => void;
+    labels: SampleLabel[]
 }) => {
     const [anchorEl, setAnchorEl] = React.useState<any>(null);
     const [currentDetailImg, setCurrentDetailImg] = React.useState<string>('');
     const [sortDialogOpen, setSortDialogOpen] = React.useState<boolean>(false);
+    const coverRef = React.useRef(null);
+    const detailRef = React.useRef(null)
+    const [coverUploading, setCoverUploading] = React.useState(false)
+    const [detailUploading, setDetailUploading] = React.useState(false)
+    const uploadMutation = useMutation({
+        mutationFn: uploadFileCommon,
+        onSettled: (d, e) => {
+            if (coverUploading) updateData({ covers: [...data.covers, d.url] })
+            if (detailUploading) updateData({ details: [...data.details, d.url] })
+            setCoverUploading(false)
+            setDetailUploading(false)
+            coverRef.current.value = null
+            detailRef.current.value = null
+        },
+    })
     return (
         <Item elevation={3}>
             <Stack spacing={2}>
@@ -79,8 +100,13 @@ const SampleName = ({
                     SelectProps={{
                         multiple: true
                     }}
-                    value={data.tags}
-                />
+                    value={data.tags.map(item => item.id)}
+                    onChange={(e) => 
+                        updateData({ tags: labels.filter(item => (e.target.value as unknown as Number[]).includes(item.id))
+                    })}
+                >
+                    {labels.map((label) => (<MenuItem key={label.id} value={label.id}>{label.name}</MenuItem>))}
+                </TextField>
                 <TextField
                     required
                     fullWidth
@@ -102,7 +128,15 @@ const SampleName = ({
                                 disabled={data.covers.length >= 4}
                             >
                                 上传图片
-                                <VisuallyHiddenInput type="file" />
+                                <VisuallyHiddenInput ref={coverRef} type="file" onChange={e => {
+                                    if (e.target?.files?.length) {
+                                        setCoverUploading(true);
+                                        const file = e.target?.files[0]
+                                        const formData = new FormData();
+                                        formData.append('file', file);
+                                        uploadMutation.mutate(formData)
+                                    }
+                                }} />
                             </Button>
                         </Typography>
                         {
@@ -146,7 +180,15 @@ const SampleName = ({
                                 disabled={data.details.length >= 80}
                             >
                                 上传图片
-                                <VisuallyHiddenInput type="file" />
+                                <VisuallyHiddenInput ref={detailRef} type="file" onChange={e => {
+                                    if (e.target?.files?.length) {
+                                        setDetailUploading(true);
+                                        const file = e.target?.files[0]
+                                        const formData = new FormData();
+                                        formData.append('file', file);
+                                        uploadMutation.mutate(formData)
+                                    }
+                                }} />
                             </Button>
                         </Typography>
                         {

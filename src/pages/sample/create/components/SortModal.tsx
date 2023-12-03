@@ -77,7 +77,7 @@ const SortModal = ({
 
     React.useEffect(() => {
         setCurrentList(imgList);
-    }, [])
+    }, [imgList])
 
     const renderList = React.useCallback(() => {
         return currentList.map((url, index) => (
