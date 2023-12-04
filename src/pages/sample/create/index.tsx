@@ -16,32 +16,56 @@ import {
     saveSample,
     retriveDraft,
     sampleLabels,
-    updateSample as updateSampleFn
+    updateSample as updateSampleFn,
+    retriveSample
 } from 'apis/sample';
 import useGlobalStore from 'globalStore';
-import { SampleData, SampleLabel } from 'declare/sample';
+import { SampleData } from 'declare/sample';
 import { message } from 'components/globalMessage';
-import { useTranslation, Trans, withTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { strToObj } from 'utils/funcTools';
 
-const Content = styled(Box)(({ theme }) => ({
+const Content = styled(Box)(({ theme }: any) => ({
     padding: theme.spacing(2),
 }));
 
 
 const SampleCreate = ({ t }: { t: any }) => {
     const queryClient = useQueryClient();
+    const location = useLocation();
+    const searchParams = strToObj(location.search);
     const user = useGlobalStore(state => state.user);
+    const navigate = useNavigate()
     const activeTab = useSampleCreateStore(state => state.activeTab);
     const updateActiveTab = useSampleCreateStore(state => state.updateActiveTab);
     const sample = useSampleCreateStore(state => state.sample);
     const curTemp = useSampleCreateStore(state => state.templateState.curTemp);
     const updateSample = useSampleCreateStore(state => state.updateSample);
     const { data: labels } = useQuery({ queryFn: sampleLabels, queryKey: ['sampleLabels'] });
-    const { data: draft, isFetching } = useQuery({ queryFn: retriveDraft, queryKey: ['retriveDraft'] });
+    const retriveDraftMutation = useMutation({
+        mutationFn: retriveDraft,
+        onSuccess: (data) => {
+            if (data) updateSample({ ...data, covers: JSON.parse(data.covers), details: JSON.parse(data.details) });
+            else updateSample({ ...initialSample, id: null });
+        }
+    });
+    const retriveSampleMutation = useMutation({
+        mutationFn: retriveSample,
+        onSuccess: (data) => {
+            updateSample({ ...data, covers: JSON.parse(data.covers), details: JSON.parse(data.details) })
+        }
+    })
+    const fetchInitialData = React.useCallback(() => {
+        if (searchParams?.sampleId) {
+            retriveSampleMutation.mutate({ sampleId: Number(searchParams.sampleId) })
+        } else {
+            retriveDraftMutation.mutate()
+        }
+    }, [])
     React.useEffect(() => {
-        if (!isFetching && draft) updateSample({ ...draft, covers: JSON.parse(draft.covers), details: JSON.parse(draft.details) });
-        if (!isFetching && !draft) updateSample({ ...initialSample, id: null });
-    }, [draft, isFetching]);
+        fetchInitialData()
+    }, []);
     const handleSampleData = React.useCallback((data: SampleData): any => {
         let temp = Object.assign({}, curTemp, {});
         delete temp.id;
@@ -56,7 +80,7 @@ const SampleCreate = ({ t }: { t: any }) => {
         mutationFn: saveSample,
         onSuccess: (data) => {
             message.success('提交成功', {
-                closeCallback: () => queryClient.invalidateQueries({ queryKey: ['retriveDraft'] })
+                closeCallback: fetchInitialData
             })
         },
         onError: (error) => message.error(error.message)
@@ -66,7 +90,7 @@ const SampleCreate = ({ t }: { t: any }) => {
         mutationFn: updateSampleFn,
         onSuccess: (data) => {
             message.success('提交成功', {
-                closeCallback: () => queryClient.invalidateQueries({ queryKey: ['retriveDraft'] })
+                closeCallback: fetchInitialData
             })
         },
         onError: (error) => message.error(error.message)
@@ -110,20 +134,28 @@ const SampleCreate = ({ t }: { t: any }) => {
                         updateData={updateSample}
                     />
                     <Box className={styles.btns}>
-                        <Button
-                            variant='outlined'
-                            className={styles.btn}
-                            onClick={() => queryClient.invalidateQueries({ queryKey: ['retriveDraft'] })}
-                        >重置</Button>
-                        <Button
-                            variant='contained'
-                            className={styles.btn}
-                            onClick={() => submit(sample, true)}>{sample?.id ? '修改草稿' : '保存为草稿'}</Button>
+                        {
+                            !searchParams?.sampleId && (
+                                <>
+                                    <Button
+                                        variant='outlined'
+                                        className={styles.btn}
+                                        onClick={fetchInitialData}
+                                    >重置</Button>
+                                    <Button
+                                        variant='contained'
+                                        className={styles.btn}
+                                        onClick={() => submit(sample, true)}>{sample?.id ? '修改草稿' : '保存为草稿'}
+                                    </Button>
+                                </>
+                            )
+                        }
+
                         <Button
                             variant='contained'
                             color='success'
                             className={styles.btn}
-                            onClick={() => submit(sample, false)}>提交样片</Button>
+                            onClick={() => submit(sample, false)}>{searchParams?.sampleId ? '更新样片' : '提交样片'}</Button>
                     </Box>
                 </Stack>
             </Content>

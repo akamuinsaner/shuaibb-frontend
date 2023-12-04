@@ -25,9 +25,25 @@ export const updateSample = (data: SampleData) => request(
     }
 )
 
+export const batchDeleteSample = (data: { ids: any[]}) => request(
+    `/api/samples/batch/delete/`,
+    {
+        method: 'POST',
+        data
+    }
+)
+
+export const retriveSample = (data: { sampleId: number }) => request(
+    `/api/samples/${data.sampleId}`,
+    {
+        method: 'GET',
+    }
+)
+
 export const retriveDraft = () => request(
     `/api/samples/draft/retrive/`,
 )
+
 
 export const sampleLabels = () => request(
     `/api/samples/labels/`,
@@ -52,7 +68,7 @@ export const sampleTemplateCreateFn = (data: SampleTemplate) => request(
 )
 
 export const sampleTemplateUpdateFn = (data: Partial<SampleTemplate>) => request(
-    `/api/samples/templates/detail/`,
+    `/api/samples/templates/${data.id}/`,
     {
         method: 'PUT',
         data
@@ -60,7 +76,7 @@ export const sampleTemplateUpdateFn = (data: Partial<SampleTemplate>) => request
 )
 
 export const sampleTemplateDeleteFn = (data: Partial<SampleTemplate>) => request(
-    `/api/samples/templates/detail/`,
+    `/api/samples/templates/${data.id}/`,
     {
         method: 'delete',
         data

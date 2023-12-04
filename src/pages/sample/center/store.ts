@@ -15,7 +15,8 @@ type state = {
     endDate: fieldState<string>,
     orderParams: OrderParams<SampleData>;
     pageInfo: PageInfo;
-    dataList: SampleData[]
+    dataList: SampleData[];
+    selectedKeys: any[];
 }
 
 type action = {
@@ -40,7 +41,8 @@ export const initialState: state = {
         limit: 10,
         total: 0
     },
-    dataList: []
+    dataList: [],
+    selectedKeys: [],
 }
 
 export const useSampleCenterStore = create<

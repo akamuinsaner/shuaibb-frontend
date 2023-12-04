@@ -120,7 +120,7 @@ const FilterFields = ({
                     >清空搜索条件</Button>
                     <Button
                         variant="contained"
-                        sx={{ marginLeft: '20px' }}
+                        sx={{ marginLeft: '16px' }}
                         onClick={onSearch}
                     >搜索</Button>
                 </Grid>

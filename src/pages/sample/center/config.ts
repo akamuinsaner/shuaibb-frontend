@@ -1,5 +1,6 @@
 import type { SampleData, SampleLabel } from 'declare/sample';
 import type { HeadCell } from 'components/ListTable';
+import dayjs from 'dayjs';
 
 
 export const headCells: HeadCell<SampleData>[] = [
@@ -87,6 +88,14 @@ export const headCells: HeadCell<SampleData>[] = [
     label: '内景数量',
     render: (value, record, index) => {
       return record.shootingIndoor ? record.shootingSceneIndoorCount : 0
+    }
+  },
+  {
+    id: 'createdAt',
+    type: 'string',
+    label: '创建日期',
+    render: (value, record, index) => {
+      return dayjs(value).format('YYYY-MM-DD')
     }
   }
 ];

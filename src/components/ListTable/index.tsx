@@ -33,20 +33,43 @@ export type OrderParams<T> = {
 const ListTableHeader = <T,>({
     headers,
     orderParams,
-    onOrderChange
+    onOrderChange,
+    checkable,
+    selectedKeys,
+    onSelectRows,
+    pageInfo,
+    rowKey,
+    data,
 }: {
+    checkable?: boolean;
     headers: HeadCell<T>[],
     orderParams: OrderParams<T>
-    onOrderChange: (key: keyof T) => void
+    onOrderChange: (key: keyof T) => void;
+    selectedKeys?: any[];
+    onSelectRows?: (selectedKeys: any) => void;
+    pageInfo: PageInfo;
+    rowKey?: string;
+    data: T[];
 }) => {
+    const { offset, limit, total } = pageInfo;
+    const curRowCount = (offset + 1 * limit) < total ? limit : (total - limit * offset)
 
     return (
         <TableHead>
-            <TableCell padding='checkbox'>
+            {checkable? <TableCell padding='checkbox'>
                 <Checkbox
                     color="primary"
+                    checked={selectedKeys.length === curRowCount}
+                    indeterminate={selectedKeys.length > 0 && selectedKeys.length < curRowCount}
+                    onChange={(e: any) => {
+                        if (e.target.checked) {
+                            onSelectRows(data.map((item: any) => item[rowKey]))
+                        } else {
+                            onSelectRows([])
+                        }
+                    }}
                 />
-            </TableCell>
+            </TableCell> : null}
             {headers.map((headCell) => {
                 return <TableCell
                     key={String(headCell.id)}
@@ -73,10 +96,18 @@ const ListTableHeader = <T,>({
 
 const ListTableBody = <T,>({
     data,
-    headers
+    headers,
+    checkable,
+    selectedKeys,
+    onSelectRows,
+    rowKey
 }: {
     data: T[];
     headers: HeadCell<T>[],
+    checkable?: boolean;
+    selectedKeys?: any[];
+    onSelectRows?: (selectedKeys: any) => void;
+    rowKey?: string;
 }) => {
     return (
         <TableBody>
@@ -86,11 +117,19 @@ const ListTableBody = <T,>({
                         sx={{ cursor: 'pointer' }}
                         tabIndex={-1}
                     >
-                        <TableCell padding="checkbox">
+                        {checkable ? <TableCell padding="checkbox">
                             <Checkbox
                                 color="primary"
+                                checked={selectedKeys.includes(row[rowKey])}
+                                onClick={(e: any) => {
+                                    if (e.target.checked) {
+                                        onSelectRows([...selectedKeys, row[rowKey]])
+                                    } else {
+                                        onSelectRows(selectedKeys.filter(item => item !== row[rowKey]))
+                                    }
+                                }}
                             />
-                        </TableCell>
+                        </TableCell> : null}
                         {headers.map((headCell, cIndex) => {
                             const render = headCell.render;
                             let renderText = row[String(headCell.id)];
@@ -99,6 +138,7 @@ const ListTableBody = <T,>({
                             }
                             return <TableCell
                                 id={String(headCell.id)}
+                                key={String(headCell.id)}
                                 align={headCell.type === 'number' ? 'right' : 'left'}
                             >
                                 {renderText}
@@ -116,13 +156,21 @@ const ListTable = <T,>({
     data,
     pageInfo,
     onChange,
-    orderParams
+    orderParams,
+    checkable,
+    selectedKeys,
+    onSelectRows,
+    rowKey
 }: {
-    headers: HeadCell<T>[],
-    data: T[],
-    pageInfo: PageInfo,
-    onChange: (params: any) => void,
-    orderParams: OrderParams<T>
+    onSelectRows?: (selectedKeys: any) => void;
+    selectedKeys?: any[];
+    checkable?: boolean;
+    headers: HeadCell<T>[];
+    data: T[];
+    pageInfo: PageInfo;
+    onChange: (params: any) => void;
+    orderParams?: OrderParams<T>;
+    rowKey?: string;
 }) => {
     const onPaginationChange = (e: any, page: number) => {
         onChange({ ...orderParams, ...pageInfo, offset: page })
@@ -131,15 +179,20 @@ const ListTable = <T,>({
         console.log(params)
         onChange({ ...params, orderBy: decamelize(String(params.orderBy)), ...pageInfo, offset: 0 })
     }
-
     return (
         <TableContainer component={Paper}>
             <Table
                 sx={{ minWidth: '100%' }}
             >
                 <ListTableHeader<T>
+                    data={data}
                     headers={headers}
                     orderParams={orderParams}
+                    selectedKeys={selectedKeys}
+                    checkable={checkable}
+                    onSelectRows={onSelectRows}
+                    pageInfo={pageInfo}
+                    rowKey={rowKey}
                     onOrderChange={(key) => onOrderParamsChange({
                         orderBy: key,
                         order: orderParams.order === 'asc' ? 'desc' : 'asc'
@@ -148,6 +201,10 @@ const ListTable = <T,>({
                 <ListTableBody<T>
                     data={data}
                     headers={headers}
+                    checkable={checkable}
+                    selectedKeys={selectedKeys}
+                    onSelectRows={onSelectRows}
+                    rowKey={rowKey}
                 />
                 {
                     pageInfo.total ? (

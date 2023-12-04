@@ -10,6 +10,8 @@ export type SampleData = {
     userId?: number;
     user?: User;
     isDraft: boolean;
+    createdAt?: string;
+    updatedAt?: string;
 
     name: string;
     desc: string;
