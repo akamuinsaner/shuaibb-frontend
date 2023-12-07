@@ -5,6 +5,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { useLocation } from 'react-router';
+import PictureSpace from './picture';
 
 export type MenuItem = {
     key: string
@@ -22,6 +23,11 @@ export const MENUCONFIG: MenuItem[] = [
         key: 'center',
         text: '样片中心',
         element: <SampleCenter />
+    },
+    {
+        key: 'picture',
+        text: '图片空间',
+        element: <PictureSpace />
     },
 ]
 

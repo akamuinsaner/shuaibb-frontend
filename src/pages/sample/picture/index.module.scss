@@ -1,0 +1,95 @@
+.page {
+    height: 100%;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+
+    .fileCatelog {
+        padding: 24px;
+        margin-bottom: 20px;
+    }
+
+    .pictureField {
+        padding: 24px;
+        flex: 1;
+        .showItem {
+            height: 180px;
+            padding: 24px;
+            cursor: pointer;
+            .name {
+                text-align: center;
+                margin-top: 5px;
+                width: 100%;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+            .showItemBox {
+                width: 180px;
+                height: 180px;
+                margin: auto;
+                border-radius: 20px;
+                position: relative;
+                background-color: #F3F6F9;
+                .checkBox {
+                    position: absolute;
+                    right: 5px;
+                    top: 5px;
+                    display: none;
+                }
+                .checkBox.checked {
+                    display: block;
+                }
+                &:hover {
+                    .checkBox {
+                        display: block;
+                    }
+                    .btmActions {
+                        display: flex;
+                    }
+                }
+            }
+
+
+
+            img,.folder {
+                height: 100%;
+                width: 100%;
+                object-position: center center;
+                object-fit: contain;
+            }
+            svg {
+                
+            }
+        }
+        .folderItem {
+
+
+        }
+        .imgItem {
+            .btmActions {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                display: flex;
+                align-items: center;
+                padding: 10px 10px;
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+                display: none;
+            }
+        }
+
+        .nameCell {
+            display: flex;
+            align-items: center;
+            img {
+                height: 24px;
+                margin-right: 10px;
+            }
+            svg {
+                margin-right: 10px;
+            }
+        }
+    }
+}

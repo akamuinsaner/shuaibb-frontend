@@ -105,7 +105,7 @@ const SampleCreate = ({ t }: { t: any }) => {
 
     return (
         <Box className={styles.create}>
-            {t('aaa')}
+            {/* {t('aaa')} */}
             <Box className={styles.tabsBox}>
                 <Tabs value={activeTab} onChange={(e, value) => updateActiveTab(value)}>
                     <Tab label="样片名称" />
