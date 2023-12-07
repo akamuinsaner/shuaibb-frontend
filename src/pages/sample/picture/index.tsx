@@ -12,7 +12,8 @@ import {
     deletePictureFolders,
     updatePicture,
     updatePictureFolders,
-    searchPictureAndFolder
+    searchPictureAndFolder,
+    batchDeletePictureAndFolder
 } from 'apis/picture/folder';
 import CreateFolderDialog from './createFolderDialog';
 import PictureFields from './PictureFields';
@@ -110,6 +111,13 @@ const PictureSpace = () => {
         mutationFn: searchPictureAndFolder,
         onSuccess: (data) => updateState({ searchedData: data })
     })
+    const batchDeletePicAndFolderMutation = useMutation({
+        mutationFn: batchDeletePictureAndFolder,
+        onSettled: (data) => {
+            listFolderMutation.mutate({ id: null });
+            listPictureMutation.mutate({ folderId: curFolderId })
+        }
+    })
     React.useEffect(() => {
         listFolderMutation.mutate({ id: null });
     }, [])
@@ -172,6 +180,13 @@ const PictureSpace = () => {
                 }}
                 onFolderUpdate={(data: Partial<PictureFolder>) => {
                     updateFolderMutation.mutate(data);
+                }}
+                batchDelete={(data: any) => {
+                    confirm.confirm({
+                        title: '删除图片/文件夹',
+                        content: '确认删除图片及文件夹吗？',
+                        confirmCallback: () => batchDeletePicAndFolderMutation.mutate(data)
+                    })
                 }}
                 onDelete={(name: string, id: number) => {
                     confirm.confirm({

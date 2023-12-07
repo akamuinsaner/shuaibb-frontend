@@ -40,6 +40,14 @@ export const searchPictureAndFolder = (data: any) => request(
     }
 )
 
+export const batchDeletePictureAndFolder = (data: any) => request(
+    `/api/pictures/batchDelete/`,
+    {
+        method: 'POST',
+        data
+    }
+)
+
 export const listPictures = (data?: any) => request(
     `/api/pictures/list/`,
     {

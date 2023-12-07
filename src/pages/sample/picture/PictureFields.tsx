@@ -43,7 +43,8 @@ const PictureFields = ({
     sortMethod,
     onSearch,
     isSearching,
-    cancelSearch
+    cancelSearch,
+    batchDelete
 }: {
     folderIds: state["folderIds"];
     toogleMode: () => void;
@@ -65,6 +66,7 @@ const PictureFields = ({
     onSearch: (searchState: any) => void;
     isSearching: boolean;
     cancelSearch: () => void;
+    batchDelete: (data: any) => void
 }) => {
 
     const [selectedFolders, setSelectedFolders] = React.useState([]);
@@ -105,6 +107,7 @@ const PictureFields = ({
                     name, type, open: true, id
                 })}
                 openMoveDialog={(data: MoveState) => setMoveState(data)}
+                batchDelete={batchDelete}
             />
             {
                 showMode === 'grid' ? (

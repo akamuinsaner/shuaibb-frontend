@@ -14,7 +14,8 @@ const PictureActionBatch = ({
     openRenameDialog,
     openMoveDialog,
     formatedFolders,
-    pictures
+    pictures,
+    batchDelete
 }: {
     selectedFolders: number[];
     selectedImages: number[];
@@ -22,7 +23,9 @@ const PictureActionBatch = ({
     openMoveDialog: (data: { id: number; type: 'pic' | 'folder'; parentId: number }) => void;
     formatedFolders: state["formatedFolders"];
     pictures: state["pictures"];
+    batchDelete: (data: any) => void;
 }) => {
+    console.log(selectedFolders, selectedImages)
     return <Stack
         sx={{ flex: 1, alignItems: 'center' }}
         direction="row"
@@ -44,6 +47,7 @@ const PictureActionBatch = ({
                         >重命名</Button> : null,
                         <Button
                             startIcon={<DeleteOutlineIcon />}
+                            onClick={() => batchDelete({ folderIds: selectedFolders })}
                         >删除</Button>,
                         <Button
                             startIcon={<GamesIcon />}
@@ -63,6 +67,7 @@ const PictureActionBatch = ({
                         >重命名</Button> : null,
                         <Button
                             startIcon={<DeleteOutlineIcon />}
+                            onClick={() => batchDelete({ pictureIds: selectedImages })}
                         >删除</Button>,
                         <Button
                             startIcon={<GamesIcon />}
@@ -75,6 +80,7 @@ const PictureActionBatch = ({
                     [
                         <Button
                             startIcon={<DeleteOutlineIcon />}
+                            onClick={() => batchDelete({ folderIds: selectedFolders, pictureIds: selectedImages })}
                         >删除</Button>,
                         <Button
                             startIcon={<GamesIcon />}

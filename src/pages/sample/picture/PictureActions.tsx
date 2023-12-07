@@ -30,7 +30,8 @@ const PictureActions = ({
     isSearching,
     cancelSearch,
     openRenameDialog,
-    openMoveDialog
+    openMoveDialog,
+    batchDelete
 }: {
     selectedFolders: number[];
     selectedImages: number[];
@@ -51,7 +52,8 @@ const PictureActions = ({
     isSearching: boolean;
     cancelSearch: () => void
     openRenameDialog: (name: string, type: 'pic' | 'folder', id: number) => void
-    openMoveDialog: (data: { id: number; type: 'pic' | 'folder'; parentId: number }) => void
+    openMoveDialog: (data: { id: number; type: 'pic' | 'folder'; parentId: number }) => void;
+    batchDelete: (data: any) => void
 }) => {
     const selectAll = selectedImages.length === pictures.length && selectedFolders.length === showFolders.length
     const indeterminate = (selectedImages.length + selectedFolders.length < pictures.length + showFolders.length)
@@ -88,6 +90,7 @@ const PictureActions = ({
                             openMoveDialog={openMoveDialog}
                             formatedFolders={formatedFolders}
                             pictures={pictures}
+                            batchDelete={batchDelete}
                         />
                     ) : (
                         <PictureActionMain
