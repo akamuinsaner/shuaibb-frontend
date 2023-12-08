@@ -18,6 +18,8 @@ export type state = {
     pictures: PictureInfo[];
     showMode: 'list' | 'grid';
     sortMethod: ESortMethod;
+    selectedImages: number[];
+    selectedFolders: number[];
     searchedData: {
         folders: PictureFolder[];
         pictures: PictureInfo[];
@@ -38,7 +40,9 @@ export const initialState: state = {
     pictures: [],
     showMode: 'grid',
     sortMethod: null,
-    searchedData: null
+    searchedData: null,
+    selectedImages: [],
+    selectedFolders: []
 }
 
 export const usePictureStore = create<

@@ -9,6 +9,7 @@ import Divider from '@mui/material/Divider';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import PictureActionMain from './PictureActionMain';
 import PictureActionBatch from './PictureActionBatch';
+import { PictureInfo } from 'declare/picture';
 
 const PictureActions = ({
     showMode,
@@ -31,7 +32,10 @@ const PictureActions = ({
     cancelSearch,
     openRenameDialog,
     openMoveDialog,
-    batchDelete
+    batchDelete,
+    openBatchMoveDialog,
+    openUploadDialog,
+    openEditDialog
 }: {
     selectedFolders: number[];
     selectedImages: number[];
@@ -53,7 +57,10 @@ const PictureActions = ({
     cancelSearch: () => void
     openRenameDialog: (name: string, type: 'pic' | 'folder', id: number) => void
     openMoveDialog: (data: { id: number; type: 'pic' | 'folder'; parentId: number }) => void;
-    batchDelete: (data: any) => void
+    batchDelete: (data: any) => void;
+    openBatchMoveDialog: (data: any) => void;
+    openUploadDialog: () => void;
+    openEditDialog: (info: PictureInfo) => void
 }) => {
     const selectAll = selectedImages.length === pictures.length && selectedFolders.length === showFolders.length
     const indeterminate = (selectedImages.length + selectedFolders.length < pictures.length + showFolders.length)
@@ -91,6 +98,8 @@ const PictureActions = ({
                             formatedFolders={formatedFolders}
                             pictures={pictures}
                             batchDelete={batchDelete}
+                            openBatchMoveDialog={openBatchMoveDialog}
+                            openEditDialog={openEditDialog}
                         />
                     ) : (
                         <PictureActionMain
@@ -101,6 +110,7 @@ const PictureActions = ({
                             onUpload={onUpload}
                             showMode={showMode}
                             toogleMode={toogleMode}
+                            openUploadDialog={openUploadDialog}
                         />
                     )
                 }

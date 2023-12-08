@@ -9,6 +9,11 @@ import RenameDialog from './RenameDialog';
 import MoveDialog from './MoveDialog';
 import { PictureInfo, PictureFolder } from 'declare/picture';
 import { message } from 'components/globalMessage';
+import PictureEditDialog from './PictureEditDialog'
+import Viewer from 'react-viewer'
+import { SampleLabel } from 'declare/sample';
+import UploadDialog from './uploadDialog';
+
 
 type RenameState = {
     id: number;
@@ -23,7 +28,17 @@ type MoveState = {
     parentId: number
 }
 
+type BatchMoveState = {
+    parentId?: number;
+    folderIds?: number[];
+    pictureIds?: number[]
+}
+
 const PictureFields = ({
+    selectedImages,
+    selectedFolders,
+    setSelectedFolders,
+    setSelectedImages,
     folderIds,
     showMode,
     toogleMode,
@@ -44,8 +59,16 @@ const PictureFields = ({
     onSearch,
     isSearching,
     cancelSearch,
-    batchDelete
+    batchDelete,
+    batchMove,
+    onCover,
+    labels,
+    curFolderId
 }: {
+    setSelectedFolders: (data: number[]) => void;
+    setSelectedImages: (data: number[]) => void;
+    selectedImages: number[];
+    selectedFolders: number[];
     folderIds: state["folderIds"];
     toogleMode: () => void;
     showMode: state["showMode"];
@@ -66,17 +89,22 @@ const PictureFields = ({
     onSearch: (searchState: any) => void;
     isSearching: boolean;
     cancelSearch: () => void;
-    batchDelete: (data: any) => void
+    batchDelete: (data: any) => void;
+    batchMove: (data: any) => void;
+    onCover: (data: any) => void;
+    labels: SampleLabel[];
+    curFolderId: any
 }) => {
-
-    const [selectedFolders, setSelectedFolders] = React.useState([]);
-    const [selectedImages, setSelectedImages] = React.useState([]);
+    const [uploadDialogOpen, setUploadDialogOpen] = React.useState<boolean>(false);
+    const [viewPictureInfo, setViewPictureInfo] = React.useState<PictureInfo>(null);
+    const [editPictureInfo, setEditPictureInfo] = React.useState<PictureInfo>(null);
     const [renameDialogState, setRenameDialogState] = React.useState<RenameState>({ 
         open: false, name: '', type: 'pic', id: null
     });
     const [moveState, setMoveState] = React.useState<MoveState>({ 
         id: null, type: 'pic', parentId: null
     })
+    const [batchMoveState, setBatchMoveState] = React.useState<BatchMoveState>({})
 
     return (
         <Paper
@@ -107,7 +135,10 @@ const PictureFields = ({
                     name, type, open: true, id
                 })}
                 openMoveDialog={(data: MoveState) => setMoveState(data)}
+                openBatchMoveDialog={(data: BatchMoveState) => setBatchMoveState(data)}
                 batchDelete={batchDelete}
+                openUploadDialog={() => setUploadDialogOpen(true)}
+                openEditDialog={(info: PictureInfo) => setEditPictureInfo(info)}
             />
             {
                 showMode === 'grid' ? (
@@ -122,6 +153,8 @@ const PictureFields = ({
                         onDelete={onDelete}
                         folderIds={folderIds}
                         updateFolderIds={updateFolderIds}
+                        openViewer={(info: PictureInfo) => setViewPictureInfo(info)}
+                        openEditDialog={(info: PictureInfo) => setEditPictureInfo(info)}
                         openMoveDialog={(data: MoveState) => setMoveState(data)}
                         openRenameDialog={(name:string, type: 'pic' | 'folder', id: number) => setRenameDialogState({
                             name, type, open: true, id
@@ -136,10 +169,10 @@ const PictureFields = ({
                         setSelectedFolders={setSelectedFolders}
                         setSelectedImages={setSelectedImages}
                         onClickFolder={onClickFolder}
-                        folderIds={folderIds}
                         onDelete={onDelete}
-                        updateFolderIds={updateFolderIds}
                         onFolderDelete={onFolderDelete}
+                        openViewer={(info: PictureInfo) => setViewPictureInfo(info)}
+                        openEditDialog={(info: PictureInfo) => setEditPictureInfo(info)}
                         openRenameDialog={(name:string, type: 'pic' | 'folder', id: number) => setRenameDialogState({
                             name, type, open: true, id
                         })}
@@ -179,6 +212,63 @@ const PictureFields = ({
                     }
                     setMoveState({ ...moveState, id: null })
                 }}
+            />
+            <MoveDialog
+                open={!!moveState.id}
+                close={() => setMoveState({ ...moveState, id: null })}
+                folders={folders}
+                formatedFolders={formatedFolders}
+                defaultParentId={moveState.parentId}
+                onSubmit={(parentId: number) => {
+                    if (renameDialogState.type === 'pic') {
+                        onPictureUpdate({ id: moveState.id, folderId: parentId });
+                    } else {
+                        if (parentId === moveState.id) {
+                            message.warning('不能移动到当前文件夹下');
+                            return;
+                        }
+                        onFolderUpdate({ id: moveState.id, parentId })
+                    }
+                    setMoveState({ ...moveState, id: null })
+                }}
+            />
+            <MoveDialog
+                open={!!(batchMoveState?.folderIds || batchMoveState?.pictureIds)}
+                close={() => setBatchMoveState({})}
+                folders={folders}
+                formatedFolders={formatedFolders}
+                defaultParentId={batchMoveState.parentId}
+                onSubmit={(parentId: number) => {
+                    if ((batchMoveState?.folderIds || []).includes(batchMoveState.parentId)) {
+                        message.warning('不能移动到当前文件夹下');
+                        return;
+                    }
+                    batchMove({ ...batchMoveState, parentId });
+                    setBatchMoveState({});
+                }}
+            />
+            <PictureEditDialog
+                open={!!editPictureInfo}
+                close={() => setEditPictureInfo(null)}
+                pictureInfo={editPictureInfo}
+                onUpload={onUpload}
+                onCover={onCover}
+                curFolderId={curFolderId}
+                labels={labels}
+            />
+            <Viewer
+                visible={!!viewPictureInfo}
+                onClose={() => setViewPictureInfo(null)}
+                images={[{ src: viewPictureInfo?.url }]}
+            />
+            <UploadDialog
+                labels={labels}
+                open={uploadDialogOpen}
+                close={() => setUploadDialogOpen(false)}
+                folders={folders}
+                formatedFolders={formatedFolders}
+                curFolderId={curFolderId}
+                onUpload={onUpload}
             />
         </Paper>
     )

@@ -62,7 +62,7 @@ const FileCatelog = ({
                                         const value = e.target.value
                                         let copiedParents = [...folderIds];
                                         copiedParents[pIndex + 1] = value
-                                        if (value === 'un') copiedParents = copiedParents.slice(0, pIndex + 2)
+                                        copiedParents = copiedParents.slice(0, pIndex + 2)
                                         changeFolderIds(copiedParents);
                                     }}
                                 >

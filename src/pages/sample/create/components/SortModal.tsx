@@ -65,7 +65,7 @@ const SortModal = ({
         if (!result.destination) {
             return;
         }
-
+        console.log(result)
         const items = reOrder(
             currentList,
             result.source.index,

@@ -27,7 +27,8 @@ const PictureActionMain = ({
     sortMethod,
     onUpload,
     toogleMode,
-    showMode
+    showMode,
+    openUploadDialog
 }: {
     onSearch: (searchState: any) => void
     openCreateDialog: () => void;
@@ -36,8 +37,8 @@ const PictureActionMain = ({
     onUpload: (data: any) => void;
     toogleMode: () => void;
     showMode: state["showMode"];
+    openUploadDialog: () => void;
 }) => {
-    const uploadRef = React.useRef(null);
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
     const [searchState, setSearchState] = React.useState<{
         name?: string; startDate?: string; endDate?: string
@@ -67,12 +68,6 @@ const PictureActionMain = ({
                 >
                     <Stack spacing={2} sx={{ padding: '24px' }}>
                         <Typography sx={{ marginBottom: '16px' }}>高级搜索</Typography>
-                        {/* <Stack direction="row" spacing={2}>
-                    <RadioGroup sx={{ display: 'flex', flexDirection: 'row' }}>
-                        <FormControlLabel value="female" control={<Radio />} label="按图片/文件夹搜索" />
-                        <FormControlLabel value="male" control={<Radio />} label="按宝贝名称搜索" />
-                    </RadioGroup>
-                </Stack> */}
                         <Stack spacing={3} direction="row">
                             <Button
                                 variant='outlined'
@@ -168,7 +163,7 @@ const PictureActionMain = ({
             >新建文件夹</Button>
             <Button
                 variant='contained'
-                onClick={() => uploadRef.current.click()}
+                onClick={openUploadDialog}
             >上传文件
             </Button>
             <Tooltip title={showMode === 'grid' ? '列表模式' : '阵列模式'}>
@@ -217,33 +212,6 @@ const PictureActionMain = ({
                     </React.Fragment>
                 )}
             </PopupState>
-            <input
-                type="file"
-                style={{ display: 'none' }}
-                ref={uploadRef}
-                accept="image/*"
-                onChange={e => {
-                    if (e.target?.files?.length) {
-                        const file = e.target?.files[0]
-                        const fr = new FileReader()
-                        fr.onload = (e) => {
-                            const img = new Image();
-                            img.onload = () => {
-                                onUpload({
-                                    file,
-                                    size: file.size,
-                                    width: img.width,
-                                    height: img.height
-                                });
-                                uploadRef.current.value = null
-                            }
-                            img.src = e.target.result as string;
-                        }
-                        fr.readAsDataURL(file)
-
-                    }
-                }}
-            />
         </>
     )
 }

@@ -36,9 +36,7 @@ const LanguageProvider = ({ children }: { children: any }) => {
             }
         });
     }, [languages, curLang]);
-    console.log(languages, curLang)
     if (!languages || !curLang) return null;
-    console.log(languages, curLang)
     return children;
 }
 

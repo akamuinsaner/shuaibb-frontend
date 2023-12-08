@@ -1,6 +1,14 @@
 import request from 'utils/request';
 import { PictureFolder, PictureInfo } from 'declare/picture';
 
+export const coverPictures = (data: any) => request(
+    `/api/pictures/cover/`,
+    {
+        method: 'POST',
+        data
+    }
+)
+
 export const listPictureFolders = (data?: { id?: number }) => request(
     `/api/pictures/folders/`,
     {
@@ -42,6 +50,14 @@ export const searchPictureAndFolder = (data: any) => request(
 
 export const batchDeletePictureAndFolder = (data: any) => request(
     `/api/pictures/batchDelete/`,
+    {
+        method: 'POST',
+        data
+    }
+)
+
+export const batchMovePictureAndFolder = (data: any) => request(
+    `/api/pictures/batchMove/`,
     {
         method: 'POST',
         data

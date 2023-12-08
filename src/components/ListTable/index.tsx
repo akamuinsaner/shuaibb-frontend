@@ -101,7 +101,8 @@ const ListTableBody = <T,>({
     checkable,
     selectedKeys,
     onSelectRows,
-    rowKey
+    rowKey,
+    rowEvents
 }: {
     data: T[];
     headers: HeadCell<T>[],
@@ -109,6 +110,10 @@ const ListTableBody = <T,>({
     selectedKeys?: any[];
     onSelectRows?: (selectedKeys: any) => void;
     rowKey?: string | { (record: T): string };
+    rowEvents?: {
+        onContextMenu?: (e: React.MouseEvent<HTMLElement, MouseEvent>, record: T) => void;
+        onDoubleClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>, record: T) => void;
+    }
 }) => {
     return (
         <TableBody>
@@ -119,6 +124,8 @@ const ListTableBody = <T,>({
                         sx={{ cursor: 'pointer' }}
                         tabIndex={-1}
                         key={actualKey}
+                        onContextMenu={(e) => rowEvents?.onContextMenu && rowEvents.onContextMenu(e, row)}
+                        onDoubleClick={(e) => rowEvents?.onDoubleClick && rowEvents.onDoubleClick(e, row)}
                     >
                         {checkable ? <TableCell padding="checkbox">
                             <Checkbox
@@ -163,7 +170,8 @@ const ListTable = <T,>({
     checkable,
     selectedKeys,
     onSelectRows,
-    rowKey
+    rowKey,
+    rowEvents
 }: {
     onSelectRows?: (selectedKeys: any) => void;
     selectedKeys?: any[];
@@ -174,6 +182,10 @@ const ListTable = <T,>({
     onChange?: (params: any) => void;
     orderParams?: OrderParams<T>;
     rowKey?: string | { (record: T): string };
+    rowEvents?: {
+        onContextMenu?: (e: React.MouseEvent<HTMLElement, MouseEvent>, record: T) => void;
+        onDoubleClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>, record: T) => void;
+    }
 }) => {
     const onPaginationChange = (e: any, page: number) => {
         onChange({ ...(orderParams || {}), ...pageInfo, offset: page })
@@ -207,6 +219,7 @@ const ListTable = <T,>({
                     selectedKeys={selectedKeys}
                     onSelectRows={onSelectRows}
                     rowKey={rowKey}
+                    rowEvents={rowEvents}
                 />
                 {
                     pageInfo.total ? (

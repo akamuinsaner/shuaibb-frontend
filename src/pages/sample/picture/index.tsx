@@ -2,7 +2,7 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import styles from './index.module.scss';
 import FileCatelog from './FileCatelog';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { usePictureStore, state, ESortMethod } from './store';
 import {
     listPictureFolders,
@@ -13,8 +13,11 @@ import {
     updatePicture,
     updatePictureFolders,
     searchPictureAndFolder,
-    batchDeletePictureAndFolder
+    batchDeletePictureAndFolder,
+    batchMovePictureAndFolder,
+    coverPictures
 } from 'apis/picture/folder';
+import { sampleLabels } from 'apis/sample'
 import CreateFolderDialog from './createFolderDialog';
 import PictureFields from './PictureFields';
 import { confirm } from 'components/confirmDialog';
@@ -57,11 +60,13 @@ const PictureSpace = () => {
         defaultSelectId,
         sortMethod,
         searchedData,
+        selectedImages,
+        selectedFolders,
         updateState
     } = usePictureStore(state => state)
-    const preFolderId = folderIds[folderIds.length - 2]
-    let curFolderId = folderIds[folderIds.length - 1]
-    curFolderId = ((curFolderId === 'un') ? preFolderId : curFolderId)
+    const [curFolderId, setCurFolderId] = React.useState<any>(null);
+
+    const { data: labels = [] } = useQuery({ queryFn: sampleLabels, queryKey: ['sampleLabels'] });
     const listFolderMutation = useMutation({
         mutationFn: listPictureFolders,
         onSuccess: (data) => {
@@ -87,7 +92,9 @@ const PictureSpace = () => {
     })
     const listPictureMutation = useMutation({
         mutationFn: listPictures,
-        onSuccess: (data) => updateState({ pictures: data })
+        onSuccess: (data) => {
+            updateState({ pictures: data })
+        }
     })
     const createPictureMutation = useMutation({
         mutationFn: createPictures,
@@ -114,17 +121,35 @@ const PictureSpace = () => {
     const batchDeletePicAndFolderMutation = useMutation({
         mutationFn: batchDeletePictureAndFolder,
         onSettled: (data) => {
+            updateState({ selectedFolders: [], selectedImages: [] });
             listFolderMutation.mutate({ id: null });
             listPictureMutation.mutate({ folderId: curFolderId })
         }
+    })
+    const batchMovePicAndFOlderMutation = useMutation({
+        mutationFn: batchMovePictureAndFolder,
+        onSuccess: (data) => {
+            updateState({ selectedFolders: [], selectedImages: [] });
+            listFolderMutation.mutate({ id: null });
+            listPictureMutation.mutate({ folderId: curFolderId })
+        }
+    })
+    const coverPictureMutation = useMutation({
+        mutationFn: coverPictures,
+        onSuccess: (data) => message.success('覆盖图片成功', {
+            closeCallback: () => listPictureMutation.mutate({ folderId: curFolderId })
+        })
     })
     React.useEffect(() => {
         listFolderMutation.mutate({ id: null });
     }, [])
     React.useEffect(() => {
+        const preFolderId = folderIds[folderIds.length - 2]
+        let curFolderId = folderIds[folderIds.length - 1]
+        curFolderId = ((curFolderId === 'un') ? preFolderId : curFolderId)
+        setCurFolderId(curFolderId)
         listPictureMutation.mutate({ folderId: curFolderId })
-    }, [curFolderId])
-
+    }, [folderIds])
     const getSortFunc = React.useCallback(<T extends { name: string; updatedAt?: string }>() => {
         let sortFunc: (a?: T, b?: T) => any;
         switch (sortMethod) {
@@ -162,6 +187,12 @@ const PictureSpace = () => {
                 onSearch={() => listPictureMutation.mutate({ folderId: curFolderId })}
             />
             <PictureFields
+                labels={labels}
+                curFolderId={curFolderId}
+                selectedImages={selectedImages}
+                selectedFolders={selectedFolders}
+                setSelectedFolders={(selectedFolders: number[]) => updateState({ selectedFolders })}
+                setSelectedImages={(selectedImages: number[]) => updateState({ selectedImages })}
                 folders={folders}
                 folderIds={folderIds}
                 sortMethod={sortMethod}
@@ -175,6 +206,7 @@ const PictureSpace = () => {
                 cancelSearch={() => updateState({ searchedData: null })}
                 onSearch={(searchState: any) => searchPicAndFolMutation.mutate(searchState)}
                 changeSort={(sortMethod: ESortMethod) => updateState({ sortMethod })}
+                batchMove={(data: any) => batchMovePicAndFOlderMutation.mutate(data)}
                 onPictureUpdate={(data: Partial<PictureInfo>) => {
                     updatePictureMutation.mutate(data);
                 }}
@@ -202,12 +234,7 @@ const PictureSpace = () => {
                         confirmCallback: () => deleteFolderMutation.mutate(id)
                     })
                 }}
-                openCreateDialog={() => {
-                    updateState({
-                        createFolderDialogOpen: true,
-                        defaultSelectId: curFolderId
-                    })
-                }}
+                openCreateDialog={() => updateState({ createFolderDialogOpen: true })}
                 onClickFolder={(id: any) => {
                     let copiedIds = [...folderIds]
                     if (copiedIds[copiedIds.length - 1] === 'un') {
@@ -220,10 +247,12 @@ const PictureSpace = () => {
                 onUpload={(data: any) => {
                     const formdata = new FormData();
                     Object.entries(data).map(([key, value]: any) => formdata.append(key, value))
-                    if (curFolderId) {
-                        formdata.append('folder_id', curFolderId)
-                    }
                     createPictureMutation.mutate(formdata)
+                }}
+                onCover={(data: any) => {
+                    const formdata = new FormData();
+                    Object.entries(data).map(([key, value]: any) => formdata.append(key, value))
+                    coverPictureMutation.mutate(formdata)
                 }}
             />
             <CreateFolderDialog
@@ -232,7 +261,7 @@ const PictureSpace = () => {
                 open={createFolderDialogOpen}
                 close={() => updateState({ createFolderDialogOpen: false })}
                 onSuccess={() => listFolderMutation.mutate({ id: null })}
-                defaultSelectId={defaultSelectId}
+                defaultSelectId={curFolderId}
             />
         </Box>
     )

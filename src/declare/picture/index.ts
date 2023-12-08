@@ -1,3 +1,4 @@
+import { SampleLabel } from 'declare/sample';
 import { User } from '../user';
 
 export type PictureFolder = {
@@ -12,6 +13,7 @@ export type PictureFolder = {
 }
 
 export type PictureInfo = {
+    labels?: SampleLabel[]
     id?: number;
     name: string;
     ext?: string;

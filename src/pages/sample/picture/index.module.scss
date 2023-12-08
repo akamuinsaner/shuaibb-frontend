@@ -46,6 +46,12 @@
                     }
                     .btmActions {
                         display: flex;
+                        align-items: center;
+                        justify-content: space-around;
+                        svg {
+                            height: 24px;
+                            width: auto;
+                        }
                     }
                 }
             }
@@ -74,8 +80,8 @@
                 right: 0;
                 display: flex;
                 align-items: center;
-                padding: 10px 10px;
-                background: linear-gradient(to top, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+                padding: 20px 10px;
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
                 display: none;
             }
         }
