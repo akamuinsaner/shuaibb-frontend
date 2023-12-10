@@ -1,4 +1,4 @@
-FROM node:19-bullseye
+FROM node:20-alpine
 
 
 ARG BACKEND_URL=BACKEND_URL
