@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.module.scss';
 import Box from '@mui/material/Box';
-import LeftBar, { MENUCONFIG, MenuItem } from './leftBar';
+import LeftBar, { MENUCONFIG, MenuItem } from './LeftBarCom';
 import TopBar from './TopBar';
 import styles from './index.module.scss';
 import { Navigate, Route, Routes } from 'react-router-dom'
