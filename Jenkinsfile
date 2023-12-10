@@ -17,23 +17,6 @@ pipeline {
             }
         }
 
-        stage('npm install') {
-            steps {
-                sh """
-                    npm config set registry 'https://registry.npm.taobao.org' && npm install
-                """
-            }
-        }
-
-        stage('npm build') {
-            steps {
-                sh """
-                    NODE_ENV=production npm run build
-                """
-            }
-            
-        }
-
         stage('Docker build') {
             steps {
                 script {
