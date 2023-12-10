@@ -27,7 +27,7 @@ pipeline {
                         BACKEND_URL = "http://${env.BACKEND_IP}:${env.BACKEND_PORT}"
                     }
                     sh """
-                        docker build --build-arg PORT=${env.EXPOSE_PORT} --build-arg BACKEND_URL=${BACKEND_URL} -t ${env.PROJECT_NAME}/${env.JOB_NAME}-${env.PROFILE}:${env.BUILD_ID} .
+                        docker build --build-arg PORT=${env.EXPOSE_PORT} --build-arg BACKEND_URL=${BACKEND_URL} -t ${env.PROJECT_NAME}/${env.JOB_NAME}-${env.PROFILE}:${env.BUILD_ID} --network=host .
                     """
                 }
 
