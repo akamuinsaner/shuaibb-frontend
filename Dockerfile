@@ -1,4 +1,5 @@
-FROM node:20-alpine
+FROM node:19-bullseye
+
 
 ARG BACKEND_URL=BACKEND_URL
 ARG PORT=PORT
