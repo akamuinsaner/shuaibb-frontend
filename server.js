@@ -15,7 +15,7 @@ const options = {
       target: BACKEND_URL,
       changeOrigin: true,
       pathRewrite: {
-        '/api': '', // rewrite path
+        '/api': '/api', // rewrite path
       }
     },
   }
