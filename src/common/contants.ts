@@ -1,1 +1,1 @@
-export const DEVHOST = 'http://localhost:8000'
+export const DEVHOST = 'http://101.42.247.31:8000'

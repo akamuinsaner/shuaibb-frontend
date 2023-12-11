@@ -10,8 +10,8 @@ ENV BACKEND_URL=$BACKEND_URL
 # Yarn Install
 COPY . /root/webapp/
 WORKDIR /root/webapp
-RUN npm config set registry 'https://registry.npm.taobao.org' && npm install \
-    && npm run build
+# RUN npm config set registry 'https://registry.npm.taobao.org' && npm install \
+#     && npm run build
 
 
 EXPOSE ${PORT}
