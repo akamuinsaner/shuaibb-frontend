@@ -15,7 +15,8 @@ import {
     searchPictureAndFolder,
     batchDeletePictureAndFolder,
     batchMovePictureAndFolder,
-    coverPictures
+    coverPictures,
+    getTotalSize
 } from 'apis/picture/folder';
 import { sampleLabels } from 'apis/sample'
 import CreateFolderDialog from './createFolderDialog';
@@ -67,6 +68,7 @@ const PictureSpace = () => {
     const [curFolderId, setCurFolderId] = React.useState<any>(null);
 
     const { data: labels = [] } = useQuery({ queryFn: sampleLabels, queryKey: ['sampleLabels'] });
+    const { data: size = 0 } = useQuery({ queryFn: getTotalSize, queryKey: ["getTotalSize"] });
     const listFolderMutation = useMutation({
         mutationFn: listPictureFolders,
         onSuccess: (data) => {
@@ -179,6 +181,7 @@ const PictureSpace = () => {
             className={styles.page}
         >
             <FileCatelog
+                size={size}
                 folders={folders}
                 folderIds={folderIds}
                 changeFolderIds={(folderIds: number[]) => updateState({ folderIds })}

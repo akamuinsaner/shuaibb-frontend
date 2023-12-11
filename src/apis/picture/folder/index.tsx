@@ -94,3 +94,11 @@ export const deletePicture = (id: number) => request(
         method: 'DELETE',
     }
 )
+
+
+export const getTotalSize = () => request(
+    `/api/pictures/size/`,
+    {
+        method: 'GET'
+    }
+)
