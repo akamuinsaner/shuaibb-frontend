@@ -1,8 +1,7 @@
-import { DEVHOST } from 'common/contants';
+import { HOST } from 'common/contants';
 import camelcaseKeys from 'camelcase-keys';
 import decamelizeKeys from 'decamelize-keys';
 
-const HOST = DEVHOST;
 
 type options = {
     method?: string;
