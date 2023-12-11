@@ -19,4 +19,4 @@ RUN npm config set registry 'https://registry.npm.taobao.org' && npm install -g 
 EXPOSE ${PORT}
 
 # Start Script
-CMD serve -p ${PORT} /root/webapp/build
+CMD serve -s -p ${PORT} /root/webapp/build
