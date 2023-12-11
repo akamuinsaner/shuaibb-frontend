@@ -55,7 +55,6 @@ pipeline {
                     def CONTAINER_ID = sh(script: "docker ps -a | grep -0e ${env.PROJECT_NAME}/${env.JOB_NAME}-${env.PROFILE} | cut -c1-10", returnStdout: true).trim();
                     if (CONTAINER_ID) {
                         sh """
-                            docker stop -f ${CONTAINER_ID}
                             docker rm -f ${CONTAINER_ID}
                         """
                     }
