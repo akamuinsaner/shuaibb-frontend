@@ -2,7 +2,7 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import styles from './index.module.scss';
 import FileCatelog from './FileCatelog';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePictureStore, state, ESortMethod } from './store';
 import {
     listPictureFolders,
@@ -65,6 +65,7 @@ const PictureSpace = () => {
         selectedFolders,
         updateState
     } = usePictureStore(state => state)
+    const queryClient = useQueryClient();
     const [curFolderId, setCurFolderId] = React.useState<any>(null);
 
     const { data: labels = [] } = useQuery({ queryFn: sampleLabels, queryKey: ['sampleLabels'] });
@@ -89,7 +90,10 @@ const PictureSpace = () => {
     const deleteFolderMutation = useMutation({
         mutationFn: deletePictureFolders,
         onSettled: (data) => message.success('删除成功', {
-            closeCallback: () => listFolderMutation.mutate({ id: null })
+            closeCallback: () => {
+                listFolderMutation.mutate({ id: null });
+                queryClient.invalidateQueries({ queryKey: ["getTotalSize"] });
+            }
         })
     })
     const listPictureMutation = useMutation({
@@ -101,7 +105,10 @@ const PictureSpace = () => {
     const createPictureMutation = useMutation({
         mutationFn: createPictures,
         onSuccess: (data) => message.success('上传成功', {
-            closeCallback: () => listPictureMutation.mutate({ folderId: curFolderId })
+            closeCallback: () => {
+                listPictureMutation.mutate({ folderId: curFolderId });
+                queryClient.invalidateQueries({ queryKey: ["getTotalSize"] });
+            }
         })
     })
     const updatePictureMutation = useMutation({
@@ -113,7 +120,10 @@ const PictureSpace = () => {
     const deletePictureMutation = useMutation({
         mutationFn: deletePicture,
         onSettled: (data) => message.success('删除成功', {
-            closeCallback: () => listPictureMutation.mutate({ folderId: curFolderId })
+            closeCallback: () => {
+                listPictureMutation.mutate({ folderId: curFolderId });
+                queryClient.invalidateQueries({ queryKey: ["getTotalSize"] });
+            }
         })
     })
     const searchPicAndFolMutation = useMutation({
@@ -125,7 +135,8 @@ const PictureSpace = () => {
         onSettled: (data) => {
             updateState({ selectedFolders: [], selectedImages: [] });
             listFolderMutation.mutate({ id: null });
-            listPictureMutation.mutate({ folderId: curFolderId })
+            listPictureMutation.mutate({ folderId: curFolderId });
+            queryClient.invalidateQueries({ queryKey: ["getTotalSize"] });
         }
     })
     const batchMovePicAndFOlderMutation = useMutation({
@@ -139,7 +150,11 @@ const PictureSpace = () => {
     const coverPictureMutation = useMutation({
         mutationFn: coverPictures,
         onSuccess: (data) => message.success('覆盖图片成功', {
-            closeCallback: () => listPictureMutation.mutate({ folderId: curFolderId })
+            closeCallback: () => {
+                listPictureMutation.mutate({ folderId: curFolderId });
+                queryClient.invalidateQueries({ queryKey: ["getTotalSize"] });
+            }
+            
         })
     })
     React.useEffect(() => {
