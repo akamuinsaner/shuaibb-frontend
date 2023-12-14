@@ -36,6 +36,7 @@ const SampleService = ({
         showData = data
         update.current = updateData;
     }
+    console.log(showData)
     return (
         <Item>
             <Stack spacing={2}>

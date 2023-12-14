@@ -23,12 +23,25 @@ import {
 } from 'apis/sample';
 import { message } from 'components/globalMessage';
 import { confirm } from 'components/confirmDialog';
+import { SampleData, CostumeCount, ShootingTime } from 'declare/sample';
 
 const Template = () => {
     const queryClient = useQueryClient();
     const templateState = useSampleCreateStore(state => state.templateState);
     const updateTemplateState = useSampleCreateStore(state => state.updateTemplateState);
-    const { data: templates } = useQuery({ queryFn: sampleTemplatesFn, queryKey: ['sampleTemplatesFn'] })
+    let { data: templates = [] } = useQuery({ queryFn: sampleTemplatesFn, queryKey: ['sampleTemplatesFn'] })
+    templates = templates.map(data => {
+        let rData = {
+            ...data,
+            shootingTime: data.shootingTime in ShootingTime ? data.shootingTime : 0,
+            customShootingTime: data.shootingTime in ShootingTime ? null : data.shootingTime,
+        }
+        if (rData.costumeOffer) {
+            rData["costumeCount"] = data.costumeCount in CostumeCount ? data.costumeCount : 0;
+            rData["customCostumeCount"] = data.costumeCount in CostumeCount ? null : data.costumeCount;
+        }
+        return rData
+    })
     const deleteTemplateMutation = useMutation({
         mutationFn: sampleTemplateDeleteFn,
         onSettled: (data) => {

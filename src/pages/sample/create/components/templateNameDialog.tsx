@@ -54,11 +54,10 @@ const TemplateNameDialog = () => {
         }
     })
     const getData = React.useCallback(() => {
-        return {
-            ...tempData,
-            name: templateState.nameText,
-            userId: user.id
-        }
+        const rData = { ...tempData, name: templateState.nameText, userId: user.id }
+        if (rData.costumeOffer && `${rData.costumeCount}` === '0') rData.costumeCount = rData.customCostumeCount;
+        if (`${rData.shootingTime}` === '0') rData.shootingTime = rData.customShootingTime;
+        return rData;
     }, [templateState.nameText, tempData])
     return (
         <Dialog

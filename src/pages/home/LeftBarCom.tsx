@@ -5,8 +5,9 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import HomeIcon from '@mui/icons-material/Home';
 import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantityLimits';
-import { LeftBarState } from './store';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import Sample from '../sample';
+import Appoint from 'pages/appoint';
 import { useNavigate, useLocation } from 'react-router';
 
 export type MenuItem = {
@@ -28,10 +29,17 @@ export const MENUCONFIG: MenuItem[] = [
     {
         key: 'sample',
         path: '/sample/*',
-        text: '样片',
+        text: '样片管理',
         icon: <ProductionQuantityLimitsIcon />,
         element: <Sample />
     },
+    {
+        key: 'appoint',
+        path: '/appoint/*',
+        text: '预约管理',
+        icon: <CalendarMonthIcon />,
+        element: <Appoint />
+    }
 ]
 
 const LeftBar = () => {

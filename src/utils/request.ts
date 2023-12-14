@@ -1,6 +1,7 @@
 import { HOST } from 'common/contants';
 import camelcaseKeys from 'camelcase-keys';
 import decamelizeKeys from 'decamelize-keys';
+import { objToStr } from './funcTools';
 
 
 type options = {
@@ -49,6 +50,9 @@ export default (url: string, {
         deCamelize: true,
         camelize: true
     }) => {
+    if (method === 'GET' && data) {
+        url = `${url}${objToStr(data)}`
+    }
     return fetch(`${HOST}${url}`, {
         method,
         body: method === 'GET' ? null : getBody(data, deCamelize),

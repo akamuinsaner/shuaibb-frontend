@@ -10,12 +10,12 @@ import TablePagination from '@mui/material/TablePagination';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import decamelize from 'decamelize';
-import Box from '@mui/material/Box';
+import camelize from 'camelize'
 
 export interface HeadCell<T> {
     id: keyof T;
     label: string;
-    type: 'string' | 'number' | 'array' | 'boolean',
+    type: 'string' | 'number' | 'array' | 'boolean' | 'date',
     render?: (value: any, record: T, index: number) => any;
 }
 
@@ -72,13 +72,15 @@ const ListTableHeader = <T,>({
                 />
             </TableCell> : null}
             {headers.map((headCell) => {
+                const supportSort = ['number', 'date'].includes(headCell.type)
                 return <TableCell
+                    sx={{ whiteSpace: 'nowrap' }}
                     key={String(headCell.id)}
-                    align={headCell.type === 'number' ? 'right' : 'left'}
+                    align={supportSort ? 'right' : 'left'}
                     sortDirection={orderParams?.orderBy === headCell.id ? orderParams.order : false}
                 >
                     {
-                        !(headCell.type === 'number' && orderParams) ?
+                        !(supportSort && orderParams) ?
                             headCell.label : (
                                 <TableSortLabel
                                     active={orderParams.orderBy === headCell.id}
@@ -121,6 +123,7 @@ const ListTableBody = <T,>({
                 const actualKey = typeof rowKey === 'function' ? rowKey(row) : row[rowKey]
                 return (
                     <TableRow
+                        hover
                         sx={{ cursor: 'pointer' }}
                         tabIndex={-1}
                         key={actualKey}
@@ -141,15 +144,17 @@ const ListTableBody = <T,>({
                             />
                         </TableCell> : null}
                         {headers.map((headCell, cIndex) => {
+                            const supportSort = ['number', 'date'].includes(headCell.type)
                             const render = headCell.render;
                             let renderText = row[String(headCell.id)];
                             if (render) {
                                 renderText = render(renderText, row, index)
                             }
                             return <TableCell
+                                sx={{ whiteSpace: 'nowrap' }}
                                 id={String(headCell.id)}
                                 key={String(headCell.id)}
-                                align={headCell.type === 'number' ? 'right' : 'left'}
+                                align={supportSort ? 'right' : 'left'}
                             >
                                 {renderText}
                             </TableCell>
@@ -194,14 +199,15 @@ const ListTable = <T,>({
         onChange({ ...params, orderBy: decamelize(String(params.orderBy)), ...pageInfo, offset: 0 })
     }
     return (
-        <TableContainer component={Paper}>
+        <TableContainer sx={{ overflowX: 'auto' }} component={Paper}>
             <Table
+                stickyHeader 
                 sx={{ minWidth: '100%' }}
             >
                 <ListTableHeader<T>
                     data={data}
                     headers={headers}
-                    orderParams={orderParams}
+                    orderParams={{ ...orderParams, orderBy: camelize(orderParams.orderBy) }}
                     selectedKeys={selectedKeys}
                     checkable={checkable}
                     onSelectRows={onSelectRows}

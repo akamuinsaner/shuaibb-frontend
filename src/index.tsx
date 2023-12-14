@@ -14,6 +14,7 @@ import App from './app';
 import { BrowserRouter } from 'react-router-dom';
 import LanguageProvider from 'components/Language';
 import "cropperjs/dist/cropper.css";
+// import './setupProxy'
 
 const queryClient = new QueryClient();
 

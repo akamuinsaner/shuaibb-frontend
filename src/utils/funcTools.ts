@@ -8,6 +8,14 @@ export const strToObj = (str: string) => {
     return obj
 }
 
+export const objToStr = (obj: { [name: string]: any }) => {
+    let strs: string[] = [];
+    for (let key in obj) {
+        strs = [...strs, `${key}=${obj[key]}`];
+    }
+    return '?' + strs.join('&')
+}
+
 
 export const sizeFormat = (size: number) => {
     if (size < 1024) return `${size}B`;

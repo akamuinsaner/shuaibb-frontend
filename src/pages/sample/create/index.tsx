@@ -20,7 +20,7 @@ import {
     retriveSample
 } from 'apis/sample';
 import useGlobalStore from 'globalStore';
-import { SampleData } from 'declare/sample';
+import { SampleData, CostumeCount, ShootingTime } from 'declare/sample';
 import { message } from 'components/globalMessage';
 import { withTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -32,11 +32,9 @@ const Content = styled(Box)(({ theme }: any) => ({
 
 
 const SampleCreate = ({ t }: { t: any }) => {
-    const queryClient = useQueryClient();
     const location = useLocation();
     const searchParams = strToObj(location.search);
     const user = useGlobalStore(state => state.user);
-    const navigate = useNavigate()
     const activeTab = useSampleCreateStore(state => state.activeTab);
     const updateActiveTab = useSampleCreateStore(state => state.updateActiveTab);
     const sample = useSampleCreateStore(state => state.sample);
@@ -46,15 +44,13 @@ const SampleCreate = ({ t }: { t: any }) => {
     const retriveDraftMutation = useMutation({
         mutationFn: retriveDraft,
         onSuccess: (data) => {
-            if (data) updateSample({ ...data, covers: JSON.parse(data.covers), details: JSON.parse(data.details) });
+            if (data) updateSample(handleRetriveData(data));
             else updateSample({ ...initialSample, id: null });
         }
     });
     const retriveSampleMutation = useMutation({
         mutationFn: retriveSample,
-        onSuccess: (data) => {
-            updateSample({ ...data, covers: JSON.parse(data.covers), details: JSON.parse(data.details) })
-        }
+        onSuccess: (data) => updateSample(handleRetriveData(data))
     })
     const fetchInitialData = React.useCallback(() => {
         if (searchParams?.sampleId) {
@@ -66,15 +62,33 @@ const SampleCreate = ({ t }: { t: any }) => {
     React.useEffect(() => {
         fetchInitialData()
     }, []);
-    const handleSampleData = React.useCallback((data: SampleData): any => {
+    const handleRetriveData = React.useCallback((data: any): SampleData => {
+        let rData = {
+            ...data,
+            covers: JSON.parse(data.covers),
+            details: JSON.parse(data.details),
+            shootingTime: data.shootingTime in ShootingTime ? data.shootingTime : 0,
+            customShootingTime: data.shootingTime in ShootingTime ? null : data.shootingTime,
+        }
+        if (rData.costumeOffer) {
+            rData["costumeCount"] = data.costumeCount in CostumeCount ? data.costumeCount : 0;
+            rData["customCostumeCount"] = data.costumeCount in CostumeCount ? null : data.costumeCount;
+        }
+        return rData
+    }, [])
+    const handleUpdateData = React.useCallback((data: SampleData): any => {
         let temp = Object.assign({}, curTemp, {});
         delete temp.id;
-        return {
+        delete temp.name
+        const rData = {
             ...data,
             covers: JSON.stringify(data.covers),
             details: JSON.stringify(data.details),
             ...temp
         }
+        if (rData.costumeOffer && `${rData.costumeCount}` === '0') rData.costumeCount = rData.customCostumeCount;
+        if (`${rData.shootingTime}` === '0') rData.shootingTime = rData.customShootingTime;
+        return rData
     }, [curTemp]);
     const saveSampleMutation = useMutation({
         mutationFn: saveSample,
@@ -97,9 +111,9 @@ const SampleCreate = ({ t }: { t: any }) => {
     });
     const submit = (sample: SampleData, isDraft: boolean) => {
         if (sample.id) {
-            updateSampleMutation.mutate({ ...handleSampleData(sample), userId: user.id, isDraft });
+            updateSampleMutation.mutate({ ...handleUpdateData(sample), userId: user.id, isDraft });
         } else {
-            saveSampleMutation.mutate({ ...handleSampleData(sample), userId: user.id, isDraft });
+            saveSampleMutation.mutate({ ...handleUpdateData(sample), userId: user.id, isDraft });
         }
     }
 

@@ -92,7 +92,7 @@ export const headCells: HeadCell<SampleData>[] = [
   },
   {
     id: 'createdAt',
-    type: 'string',
+    type: 'date',
     label: '创建日期',
     render: (value, record, index) => {
       return dayjs(value).format('YYYY-MM-DD')
