@@ -4,8 +4,7 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import LeftBar, { MENUCONFIG, MenuItem } from './LeftBar';
 import styles from './index.module.scss'
 
-
-const Appointment = () => {
+const Auth = () => {
     const navigate = useNavigate();
     const toPage = (path: string) => navigate(path)
     const routes = MENUCONFIG.map((menu: MenuItem) => {
@@ -23,7 +22,7 @@ const Appointment = () => {
             </Box>
             <Box className={styles.main}>
                 <Routes>
-                    <Route index path="/" element={<Navigate to="/appointment/schedule" />} />
+                    <Route index path="/" element={<Navigate to="/auth/group" />} />
                     {routes}
                 </Routes>
             </Box>
@@ -31,4 +30,4 @@ const Appointment = () => {
     )
 }
 
-export default React.memo(Appointment);
+export default React.memo(Auth);

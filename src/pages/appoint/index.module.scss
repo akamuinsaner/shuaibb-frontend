@@ -1,0 +1,12 @@
+.page {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+}
+.leftBar {
+    width: 240px;
+}
+.main {
+    flex: 1;
+    overflow: hidden;
+}

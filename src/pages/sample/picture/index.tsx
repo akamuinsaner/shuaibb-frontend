@@ -196,7 +196,7 @@ const PictureSpace = () => {
             className={styles.page}
         >
             <FileCatelog
-                size={size}
+                size={size || 0}
                 folders={folders}
                 folderIds={folderIds}
                 changeFolderIds={(folderIds: number[]) => updateState({ folderIds })}

@@ -29,7 +29,7 @@ const Schedule = () => {
         updateState
     } = useScheduleStore(state => state);
     const { data: labels } = useQuery({ queryFn: sampleLabels, queryKey: ['sampleLabels'] });
-    const { data: customers } = useQuery({ queryFn: listCustomers, queryKey: ['listCustomers'] })
+    const { data: customers } = useQuery({ queryFn: listCustomers, queryKey: ['listCustomers', { keyword: '' }] })
     const listScheduleMutation = useMutation({
         mutationFn: listSchedules,
         onSuccess: (data) => updateState({ schedules: data })

@@ -47,7 +47,7 @@ const RightBar = ({
                 variant="contained"
                 onClick={showAddDialog}
             >
-                添加档期
+                添加订单
             </Button>
         </Stack>
     )

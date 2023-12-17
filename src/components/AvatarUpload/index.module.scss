@@ -1,0 +1,68 @@
+.avatarUpload {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    overflow: hidden;
+    background-color: #ccc;
+    cursor: pointer;
+    position: relative;
+    .avatar {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        object-position: center center;
+    }
+    .letter {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4em;
+        color: #fff;
+    }
+    .uploadMask {
+        background: rgba($color: #000000, $alpha: 0.5);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 0;
+        border-radius: 50%;
+        border: 1px dashed #333;
+        display: none;
+        left: 0;
+        .addBtn {
+            width: 50%;
+            height: 50%;
+            color: #fff;
+        }
+    }
+
+    .delReUpMask {
+        background: rgba($color: #000000, $alpha: 0.5);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        top: 0;
+        border-radius: 50%;
+        border: 1px dashed #333;
+        display: none;
+        left: 0;
+    }
+    &.nonAvatar {
+        .uploadMask {
+            display: flex;
+        }
+    }
+    &.hasAvatar:hover {
+        .delReUpMask {
+            display: flex;
+        }
+    }
+}

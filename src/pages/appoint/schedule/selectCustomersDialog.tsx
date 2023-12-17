@@ -37,7 +37,9 @@ const SelectCustomerDialog = ({
             setShowCustomers(customers.filter(c => (c.name.includes(name) || c.phone.includes(name))));
         }, 500);
     }, [name])
-    console.log(name)
+    React.useEffect(() => {
+        setShowCustomers(customers)
+    }, [customers])
     return (
         <Dialog
             open={open}
@@ -67,7 +69,7 @@ const SelectCustomerDialog = ({
                                     }
                                 >
                                     <ListItemAvatar>
-                                        <Avatar src="/static/images/avatar/1.jpg" />
+                                        <Avatar src={c.avatar} >{!c.avatar ? c.name.charAt(0) : null}</Avatar>
                                     </ListItemAvatar>
                                     <ListItemText
                                         primary={c.name}

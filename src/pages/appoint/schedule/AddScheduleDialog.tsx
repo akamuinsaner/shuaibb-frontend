@@ -44,6 +44,7 @@ const AddScheduleDialog = ({
     customers: Customer[]
 }) => {
     const [customerId, setCustomerId] = React.useState<number>(null);
+    const [customerAvatar, setCustomerAvatar] = React.useState<string>('');
     const [customerName, setCustomerName] = React.useState<string>('');
     const [customerPhone, setCustomerPhone] = React.useState<string>('');
     const [dateSettled, setDateSettled] = React.useState<boolean>(true);
@@ -73,13 +74,14 @@ const AddScheduleDialog = ({
                 maxWidth="sm"
                 className={styles.addScheduleDialog}
             >
-                <DialogTitle>新增档期</DialogTitle>
+                <DialogTitle>新增订单</DialogTitle>
                 <DialogContent>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <Stack spacing={2}>
                             <Paper className={styles.customerBox}>
                                 <Box className={styles.avatar} >
-                                    {customerName ? customerName.charAt(0) : null}
+                                    {customerAvatar ? <img src={customerAvatar} /> : null}
+                                    {(customerName && !customerAvatar) ? customerName.charAt(0) : null}
                                 </Box>
                                 <Stack className={styles.info} spacing={1}>
                                     <TextField
@@ -274,6 +276,7 @@ const AddScheduleDialog = ({
                 customers={customers}
                 submit={(customer) => {
                     setCustomerId(customer.id);
+                    setCustomerAvatar(customer.avatar)
                     setCustomerName(customer.name);
                     setCustomerPhone(customer.phone);
                 }}

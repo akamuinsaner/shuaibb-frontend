@@ -13,9 +13,10 @@ import decamelize from 'decamelize';
 import camelize from 'camelize'
 
 export interface HeadCell<T> {
-    id: keyof T;
+    id?: keyof T;
     label: string;
-    type: 'string' | 'number' | 'array' | 'boolean' | 'date',
+    multiLine?: boolean;
+    type?: 'string' | 'number' | 'array' | 'boolean' | 'date',
     render?: (value: any, record: T, index: number) => any;
 }
 
@@ -151,7 +152,7 @@ const ListTableBody = <T,>({
                                 renderText = render(renderText, row, index)
                             }
                             return <TableCell
-                                sx={{ whiteSpace: 'nowrap' }}
+                                sx={{ whiteSpace: headCell.multiLine ? 'normal' : 'nowrap' }}
                                 id={String(headCell.id)}
                                 key={String(headCell.id)}
                                 align={supportSort ? 'right' : 'left'}
@@ -183,7 +184,7 @@ const ListTable = <T,>({
     checkable?: boolean;
     headers: HeadCell<T>[];
     data: T[];
-    pageInfo?: PageInfo;
+    pageInfo: PageInfo;
     onChange?: (params: any) => void;
     orderParams?: OrderParams<T>;
     rowKey?: string | { (record: T): string };
@@ -207,7 +208,7 @@ const ListTable = <T,>({
                 <ListTableHeader<T>
                     data={data}
                     headers={headers}
-                    orderParams={{ ...orderParams, orderBy: camelize(orderParams.orderBy) }}
+                    orderParams={{ ...orderParams, orderBy: camelize(orderParams?.orderBy) }}
                     selectedKeys={selectedKeys}
                     checkable={checkable}
                     onSelectRows={onSelectRows}
@@ -228,12 +229,12 @@ const ListTable = <T,>({
                     rowEvents={rowEvents}
                 />
                 {
-                    pageInfo.total ? (
+                    pageInfo?.total ? (
                         <TablePagination
-                            rowsPerPageOptions={[pageInfo.limit]}
-                            count={pageInfo.total}
+                            rowsPerPageOptions={[pageInfo?.limit]}
+                            count={pageInfo?.total}
                             rowsPerPage={pageInfo.limit}
-                            page={pageInfo.offset}
+                            page={pageInfo?.offset}
                             onPageChange={onPaginationChange}
                         />
                     ) : null

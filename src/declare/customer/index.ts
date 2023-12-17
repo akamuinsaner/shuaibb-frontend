@@ -3,7 +3,9 @@ import { User } from '../user';
 export type Customer = {
     name: string;
     phone: string;
+    avatar?: string;
+    desc?: string;
     user?: User;
-    useId?: number;
+    userId?: number;
     id?: number;
 }

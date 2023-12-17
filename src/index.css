@@ -1,6 +1,8 @@
-html,body, #root {
+html {
   height: 100vh;
   width: 100vw;
+  min-width: 1800px;
+  overflow-x: auto;
   padding: 0;
   margin: 0;
   overflow: hidden;

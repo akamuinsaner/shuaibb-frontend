@@ -9,6 +9,8 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import Sample from '../sample';
 import Appoint from 'pages/appoint';
 import { useNavigate, useLocation } from 'react-router';
+import PersonIcon from '@mui/icons-material/Person';
+import Auth from '../auth';
 
 export type MenuItem = {
     key: string
@@ -34,11 +36,18 @@ export const MENUCONFIG: MenuItem[] = [
         element: <Sample />
     },
     {
-        key: 'appoint',
-        path: '/appoint/*',
+        key: 'appointment',
+        path: '/appointment/*',
         text: '预约管理',
         icon: <CalendarMonthIcon />,
         element: <Appoint />
+    },
+    {
+        key: 'auth',
+        path: '/auth/*',
+        text: '用户管理',
+        icon: <PersonIcon />,
+        element: <Auth />
     }
 ]
 

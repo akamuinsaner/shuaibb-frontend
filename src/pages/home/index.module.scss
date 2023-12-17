@@ -4,6 +4,8 @@
   overflow: hidden;
   .leftBar {
     width: 240px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   
 
@@ -29,7 +31,7 @@
     .main {
       flex: 1;
       height: 100%;
-      overflow: hidden;
+      overflow-y: hidden;
     }
   }
 }
