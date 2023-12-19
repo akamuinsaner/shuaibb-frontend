@@ -147,19 +147,22 @@
                 }
             }
             &.isToday {
+                background-color: #f8e1a1;
                 .addButton {
                     display: none;
                 }
                 .showDate {
+                    font-weight: bold;
                     color: #ff949c;
-                    width: 30px;
-                    height: 30px;
-                    border-radius: 30px;
-                    line-height: 30px;
+                    width: 36px;
+                    height: 36px;
+                    font-size: 22px;
+                    border-radius: 36px;
+                    line-height: 36px;
                     text-align: center;
                     background-color: #fff;
-                    left: 7px;
-                    top: 7px;
+                    left: 10px;
+                    top: 10px;
                 }
             }
             &:not(.hasSchedule):hover {
@@ -217,6 +220,11 @@
     }
     .remarkBox {
         padding: 10px;
+    }
+    .executorBox {
+        padding: 10px;
+        display: flex;
+        align-items: center;
     }
 }
 

@@ -15,6 +15,7 @@ import { message } from 'components/globalMessage';
 import { listCustomers } from 'apis/customer';
 import OrderListDialog from './OrderListDialog';
 import RightBar from './RightBar';
+import { listUsers } from 'apis/auth/user';
 
 dayjs.extend(isToday)
 
@@ -28,8 +29,9 @@ const Schedule = () => {
         monthState,
         updateState
     } = useScheduleStore(state => state);
-    const { data: labels } = useQuery({ queryFn: sampleLabels, queryKey: ['sampleLabels'] });
-    const { data: customers } = useQuery({ queryFn: listCustomers, queryKey: ['listCustomers', { keyword: '' }] })
+    const { data: labels = [] } = useQuery({ queryFn: sampleLabels, queryKey: ['sampleLabels'] });
+    const { data: customers = [] } = useQuery({ queryFn: listCustomers, queryKey: ['listCustomers', { keyword: '' }] });
+    const { data: users = [] } = useQuery({ queryFn: listUsers, queryKey: ['listUsers'] });
     const listScheduleMutation = useMutation({
         mutationFn: listSchedules,
         onSuccess: (data) => updateState({ schedules: data })
@@ -72,6 +74,7 @@ const Schedule = () => {
                 labels={labels}
                 submit={createScheduleMutation.mutate}
                 customers={customers}
+                users={users}
             />
             <OrderListDialog
                 open={orderDialogOpen}

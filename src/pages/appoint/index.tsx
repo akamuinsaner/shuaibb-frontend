@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import LeftBar, { MENUCONFIG, MenuItem } from './LeftBar';
 import styles from './index.module.scss'
+import OrderDetail from './orderDetail';
 
 
 const Appointment = () => {
@@ -25,6 +26,7 @@ const Appointment = () => {
                 <Routes>
                     <Route index path="/" element={<Navigate to="/appointment/schedule" />} />
                     {routes}
+                    <Route path='/appointment/schedule/detail' element={<OrderDetail />} />
                 </Routes>
             </Box>
         </Box>

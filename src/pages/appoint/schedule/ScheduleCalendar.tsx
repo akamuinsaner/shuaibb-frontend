@@ -52,13 +52,13 @@ const AppointCalendar = ({
     }, [monthState]);
     return (
         <Box className={styles.calendar}>
-            <Typography className={styles.dateHeader}>日</Typography>
-            <Typography className={styles.dateHeader}>一</Typography>
-            <Typography className={styles.dateHeader}>二</Typography>
-            <Typography className={styles.dateHeader}>三</Typography>
-            <Typography className={styles.dateHeader}>四</Typography>
-            <Typography className={styles.dateHeader}>五</Typography>
-            <Typography className={styles.dateHeader}>六</Typography>
+            <Typography key={1} className={styles.dateHeader}>日</Typography>
+            <Typography key={2} className={styles.dateHeader}>一</Typography>
+            <Typography key={3} className={styles.dateHeader}>二</Typography>
+            <Typography key={4} className={styles.dateHeader}>三</Typography>
+            <Typography key={5} className={styles.dateHeader}>四</Typography>
+            <Typography key={6} className={styles.dateHeader}>五</Typography>
+            <Typography key={7} className={styles.dateHeader}>六</Typography>
             {getRenderList().map((item, index) => {
                 const date = dayjs(item.date).date()
                 const showDate = date < 10 ? `0${date}` : date;

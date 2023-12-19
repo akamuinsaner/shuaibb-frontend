@@ -12,6 +12,7 @@ import styles from './index.module.scss'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { message } from 'components/globalMessage';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { useNavigate } from 'react-router';
 const OrderListDialog = ({
     open,
     close,
@@ -23,6 +24,7 @@ const OrderListDialog = ({
     date: string;
     schedules: Schedule[]
 }) => {
+    const navigate = useNavigate();
     return (
         <Dialog
             open={open}
@@ -54,6 +56,7 @@ const OrderListDialog = ({
                                     endIcon={<KeyboardArrowRightIcon htmlColor='#fff' />}
                                     size="small"
                                     sx={{ color: '#fff' }}
+                                    onClick={() => navigate(`/appointment/schedule/detail?id=${sche.id}`)}
                                 >
                                     详情
                                 </Button>

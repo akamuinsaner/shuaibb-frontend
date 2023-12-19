@@ -42,13 +42,17 @@ const RightBar = ({
                 })}
             </>
             <Divider className={styles.divider} />
-            <Button
-                startIcon={<AddIcon />}
-                variant="contained"
-                onClick={showAddDialog}
-            >
-                添加订单
-            </Button>
+            {
+                dayjs(date).isBefore(dayjs()) ? null : (
+                    <Button
+                        startIcon={<AddIcon />}
+                        variant="contained"
+                        onClick={showAddDialog}
+                    >
+                        添加订单
+                    </Button>
+                )
+            }
         </Stack>
     )
 }

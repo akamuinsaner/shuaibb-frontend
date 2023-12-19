@@ -28,21 +28,32 @@ import { SampleData, SampleLabel } from 'declare/sample';
 import dayjs from 'dayjs';
 import { PayStatus } from 'declare/schedule';
 import { Customer } from 'declare/customer';
-import { Schedule } from 'declare/schedule'
+import { Schedule } from 'declare/schedule';
+import Avatar from '@mui/material/Avatar';
+import AvatarGroup from '@mui/material/AvatarGroup';
+import PeopleIcon from '@mui/icons-material/People';
+import { User } from 'declare/user';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import globalStore from 'globalStore';
+import IconButton from '@mui/material/IconButton'
+import AddExecutorsDialog from './addExecutorsDialog';
 
 const AddScheduleDialog = ({
     date,
     close,
     labels = [],
     submit,
-    customers = []
+    customers = [],
+    users
 }: {
     date: string;
     close: () => void;
     labels: SampleLabel[];
     submit: (data: Schedule) => void
-    customers: Customer[]
+    customers: Customer[];
+    users: User[]
 }) => {
+    const { user } = globalStore(state => state);
     const [customerId, setCustomerId] = React.useState<number>(null);
     const [customerAvatar, setCustomerAvatar] = React.useState<string>('');
     const [customerName, setCustomerName] = React.useState<string>('');
@@ -53,11 +64,13 @@ const AddScheduleDialog = ({
     const [endTime, setEndTime] = React.useState<string>(null);
     const [openChooseDialog, setOpenChooseDialog] = React.useState<boolean>(false);
     const [openSelectDialog, setOpenSelectDialog] = React.useState<boolean>(false);
+    const [openExecutorDialog, setOpenExecutorDialog] = React.useState<boolean>(false);
     const [sample, setSample] = React.useState<SampleData>(null);
     const [price, setPrice] = React.useState<number>(null);
     const [deposit, setDeposit] = React.useState<number>(null);
     const [payStatus, setPayStatus] = React.useState<PayStatus>(0);
     const [location, setLocation] = React.useState<string>('');
+    const [executors, setExecutors] = React.useState<User[]>([user]);
     React.useEffect(() => {
         setShootDate(date);
     }, [date]);
@@ -236,6 +249,20 @@ const AddScheduleDialog = ({
                                     />
                                 </Stack>
                             </Paper>
+                            <Paper className={styles.executorBox}>
+                                <PeopleIcon sx={{ marginRight: '10px' }} />
+                                <Typography>执行人：</Typography>
+                                <AvatarGroup
+                                    renderSurplus={(surplus) => <span>+{surplus.toString()[0]}k</span>}
+                                    total={executors.length}
+                                >
+                                    {executors.map(user => <Avatar
+                                        key={user.id}
+                                        src={user.avatar}
+                                    >{!user.avatar && user.showName.charAt(0)}</Avatar>)}
+                                </AvatarGroup>
+                                <IconButton onClick={() => setOpenExecutorDialog(true)}><AddCircleIcon htmlColor='#1976d2' /></IconButton>
+                            </Paper>
                         </Stack>
                     </LocalizationProvider>
 
@@ -252,7 +279,8 @@ const AddScheduleDialog = ({
                             const data: Schedule = {
                                 customerId, customerName, customerPhone, shootDate,
                                 startTime, endTime, dateSettled, sampleId: sample.id,
-                                price, deposit, payStatus, location
+                                price, deposit, payStatus, location,
+                                executorIds: executors.map(item => item.id)
                             }
                             close();
                             submit(data);
@@ -280,6 +308,13 @@ const AddScheduleDialog = ({
                     setCustomerName(customer.name);
                     setCustomerPhone(customer.phone);
                 }}
+            />
+            <AddExecutorsDialog
+                open={openExecutorDialog}
+                close={() => setOpenExecutorDialog(false)}
+                users={users}
+                initialIds={executors.map(u => u.id)}
+                submit={(users) => setExecutors(users)}
             />
         </>
 

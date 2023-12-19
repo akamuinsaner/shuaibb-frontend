@@ -32,5 +32,9 @@ export type Schedule = {
     location?: string;
     user?: User;
     userId?: number;
-    id?: number
+    id?: number;
+    executors?: User[];
+    executorIds?: number[];
+    createdAt?: string;
+    updatedAt?: string;
 }
