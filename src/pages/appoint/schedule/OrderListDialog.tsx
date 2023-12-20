@@ -47,7 +47,7 @@ const OrderListDialog = ({
             <DialogContent>
                 {schedules.map(sche => {
                     return (
-                        <Box className={styles.orderBox}>
+                        <Box key={sche.id} className={styles.orderBox}>
                             <Box
                                 className={styles.orderBoxHeader}
                             >
@@ -56,7 +56,7 @@ const OrderListDialog = ({
                                     endIcon={<KeyboardArrowRightIcon htmlColor='#fff' />}
                                     size="small"
                                     sx={{ color: '#fff' }}
-                                    onClick={() => navigate(`/appointment/schedule/detail?id=${sche.id}`)}
+                                    onClick={() => navigate(`/appointment/detail?id=${sche.id}`)}
                                 >
                                     详情
                                 </Button>

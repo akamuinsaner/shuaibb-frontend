@@ -81,6 +81,7 @@ const AppointCalendar = ({
                         <Box className={styles.scheduleList}>
                             {schedulesOfToday.map(schedule => (
                                 <Box
+                                    key={schedule.id}
                                     className={styles.scheduleItem}
                                     onClick={() => showOrderDialog(item.date)}
                                 >

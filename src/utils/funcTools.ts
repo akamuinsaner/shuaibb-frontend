@@ -1,4 +1,4 @@
-export const strToObj = (str: string) => {
+export const strToObj = (str: string): { [name: string]: any } => {
     if (str.startsWith('?')) str = str.substring(1);
     let obj: { [name: string]: string } = {};
     str.split('&').map(keypair => {

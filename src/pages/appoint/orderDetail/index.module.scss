@@ -1,0 +1,105 @@
+.page {
+    padding: 20px;
+    flex: 1;
+    height: 100%;
+    overflow-y: auto;
+
+
+    .statusAction {
+        width: 400px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        position: relative;
+        .btn {
+            margin: 15px 0;
+            width: 180px;
+        }
+        .leftBtm {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+        .rightBtm {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+    }
+    .statusProgress {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        padding: 0 40px;
+    }
+    .orderInfo {
+        padding: 16px;
+        .header {
+            padding: 40px 20px 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            .customerInfo {
+                display: flex;
+                align-items: center;
+                .avatar {
+                    height: 50px;
+                    width: 50px;
+                    margin-right: 16px;
+                }
+            }
+        }
+        .body {
+            padding: 20px;
+
+            display: flex;
+            align-items: flex-start;
+            .covers {
+                width: 400px;
+                height: 400px;
+                margin-right: 40px;
+                img {
+                    height: 100%;
+                    width: 100%;
+                    object-fit: contain;
+                    object-position: center center;
+                }
+            }
+            .basicInfo {
+                flex: 1;
+                padding-top: 40px;
+                .basicInfoItem {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 30px;
+                    color: #666;
+                    svg {
+                        color: #666;
+                        margin-right: 20px;
+                    }
+                }
+                .serviceInfo {
+                    padding: 30px;
+                    border-radius: 10px;
+                    background-color: #eee;
+                    .serviceItem {
+                        padding: 15px 0;
+                    }
+                }
+            }
+        }
+    }
+    .orderHistory {
+        padding: 16px;
+        .header {
+            padding: 40px 20px 0px;
+            border-bottom: 1px solid #ddd;
+        }
+        .body {
+            padding: 20px;
+        }
+    }
+}

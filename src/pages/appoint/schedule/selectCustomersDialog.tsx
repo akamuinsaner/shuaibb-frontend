@@ -61,24 +61,21 @@ const SelectCustomerDialog = ({
                 >
                     <List>
                         {showCustomers.map(c => (
-                            <>
-                                <ListItem
-                                    key={c.id}
-                                    secondaryAction={
-                                        <FormControlLabel label="" value={c.id} control={<Radio />} />
-                                    }
-                                >
-                                    <ListItemAvatar>
-                                        <Avatar src={c.avatar} >{!c.avatar ? c.name.charAt(0) : null}</Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={c.name}
-                                        secondary={c.phone}
-                                    />
-                                </ListItem>
-                                <Divider />
-                            </>
-
+                            <ListItem
+                                key={c.id}
+                                secondaryAction={
+                                    <FormControlLabel label="" value={c.id} control={<Radio />} />
+                                }
+                            >
+                                <ListItemAvatar key={1}>
+                                    <Avatar src={c.avatar} >{!c.avatar ? c.name.charAt(0) : null}</Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    key={2}
+                                    primary={c.name}
+                                    secondary={c.phone}
+                                />
+                            </ListItem>
                         ))}
                     </List>
                 </RadioGroup>

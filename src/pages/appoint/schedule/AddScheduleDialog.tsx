@@ -37,6 +37,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import globalStore from 'globalStore';
 import IconButton from '@mui/material/IconButton'
 import AddExecutorsDialog from './addExecutorsDialog';
+import { message } from 'components/globalMessage';
 
 const AddScheduleDialog = ({
     date,
@@ -44,14 +45,16 @@ const AddScheduleDialog = ({
     labels = [],
     submit,
     customers = [],
-    users
+    users,
+    record
 }: {
     date: string;
     close: () => void;
     labels: SampleLabel[];
     submit: (data: Schedule) => void
     customers: Customer[];
-    users: User[]
+    users: User[];
+    record?: Schedule
 }) => {
     const { user } = globalStore(state => state);
     const [customerId, setCustomerId] = React.useState<number>(null);
@@ -79,6 +82,23 @@ const AddScheduleDialog = ({
             setEndTime(dayjs(startTime, 'hh:mm a').add(sample.shootingTime, 'h').format('hh:mm a'));
         }
     }, [sample, startTime]);
+    React.useEffect(() => {
+        if (record) {
+            setCustomerId(record.customer.id);
+            setCustomerName(record.customer.name);
+            setCustomerPhone(record.customer.phone);
+            setCustomerAvatar(record.customer.avatar);
+            setShootDate(record.shootDate);
+            setStartTime(record.startTime);
+            setEndTime(record.endTime);
+            setSample(record.sample)
+            setPrice(record.price)
+            setDeposit(record.deposit)
+            setPayStatus(record.payStatus)
+            setLocation(record.location)
+            setExecutors(record.executors)
+        }
+    }, [record]);
     return (
         <>
             <Dialog
@@ -100,6 +120,7 @@ const AddScheduleDialog = ({
                                     <TextField
                                         placeholder='请输入客户姓名'
                                         size='small'
+                                        disabled={!!record}
                                         value={customerName}
                                         onChange={(e) => {
                                             setCustomerId(null);
@@ -110,17 +131,18 @@ const AddScheduleDialog = ({
                                         placeholder='请输入客户电话'
                                         size='small'
                                         value={customerPhone}
+                                        disabled={!!record}
                                         onChange={(e) => {
                                             setCustomerId(null);
                                             setCustomerPhone(e.target.value)
                                         }}
                                     />
                                 </Stack>
-                                <AddCircleOutlineIcon
+                                {record ? null : <AddCircleOutlineIcon
                                     htmlColor='#666'
                                     className={styles.addCustomer}
                                     onClick={() => setOpenSelectDialog(true)}
-                                />
+                                />}
                             </Paper>
                             <Paper className={styles.sampleBox}>
                                 <Stack spacing={1}>
@@ -131,6 +153,7 @@ const AddScheduleDialog = ({
                                                     value={shootDate && dayjs(shootDate)}
                                                     onChange={(val) => setShootDate(val.format('YYYY-MM-DD'))}
                                                     disablePast
+                                                    disabled={!!record}
                                                     slotProps={{
                                                         textField: {
                                                             placeholder: '拍摄日期',
@@ -143,6 +166,7 @@ const AddScheduleDialog = ({
                                                         value={startTime && dayjs(startTime, 'hh:mm a')}
                                                         onChange={(val) => setStartTime(val.format('hh:mm a'))}
                                                         format="hh:mm"
+                                                        disabled={!!record}
                                                         slotProps={{
                                                             textField: {
                                                                 placeholder: '开始时间',
@@ -167,10 +191,10 @@ const AddScheduleDialog = ({
                                             </>
                                         ) : null
                                     }
-                                    <FormControlLabel control={<Checkbox
+                                    {record ? null : <FormControlLabel control={<Checkbox
                                         checked={!dateSettled}
                                         onChange={(e) => setDateSettled(!e.target.checked as any)}
-                                    />} label="日期待定" />
+                                    />} label="日期待定" />}
                                     <TextField
                                         InputProps={{
                                             startAdornment: <InputAdornment position="start">
@@ -185,6 +209,10 @@ const AddScheduleDialog = ({
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.currentTarget.blur();
+                                            if (record && record.payStatus >= PayStatus['已付定金']) {
+                                                message.warning('客户已支付订单，无法修改套系');
+                                                return;
+                                            }
                                             setOpenChooseDialog(true);
                                         }}
                                     />
@@ -195,6 +223,7 @@ const AddScheduleDialog = ({
                                                     <CurrencyYenIcon />
                                                 </InputAdornment>,
                                             }}
+                                            disabled={!!record}
                                             placeholder='套系价格'
                                             required
                                             size='small'
@@ -208,6 +237,7 @@ const AddScheduleDialog = ({
                                                     <ShoppingBagIcon />
                                                 </InputAdornment>,
                                             }}
+                                            disabled={!!record}
                                             placeholder='套系定金'
                                             required
                                             size='small'
@@ -217,7 +247,7 @@ const AddScheduleDialog = ({
                                     </Stack>
                                 </Stack>
                             </Paper>
-                            <Paper className={styles.statusBox}>
+                            {record ? null : <Paper className={styles.statusBox}>
                                 <CurrencyYenIcon htmlColor='#666' />
                                 <Typography>收款状态</Typography>
                                 <Select
@@ -232,7 +262,7 @@ const AddScheduleDialog = ({
                                     <MenuItem value={PayStatus['已付定金']}>已付定金</MenuItem>
                                     <MenuItem value={PayStatus['已付全款']}>已付全款</MenuItem>
                                 </Select>
-                            </Paper>
+                            </Paper>}
                             <Paper className={styles.remarkBox}>
                                 <Stack direction="row" spacing={2}>
                                     <TextField

@@ -26,7 +26,6 @@ const Appointment = () => {
                 <Routes>
                     <Route index path="/" element={<Navigate to="/appointment/schedule" />} />
                     {routes}
-                    <Route path='/appointment/schedule/detail' element={<OrderDetail />} />
                 </Routes>
             </Box>
         </Box>

@@ -6,11 +6,13 @@ import { useLocation } from 'react-router';
 import Schedule from './schedule';
 import AppointmentCenter from './center';
 import Customers from './customer';
+import OrderDetail from './orderDetail';
 
 export type MenuItem = {
     key: string
     text: string;
     element: React.ReactNode
+    hide?: boolean;
 }
 
 export const MENUCONFIG: MenuItem[] = [
@@ -28,6 +30,12 @@ export const MENUCONFIG: MenuItem[] = [
         key: 'customer',
         text: '客户中心',
         element: <Customers />
+    },
+    {
+        key: 'detail',
+        text: '订单详情',
+        element: <OrderDetail />,
+        hide: true
     }
 ]
 
@@ -43,6 +51,7 @@ const LeftBar = ({
                 key={menuItem.key}
                 onClick={() => toPage(`/appointment/${menuItem.key}`)}
                 selected={location.pathname.includes(`/appointment/${menuItem.key}`)}
+                sx={{ display: menuItem.hide ? 'none' : 'block' }}
             >
                 <ListItemText>{menuItem.text}</ListItemText>
             </ListItemButton>

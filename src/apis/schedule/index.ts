@@ -16,3 +16,26 @@ export const createSchedule = (data: Schedule) => request(
         data
     }
 )
+
+export const updateSchedule = (data: Partial<Schedule>) => request(
+    `/api/schedules/${data.id}/`,
+    {
+        method: 'PATCH',
+        data
+    }
+)
+
+export const deleteSchedule = (id: number) => request(
+    `/api/schedules/${id}`,
+    {
+        method: 'DELETE'
+    }
+)
+
+export const retriveSchedule = (id: number) => request(
+    `/api/schedules/${id}/`,
+)
+
+export const listHistories = (id: number) => request(
+    `/api/schedules/${id}/history/`,
+)
