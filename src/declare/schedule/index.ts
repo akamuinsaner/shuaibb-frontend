@@ -1,6 +1,7 @@
 import { User } from '../user';
 import { SampleData } from '../sample';
 import { Customer } from '../customer';
+import { HistoryFields } from 'declare/common';
 
 
 export enum PayStatus {
@@ -44,4 +45,6 @@ export type Schedule = {
     executorIds?: number[];
     createdAt?: string;
     updatedAt?: string;
+    history?: (Schedule & HistoryFields)[];
+    _change_reason?: string;
 }

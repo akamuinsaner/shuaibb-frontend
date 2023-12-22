@@ -9,6 +9,9 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import TablePagination from '@mui/material/TablePagination';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import decamelize from 'decamelize';
 import camelize from 'camelize'
 
@@ -41,6 +44,7 @@ const ListTableHeader = <T,>({
     pageInfo,
     rowKey,
     data,
+    expandable,
 }: {
     checkable?: boolean;
     headers: HeadCell<T>[],
@@ -51,13 +55,15 @@ const ListTableHeader = <T,>({
     pageInfo: PageInfo;
     rowKey?: string | { (record: T): string };
     data: T[];
+    expandable?: boolean;
 }) => {
-    const { offset, limit, total } = pageInfo;
-    const curRowCount = (offset + 1 * limit) < total ? limit : (total - limit * offset)
+    const { offset, limit, total } = (pageInfo || {});
+    const curRowCount = pageInfo ? (offset + 1 * limit) < total ? limit : (total - limit * offset) : data.length
 
     return (
         <TableHead>
-            {checkable? <TableCell padding='checkbox'>
+            {expandable ? <TableCell></TableCell> : null}
+            {checkable ? <TableCell padding='checkbox'>
                 <Checkbox
                     color="primary"
                     checked={selectedKeys.length === curRowCount}
@@ -105,8 +111,16 @@ const ListTableBody = <T,>({
     selectedKeys,
     onSelectRows,
     rowKey,
-    rowEvents
+    rowEvents,
+    expandable,
+    expandContent,
+    expandRows,
+    setExpandRows
 }: {
+    expandable: boolean;
+    expandRows?: any[];
+    setExpandRows?: (r: any[]) => void;
+    expandContent?: (record: T) => any;
     data: T[];
     headers: HeadCell<T>[],
     checkable?: boolean;
@@ -123,44 +137,63 @@ const ListTableBody = <T,>({
             {data.map((row: any, index) => {
                 const actualKey = typeof rowKey === 'function' ? rowKey(row) : row[rowKey]
                 return (
-                    <TableRow
-                        hover
-                        sx={{ cursor: 'pointer' }}
-                        tabIndex={-1}
-                        key={actualKey}
-                        onContextMenu={(e) => rowEvents?.onContextMenu && rowEvents.onContextMenu(e, row)}
-                        onDoubleClick={(e) => rowEvents?.onDoubleClick && rowEvents.onDoubleClick(e, row)}
-                    >
-                        {checkable ? <TableCell padding="checkbox">
-                            <Checkbox
-                                color="primary"
-                                checked={selectedKeys.includes(actualKey)}
-                                onClick={(e: any) => {
-                                    if (e.target.checked) {
-                                        onSelectRows([...selectedKeys, actualKey])
-                                    } else {
-                                        onSelectRows(selectedKeys.filter(item => item !== actualKey))
-                                    }
-                                }}
-                            />
-                        </TableCell> : null}
-                        {headers.map((headCell, cIndex) => {
-                            const supportSort = ['number', 'date'].includes(headCell.type)
-                            const render = headCell.render;
-                            let renderText = row[String(headCell.id)];
-                            if (render) {
-                                renderText = render(renderText, row, index)
-                            }
-                            return <TableCell
-                                sx={{ whiteSpace: headCell.multiLine ? 'normal' : 'nowrap' }}
-                                id={String(headCell.id)}
-                                key={String(headCell.id)}
-                                align={supportSort ? 'right' : 'left'}
-                            >
-                                {renderText}
+                    <>
+                        <TableRow
+                            hover
+                            sx={{ cursor: 'pointer' }}
+                            tabIndex={-1}
+                            key={actualKey}
+                            onContextMenu={(e) => rowEvents?.onContextMenu && rowEvents.onContextMenu(e, row)}
+                            onDoubleClick={(e) => rowEvents?.onDoubleClick && rowEvents.onDoubleClick(e, row)}
+                        >
+                            {expandable ? <TableCell>
+                                <IconButton
+                                    aria-label="expand row"
+                                    size="small"
+                                    onClick={() => setExpandRows(expandRows.includes(actualKey)
+                                        ? expandRows.filter(key => key !== actualKey) 
+                                        : [...expandRows, actualKey])}
+                                >
+                                    {expandRows.includes(actualKey) ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                                </IconButton>
+                            </TableCell> : null}
+                            {checkable ? <TableCell padding="checkbox">
+                                <Checkbox
+                                    color="primary"
+                                    checked={selectedKeys.includes(actualKey)}
+                                    onClick={(e: any) => {
+                                        if (e.target.checked) {
+                                            onSelectRows([...selectedKeys, actualKey])
+                                        } else {
+                                            onSelectRows(selectedKeys.filter(item => item !== actualKey))
+                                        }
+                                    }}
+                                />
+                            </TableCell> : null}
+                            {headers.map((headCell, cIndex) => {
+                                const supportSort = ['number', 'date'].includes(headCell.type)
+                                const render = headCell.render;
+                                let renderText = row[String(headCell.id)];
+                                if (render) {
+                                    renderText = render(renderText, row, index)
+                                }
+                                return <TableCell
+                                    sx={{ whiteSpace: headCell.multiLine ? 'normal' : 'nowrap' }}
+                                    id={String(headCell.id)}
+                                    key={String(headCell.id)}
+                                    align={supportSort ? 'right' : 'left'}
+                                >
+                                    {renderText}
+                                </TableCell>
+                            })}
+                        </TableRow>
+                        {expandRows.includes(actualKey)  ? <TableRow>
+                            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headers.length + 1}>
+                                {expandContent(row)}
                             </TableCell>
-                        })}
-                    </TableRow>
+                        </TableRow> : null}
+                    </>
+
                 )
             })}
         </TableBody>
@@ -177,14 +210,20 @@ const ListTable = <T,>({
     selectedKeys,
     onSelectRows,
     rowKey,
-    rowEvents
+    rowEvents,
+    expandable = false,
+    expandContent,
+    showPaganition = true
 }: {
+    expandContent?: (record: T) => any;
+    showPaganition?: boolean;
+    expandable?: boolean;
     onSelectRows?: (selectedKeys: any) => void;
     selectedKeys?: any[];
     checkable?: boolean;
     headers: HeadCell<T>[];
     data: T[];
-    pageInfo: PageInfo;
+    pageInfo?: PageInfo;
     onChange?: (params: any) => void;
     orderParams?: OrderParams<T>;
     rowKey?: string | { (record: T): string };
@@ -193,21 +232,23 @@ const ListTable = <T,>({
         onDoubleClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>, record: T) => void;
     }
 }) => {
+    const [expandRows, setExpandRows] = React.useState<any>([]);
     const onPaginationChange = (e: any, page: number) => {
-        onChange({ ...(orderParams || {}), ...pageInfo, offset: page })
+        onChange({ ...(orderParams || {}), ...(pageInfo || {}), offset: page })
     }
     const onOrderParamsChange = (params: OrderParams<T>) => {
-        onChange({ ...params, orderBy: decamelize(String(params.orderBy)), ...pageInfo, offset: 0 })
+        onChange({ ...params, orderBy: decamelize(String(params.orderBy)), ...(pageInfo || {}), offset: 0 })
     }
     return (
         <TableContainer sx={{ overflowX: 'auto' }} component={Paper}>
             <Table
-                stickyHeader 
+                stickyHeader
                 sx={{ minWidth: '100%' }}
             >
                 <ListTableHeader<T>
                     data={data}
                     headers={headers}
+                    expandable={expandable}
                     orderParams={{ ...orderParams, orderBy: camelize(orderParams?.orderBy) }}
                     selectedKeys={selectedKeys}
                     checkable={checkable}
@@ -220,20 +261,24 @@ const ListTable = <T,>({
                     })}
                 />
                 <ListTableBody<T>
+                    expandable={expandable}
                     data={data}
                     headers={headers}
                     checkable={checkable}
                     selectedKeys={selectedKeys}
                     onSelectRows={onSelectRows}
                     rowKey={rowKey}
+                    expandRows={expandRows}
+                    setExpandRows={setExpandRows}
                     rowEvents={rowEvents}
+                    expandContent={expandContent}
                 />
                 {
-                    pageInfo?.total ? (
+                    pageInfo?.total && showPaganition ? (
                         <TablePagination
                             rowsPerPageOptions={[pageInfo?.limit]}
                             count={pageInfo?.total}
-                            rowsPerPage={pageInfo.limit}
+                            rowsPerPage={pageInfo?.limit}
                             page={pageInfo?.offset}
                             onPageChange={onPaginationChange}
                         />

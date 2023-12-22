@@ -25,8 +25,10 @@ import { PayStatus } from 'declare/schedule';
 import { message } from 'components/globalMessage';
 import AddScheduleDialog from '../schedule/AddScheduleDialog';
 import { useOrderDetailStore } from './store';
+import useGlobalStore from 'globalStore';
 
 const OrderDetail = () => {
+    const { user } = useGlobalStore(state => state);
     const queryClient = useQueryClient();
     const location = useLocation();
     const navigate = useNavigate();
@@ -61,7 +63,6 @@ const OrderDetail = () => {
         })
     })
     if (!schedule) return null
-    console.log(editDialogOpen)
     return (
         <Stack direction="column" spacing={2} className={styles.page}>
             <Breadcrumbs sx={{ marginBottom: '16px' }}>
@@ -72,7 +73,11 @@ const OrderDetail = () => {
             <Stack direction="row" spacing={2} sx={{ height: '200px' }} >
                 <StatusAction
                     status={schedule.payStatus}
-                    updateStatus={(status: PayStatus) => updateScheduleMutation.mutate({ id: scheduleId, payStatus: status })}
+                    updateStatus={(status: PayStatus) => updateScheduleMutation.mutate({
+                        id: scheduleId,
+                        payStatus: status,
+                        _change_reason: `${user.showName}将订单状态由${PayStatus[schedule.payStatus]}修改为${PayStatus[status]}`
+                    })}
                     deleteSchedule={() => deleteScheduleMutation.mutate(scheduleId)}
                     openEditDialog={() => updateState({ editDialogOpen: schedule.shootDate })}
                 />
@@ -95,7 +100,11 @@ const OrderDetail = () => {
                 customers={[]}
                 labels={[]}
                 users={users}
-                submit={(data) => updateScheduleMutation.mutate({...data, id: scheduleId})}
+                submit={(data) => updateScheduleMutation.mutate({
+                    ...data,
+                    id: scheduleId,
+                    _change_reason: `${user.showName}修改了订单`
+                })}
             />
         </Stack>
 

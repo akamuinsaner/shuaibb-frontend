@@ -23,11 +23,11 @@ import {
 } from 'apis/auth/group'
 import { useMutation, useQuery } from '@tanstack/react-query';
 import CreateUserDialog from './createUserDialog';
+import FilterFields from 'components/FilterFields';
 
 const Users = () => {
     const {
-        name,
-        roles,
+        filterParams,
         users,
         createDialogOpen,
         curEditRecord,
@@ -47,13 +47,13 @@ const Users = () => {
     const createUserMutation = useMutation({
         mutationFn: createUser,
         onSuccess: (data) => message.success('创建成功', {
-            closeCallback: () => listUsersMutation.mutate({ name, roles })
+            closeCallback: () => listUsersMutation.mutate(filterParams)
         })
     });
     const updateUserMutation = useMutation({
         mutationFn: updateUser,
         onSuccess: (data) => message.success('更新成功', {
-            closeCallback: () => listUsersMutation.mutate({ name, roles })
+            closeCallback: () => listUsersMutation.mutate(filterParams)
         })
     })
     const deleteUserMutation = useMutation({
@@ -61,63 +61,33 @@ const Users = () => {
         onSettled: (data, error) => {
             if (error) return;
             message.success('删除成功', {
-                closeCallback: () => listUsersMutation.mutate({ name, roles })
+                closeCallback: () => listUsersMutation.mutate(filterParams)
             })
         }
     })
     React.useEffect(() => {
-        listUsersMutation.mutate({ name, roles });
+        listUsersMutation.mutate(filterParams);
     }, [])
     return (
-        <Box sx={{ padding: '20px' }}>
-            <Paper sx={{ padding: '24px', marginBottom: '20px' }}>
-                <Grid container spacing={2}>
-                    <Grid item sm={3}>
-                        <TextField
-                            size="small"
-                            fullWidth
-                            label="用户名/手机号/邮箱"
-                            placeholder='请输入用户名/手机号/邮箱'
-                            value={name}
-                            onChange={(e) => updateState({ name: e.target.value })}
-                        />
-                    </Grid>
-                    <Grid item sm={3}>
-                        <TextField
-                            size="small"
-                            select
-                            SelectProps={{
-                                multiple: true
-                            }}
-                            fullWidth
-                            label="角色"
-                            placeholder='请选择角色'
-                            value={roles}
-                            onChange={(e) => updateState({ roles: e.target.value as any })}
-                        >
-                            <MenuItem key={0} value={0}>{ERole[0]}</MenuItem>
-                            <MenuItem key={1} value={1}>{ERole[1]}</MenuItem>
-                            <MenuItem key={-1} value={-1}>{ERole[-1]}</MenuItem>
-                        </TextField>
-                    </Grid>
-                    <Grid item sm={3}>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={() => {
-                                updateState({ name: '', roles: [] });
-                                listUsersMutation.mutate({})
-                            }}
-                        >清空搜索条件</Button>
-                        <Button
-                            variant="contained"
-                            sx={{ marginLeft: '16px' }}
-                            onClick={() => listUsersMutation.mutate({ name, roles })}
-                        >搜索</Button>
-                    </Grid>
-                </Grid>
-            </Paper>
-            <Stack spacing={2} direction="row-reverse" sx={{ marginBottom: '20px' }}>
+        <Stack spacing={2} sx={{ padding: '20px' }}>
+            <FilterFields
+                reset={() => {
+                    updateState({ filterParams: {} });
+                    listUsersMutation.mutate({});
+                }}
+                search={() => listUsersMutation.mutate(filterParams)}
+                data={filterParams}
+                onChange={(key, value) => updateState({ filterParams: { ...filterParams, [key]: value } })}
+                configs={[
+                    { key: 'name', label: '用户名/邮箱/手机号' },
+                    { key: 'roles', label: '角色', type: 'select',
+                        selectProps: {
+                            options: Object.keys(ERole).filter(k => isNaN(Number(k))).map(name => ({ name, id: ERole[name] })),
+                            multiple: true, labelField: 'name', valueField: 'id' },
+                    }
+                ]}
+            />
+            <Stack spacing={2} direction="row-reverse">
                 <Button variant="contained" onClick={() => updateState({ createDialogOpen: true })}>新增用户</Button>
                 <Button
                     variant="contained"
@@ -177,7 +147,7 @@ const Users = () => {
                 record={curEditRecord}
                 groups={groups}
             />
-        </Box>
+        </Stack>
     )
 }
 

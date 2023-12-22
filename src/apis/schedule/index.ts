@@ -1,6 +1,14 @@
 import request from 'utils/request';
 import { Schedule } from 'declare/schedule';
 
+export const searchSchedules = (data: any) => request(
+    `/api/schedules/search/`,
+    {
+        method: 'POST',
+        data
+    }
+)
+
 export const listSchedules = (data: any) => request(
     `/api/schedules/`,
     {

@@ -1,0 +1,15 @@
+.filterFields {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    .formFields {
+        flex: 1;
+        .autoComplete {
+             .MuiAutocomplete-root .MuiFormControl-root .MuiInputBase-root {
+                flex-wrap: nowrap !important;
+                overflow-x: scroll;  // or "hidden"
+            }
+        }
+
+    }
+}
