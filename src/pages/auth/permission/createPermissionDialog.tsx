@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { Permission } from 'declare/auth';
+import { Form } from 'components/FormValidator';
 
 const CreatePermissionDialog = ({
     open,
@@ -22,13 +23,6 @@ const CreatePermissionDialog = ({
     record?: Permission;
     types: any[]
 }) => {
-    const [data, setData] = React.useState<Permission>(null);
-    React.useEffect(() => {
-        if (record) {
-            setData(record);
-        }
-    }, [record])
-
     return (
         <Dialog
             open={open}
@@ -38,44 +32,64 @@ const CreatePermissionDialog = ({
             <DialogTitle>{record ? '编辑权限' : '新增权限'}</DialogTitle>
             <DialogContent sx={{ paddingTop: '20px !important' }}>
                 <Stack spacing={2}>
-                    <TextField
-                        required
-                        label="权限名称"
-                        value={data?.chineseName}
-                        onChange={e => setData({ ...data, chineseName: e.target.value })}
-                    />
-                    <TextField
-                        required
-                        label="权限代码"
-                        value={data?.codename}
-                        onChange={e => setData({ ...data, codename: e.target.value })}
-                    />
-                    <TextField
-                        required
-                        label="权限描述"
-                        value={data?.name}
-                        onChange={e => setData({ ...data, name: e.target.value })}
-                    />
-                    <TextField
-                        required
-                        label="所属内容"
-                        select
-                        value={data?.contentType}
-                        onChange={e => setData({ ...data, contentType: e.target.value as any })}
-                    >
-                        {types.map(type => {
-                            return <MenuItem
-                                key={type.id} value={type.id}
-                            >{type.appLabel}.{type.model}</MenuItem>
-                        })}
-                    </TextField>
+                    <Form initialValues={record}>
+                        <Form.Item
+                            name="chineseName"
+                            rules={[
+                                { required: true, msg: '请输入权限名称' }
+                            ]}
+                        >
+                            <TextField required label="权限名称" />
+                        </Form.Item>
+                        <Form.Item
+                            name="codename"
+                            rules={[
+                                { required: true, msg: '请输入权限代码' }
+                            ]}
+                        >
+                            <TextField required label="权限代码" />
+                        </Form.Item>
+                        <Form.Item
+                            name="name"
+                            rules={[
+                                { required: true, msg: '请输入权限描述' }
+                            ]}
+                        >
+                            <TextField required label="权限描述" />
+                        </Form.Item>
+                        <Form.Item
+                            name="contentType"
+                            rules={[
+                                { required: true, msg: '请选择所属内容' }
+                            ]}
+                        >
+                            <TextField
+                                required
+                                label="所属内容"
+                                select
+                            >
+                                {types.map(type => {
+                                    return <MenuItem
+                                        key={type.id} value={type.id}
+                                    >{type.appLabel}.{type.model}</MenuItem>
+                                })}
+                            </TextField>
+                        </Form.Item>
+
+                    </Form>
+
+
                 </Stack>
             </DialogContent>
             <DialogActions>
                 <Button variant='outlined' onClick={close}>取消</Button>
                 <Button variant='contained' onClick={() => {
-                    close();
-                    submit(data)
+                    Form.validates((errors, values) => {
+                        if (!errors) {
+                            close();
+                            submit({ ...values, id: record?.id })
+                        }
+                    })
                 }}>确定</Button>
             </DialogActions>
         </Dialog>

@@ -8,10 +8,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { Group, Permission } from 'declare/auth';
 import MenuItem from '@mui/material/MenuItem';
-import Box from '@mui/material/Box';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Chip from '@mui/material/Chip';
-import { Select } from '@mui/material';
+import { Form } from 'components/FormValidator';
 
 const CreateGroupDialog = ({
     open,
@@ -26,15 +23,6 @@ const CreateGroupDialog = ({
     submit: (group: Group) => void;
     record?: Group;
 }) => {
-    const [name, setName] = React.useState<string>('');
-    const [permissionIds , setPermissionIds] = React.useState<number[]>([]);
-
-    React.useEffect(() => {
-        if (record) {
-            setName(record.name);
-            setPermissionIds(record.permissions.map(item => item.id))
-        }
-    }, [record])
 
     return (
         <Dialog
@@ -45,36 +33,56 @@ const CreateGroupDialog = ({
             <DialogTitle>创建群组</DialogTitle>
             <DialogContent sx={{ paddingTop: '20px !important' }}>
                 <Stack spacing={2}>
-                    <TextField
-                        label="群组名称"
-                        value={name}
-                        onChange={e => setName(e.target.value)}
-                    />
-                    <Select
-                        multiple
-                        value={permissionIds}
-                        onChange={(e) => setPermissionIds(e.target.value as any)}
-                        input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                        renderValue={(selected) => (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                {selected.map((value) => {
-                                    const perm = permissions.find(p => `${p.id}` === `${value}`)
-                                    return <Chip key={value} label={perm.name} />
-                                })}
-                            </Box>
-                        )}
+                    <Form
+                        initialValues={!record ? null : {
+                            name: record.name,
+                            permissionIds: record.permissions.map(item => item.id)
+                        }}
                     >
-                        {permissions.map(perm => (
-                            <MenuItem key={perm.id} value={perm.id}>{perm.name}</MenuItem>
-                        ))}
-                    </Select>
+                        <Form.Item
+                            name="name"
+                            rules={[
+                                { required: true, msg: '请输入群组名称' }
+                            ]}
+                        >
+                            <TextField
+                                required
+                                label="群组名称"
+                                placeholder='请输入群组名称'
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="permissionIds"
+                            multiple
+                        >
+                            <TextField
+                                label="权限"
+                                placeholder='请选择权限'
+                                select
+                                SelectProps={{
+                                    multiple: true,
+                                }}
+                            >
+                                {permissions.map(perm => (
+                                    <MenuItem key={perm.id} value={perm.id}>{perm.name}</MenuItem>
+                                ))}
+                            </TextField>
+                        </Form.Item>
+
+                    </Form>
+
                 </Stack>
             </DialogContent>
             <DialogActions>
                 <Button variant='outlined' onClick={close}>取消</Button>
                 <Button variant='contained' onClick={() => {
-                    close();
-                    submit({ name, permissionIds, id: record?.id });
+                    Form.validates((errors, values) => {
+                        if (!errors) {
+                            close();
+                            submit({ ...values, id: record?.id });
+                        }
+                    })
+
                 }}>确定</Button>
             </DialogActions>
         </Dialog>

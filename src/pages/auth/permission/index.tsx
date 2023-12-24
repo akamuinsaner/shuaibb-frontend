@@ -21,11 +21,12 @@ import {
 } from 'apis/auth/permission';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import CreatePermissionDialog from './createPermissionDialog';
+import FilterFields from 'components/FilterFields';
 
 const Permissions = () => {
     const {
         updateState,
-        name,
+        filterParams,
         selectKeys,
         permissions,
         curEditRecord,
@@ -44,62 +45,48 @@ const Permissions = () => {
     const createPermissionMutation = useMutation({
         mutationFn: createPermissions,
         onSuccess: (data) => message.success('创建成功', {
-            closeCallback: () => listPermissionsMutation.mutate({ name })
+            closeCallback: () => listPermissionsMutation.mutate(filterParams)
         })
     })
     const updatePermissionMutation = useMutation({
         mutationFn: updatePermissions,
         onSuccess: (data) => message.success('更新成功', {
-            closeCallback: () => listPermissionsMutation.mutate({ name })
+            closeCallback: () => listPermissionsMutation.mutate(filterParams)
         })
     })
     const deletePermissionMutation = useMutation({
         mutationFn: deletePermissions,
         onSettled: (data) => message.success('删除成功', {
-            closeCallback: () => listPermissionsMutation.mutate({ name })
+            closeCallback: () => listPermissionsMutation.mutate(filterParams)
         })
     })
     const batchDeletePermissionMutation = useMutation({
         mutationFn: batchDeletePermission,
         onSuccess: (data) => message.success('批量删除成功', {
-            closeCallback: () => listPermissionsMutation.mutate({ name })
+            closeCallback: () => listPermissionsMutation.mutate(filterParams)
         })
     })
     React.useEffect(() => {
-        listPermissionsMutation.mutate({ name })
+        listPermissionsMutation.mutate(filterParams)
     }, [])
     return (
-        <Box sx={{ padding: '20px' }}>
-            <Paper sx={{ padding: '24px', marginBottom: '20px' }}>
-                <Grid container spacing={2}>
-                    <Grid item sm={3}>
-                        <TextField
-                            size="small"
-                            fullWidth
-                            label="权限名称"
-                            placeholder='请输入权限名称'
-                            value={name}
-                            onChange={(e) => updateState({ name: e.target.value })}
-                        />
-                    </Grid>
-                    <Grid item sm={3}>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={() => {
-                                updateState({ name: '' });
-                                listPermissionsMutation.mutate({});
-                            }}
-                        >清空搜索条件</Button>
-                        <Button
-                            variant="contained"
-                            sx={{ marginLeft: '16px' }}
-                            onClick={() => listPermissionsMutation.mutate({ name })}
-                        >搜索</Button>
-                    </Grid>
-                </Grid>
-            </Paper>
-            <Stack spacing={2} direction="row-reverse" sx={{ marginBottom: '20px' }}>
+        <Stack sx={{ padding: '20px' }} direction="column" spacing={2}>
+            <FilterFields
+                data={filterParams}
+                onChange={(key, value) => updateState({ filterParams: { ...filterParams, [key]: value } })}
+                configs={[
+                    { label: '权限名称', key: 'name' }
+                ]}
+                reset={() => {
+                    updateState({filterParams: {}, selectKeys: [], pageInfo: { ...pageInfo, offset: 0, total: 0 } })
+                    listPermissionsMutation.mutate({})
+                }}
+                search={() => {
+                    updateState({ filterParams: {}, selectKeys: [], pageInfo: { ...pageInfo, offset: 0, total: 0 } })
+                    listPermissionsMutation.mutate(filterParams)
+                }}
+            />
+            <Stack spacing={2} direction="row-reverse">
                 <Button variant="contained" onClick={() => updateState({ createDialogOpen: true })}>新增权限</Button>
                 <Button
                     variant="contained"
@@ -157,7 +144,7 @@ const Permissions = () => {
                 submit={updatePermissionMutation.mutate}
                 types={contentTypes}
             />
-        </Box>
+        </Stack>
     )
 }
 

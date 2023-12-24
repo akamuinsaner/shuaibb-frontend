@@ -59,7 +59,6 @@ const Users = () => {
     const deleteUserMutation = useMutation({
         mutationFn: deleteUser,
         onSettled: (data, error) => {
-            if (error) return;
             message.success('删除成功', {
                 closeCallback: () => listUsersMutation.mutate(filterParams)
             })

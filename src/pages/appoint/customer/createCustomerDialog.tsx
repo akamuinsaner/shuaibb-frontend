@@ -13,6 +13,9 @@ import AvatarUpload from 'components/AvatarUpload';
 import { uploadFileCommon } from 'apis/upload';
 import { useMutation } from '@tanstack/react-query';
 import { message } from 'components/globalMessage';
+import { Form } from 'components/FormValidator';
+import { FormItem } from 'components/FormValidator/item';
+import { MOBILE_REXP } from 'common/rexps';
 
 const CreateCustomerDialog = ({
     open,
@@ -26,19 +29,7 @@ const CreateCustomerDialog = ({
     record?: Customer;
 }) => {
     const { user } = useGlobalStore(state => state)
-    const [data, setData] = React.useState<Customer>({ name: '', phone: '' });
-
-    React.useEffect(() => {
-        record && setData(record)
-    }, [record])
-    const uploadFileMutation = useMutation({
-        mutationFn: uploadFileCommon,
-        onSuccess: (res) => {
-            message.success('上传头像成功');
-            setData({ ...data, avatar: res.url })
-        }
-    })
-    console.log(data)
+    const [name, setName] = React.useState<string>('');
     return (
         <Dialog
             open={open}
@@ -48,55 +39,70 @@ const CreateCustomerDialog = ({
             <DialogTitle>创建群组</DialogTitle>
             <DialogContent sx={{ paddingTop: '20px !important' }}>
                 <Stack spacing={2} sx={{ alignItems: 'center' }}>
-                    <Box sx={{ width: '150px', height: '150px' }}>
-                        <AvatarUpload
-                            url={data?.avatar}
-                            showLetter={true}
-                            letter={(data?.name || '').charAt(0)}
-                            onDelete={() => setData({ ...data, avatar: null })}
-                            onUpload={file => {
-                                const fd = new FormData();
-                                fd.append('file', file);
-                                fd.append('type', 'avatar');
-                                uploadFileMutation.mutate(fd)
-                            }}
-                        />
-                    </Box>
-                    <TextField
-                        required
-                        fullWidth
-                        label="客户姓名"
-                        value={data?.name}
-                        placeholder="请输入客户姓名"
-                        onChange={e => setData({ ...data, name: e.target.value })}
-                    />
-                    <TextField
-                        required
-                        fullWidth
-                        label="手机号"
-                        value={data.phone}
-                        placeholder="请输入客户手机号"
-                        onChange={e => setData({ ...data, phone: e.target.value })}
-                    />
-                    <TextField
-                        rows={5}
-                        multiline
-                        fullWidth
-                        label="客户描述"
-                        placeholder='请输入客户描述'
-                        value={data.desc}
-                        onChange={e => setData({ ...data, desc: e.target.value })}
-                    />
+                    <Form initialValues={record}>
+                        <FormItem
+                            name="avatar"
+                        >
+                            <AvatarUpload
+                                showLetter={true}
+                                letter={name.charAt(0)}
+                                onDelete={() => Form.setValues({ avatar: null })}
+                            />
+                        </FormItem>
+                        <FormItem
+                            name="name"
+                            rules={[
+                                { required: true, msg: '请输入客户姓名' }
+                            ]}
+                        >
+                            <TextField
+                                required
+                                fullWidth
+                                label="客户姓名"
+                                placeholder="请输入客户姓名"
+                            />
+                        </FormItem>
+                        <FormItem
+                            name="phone"
+                            rules={[
+                                { required: true, msg: '请输入客户手机号' },
+                                { regex: MOBILE_REXP, msg: '请输入正确的手机号格式' }
+                            ]}
+                        >
+                            <TextField
+                                required
+                                fullWidth
+                                label="手机号"
+                                placeholder="请输入客户手机号"
+                            />
+                        </FormItem>
+                        <FormItem
+                            name="desc"
+                        >
+                            <TextField
+                                rows={5}
+                                multiline
+                                fullWidth
+                                label="客户描述"
+                                placeholder='请输入客户描述'
+                            />
+                        </FormItem>
+                    </Form>
                 </Stack>
             </DialogContent>
             <DialogActions>
                 <Button variant='outlined' onClick={close}>取消</Button>
                 <Button variant='contained' onClick={() => {
-                    close();
-                    submit({ ...data, userId: user?.id });
+                    Form.validates((errors, values) => {
+                        console.log(errors, values)
+                        if (!errors) {
+                            close();
+                            submit({ ...values, userId: user?.id, id: record?.id });
+                        }
+                    })
                 }}>确定</Button>
             </DialogActions>
-        </Dialog>
+        </Dialog >
     )
 }
 

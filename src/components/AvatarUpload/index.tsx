@@ -5,27 +5,36 @@ import AddIcon from '@mui/icons-material/Add';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import { uploadFileCommon } from 'apis/upload';
+import { useMutation } from '@tanstack/react-query';
+import { message } from 'components/globalMessage';
 
 const AvatarUpload = ({
-    url,
+    value,
     showLetter,
     letter,
-    onUpload,
+    onChange,
     onDelete
 }: {
-    url: string;
+    value?: string;
     showLetter?: boolean;
-    letter: string;
-    onUpload: (file: File) => void;
-    onDelete: () => void;
+    letter?: string;
+    onChange?: (url: string) => void;
+    onDelete?: () => void;
 }) => {
     const inputRef = React.useRef<HTMLInputElement>(null);
-
+    const uploadFileMutation = useMutation({
+        mutationFn: uploadFileCommon,
+        onSuccess: (res) => {
+            message.success('上传头像成功');
+            onChange(res.url)
+        }
+    })
     return (
         <Box
             className={`
                 ${styles.avatarUpload} 
-                ${url ? styles.hasAvatar : styles.nonAvatar}`
+                ${value ? styles.hasAvatar : styles.nonAvatar}`
             }
         >
             <input
@@ -35,15 +44,18 @@ const AvatarUpload = ({
                 accept="image/*"
                 onChange={(e) => {
                     const file = e.target?.files[0];
-                    onUpload(file);
+                    const fd = new FormData();
+                    fd.append('file', file);
+                    fd.append('type', 'avatar');
+                    uploadFileMutation.mutate(fd);
                     e.target.value = null;
                 }} />
-            {url ? <img className={styles.avatar} src={url} /> : null}
-            {(!url && showLetter) ? <Box className={styles.letter}>{letter}</Box> : null}
-            {!url ? <Box className={styles.uploadMask}>
+            {value ? <img className={styles.avatar} src={value} /> : null}
+            {(!value && showLetter) ? <Box className={styles.letter}>{letter}</Box> : null}
+            {!value ? <Box className={styles.uploadMask}>
                 <AddIcon className={styles.addBtn} onClick={() => inputRef.current.click()} />
             </Box> : null}
-            {url ? <Box className={styles.delReUpMask}>
+            {value ? <Box className={styles.delReUpMask}>
                 <Tooltip title="重新上传"><FileUploadIcon
                     htmlColor='#fff'
                     onClick={() => inputRef.current.click()}

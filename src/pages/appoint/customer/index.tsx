@@ -20,7 +20,7 @@ import { confirm } from 'components/confirmDialog';
 import { message } from 'components/globalMessage';
 import Link from '@mui/material/Link';
 import CreateCustomerDialog from './createCustomerDialog';
-
+import FilterFields from 'components/FilterFields';
 
 const Customers = () => {
     const {
@@ -28,7 +28,7 @@ const Customers = () => {
         createDialogOpen,
         pageInfo,
         selectKeys,
-        keyword,
+        filterParams,
         customers,
         updateState
     } = useCustomerStore(state => state);
@@ -43,63 +43,44 @@ const Customers = () => {
     const deleteCustomerMutation = useMutation({
         mutationFn: deleteCustomer,
         onSettled: () => message.success('删除成功', {
-            closeCallback: () => listCustomersMutation.mutate({ keyword })
+            closeCallback: () => listCustomersMutation.mutate(filterParams)
         })
     })
     const createCustomerMutation = useMutation({
         mutationFn: createCustomer,
         onSuccess: () => message.success('添加成功', {
-            closeCallback: () => listCustomersMutation.mutate({ keyword })
+            closeCallback: () => listCustomersMutation.mutate(filterParams)
         })
     })
     const updateCustomerMutation = useMutation({
         mutationFn: updateCustomer,
         onSuccess: () => message.success('修改成功', {
-            closeCallback: () => listCustomersMutation.mutate({ keyword })
+            closeCallback: () => listCustomersMutation.mutate(filterParams)
         })
     })
     const batchDeleteCustomersMutation = useMutation({
         mutationFn: batchDeleteCustomers,
         onSuccess: () => message.success('批量删除成功', {
-            closeCallback: () => listCustomersMutation.mutate({ keyword })
+            closeCallback: () => listCustomersMutation.mutate(filterParams)
         })
     })
 
     React.useEffect(() => {
-        listCustomersMutation.mutate({ keyword })
+        listCustomersMutation.mutate(filterParams)
     }, [])
     return (
-        <Box sx={{ padding: '20px' }}>
-            <Paper sx={{ padding: '24px', marginBottom: '20px' }}>
-                <Grid container spacing={2}>
-                    <Grid item sm={3}>
-                        <TextField
-                            size="small"
-                            fullWidth
-                            label="姓名或手机号"
-                            placeholder='请输入姓名或手机号'
-                            value={keyword}
-                            onChange={(e) => updateState({ keyword: e.target.value })}
-                        />
-                    </Grid>
-                    <Grid item sm={3}>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={() => {
-                                updateState({ keyword: '' });
-                                listCustomersMutation.mutate({})
-                            }}
-                        >清空搜索条件</Button>
-                        <Button
-                            variant="contained"
-                            sx={{ marginLeft: '16px' }}
-                            onClick={() => listCustomersMutation.mutate({ keyword })}
-                        >搜索</Button>
-                    </Grid>
-                </Grid>
-            </Paper>
-            <Stack spacing={2} direction="row-reverse" sx={{ marginBottom: '20px' }}>
+        <Stack sx={{ padding: '20px' }} spacing={2}>
+            <FilterFields
+                configs={[{ key: 'keyword', label: '姓名或手机号', placeholder: '请输入姓名或手机号' }]}
+                data={{ ...filterParams }}
+                onChange={(key, value) => updateState({ filterParams: { ...filterParams, [key]: value } })}
+                reset={() => {
+                    updateState({ filterParams: {} });
+                    listCustomersMutation.mutate({});
+                }}
+                search={() => listCustomersMutation.mutate(filterParams)}
+            />
+            <Stack spacing={2} direction="row-reverse">
                 <Button variant="contained" onClick={() => updateState({ createDialogOpen: true })}>添加客户</Button>
                 <Button
                     variant="contained"
@@ -160,7 +141,7 @@ const Customers = () => {
                 submit={updateCustomerMutation.mutate}
                 record={curEditRecord}
             />
-        </Box>
+        </Stack>
     )
 }
 

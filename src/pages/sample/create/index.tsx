@@ -20,37 +20,76 @@ import {
     retriveSample
 } from 'apis/sample';
 import useGlobalStore from 'globalStore';
-import { SampleData, CostumeCount, ShootingTime } from 'declare/sample';
+import { SampleData, CostumeCount, ShootingTime, SampleTemplate } from 'declare/sample';
 import { message } from 'components/globalMessage';
 import { withTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { strToObj } from 'utils/funcTools';
+import { Form } from 'components/FormValidator';
 
 const Content = styled(Box)(({ theme }: any) => ({
     padding: theme.spacing(2),
 }));
 
+const defaultValue: Partial<SampleData> = {
+    basicInfoVisible: true,
+    costumeOffer: false,
+    priceVisible: true,
+    depositVisible: true,
+    public: true
+}
+
+const handleRetriveData = (data: any): SampleData => {
+    let rData = {
+        ...data,
+        covers: JSON.parse(data.covers),
+        details: JSON.parse(data.details),
+        tagIds: data.tags.map(tag => tag.id),
+        shootingTime: data.shootingTime in ShootingTime ? data.shootingTime : 0,
+        customShootingTime: data.shootingTime in ShootingTime ? null : data.shootingTime,
+    }
+    if (rData.costumeOffer) {
+        rData["costumeCount"] = data.costumeCount in CostumeCount ? data.costumeCount : 0;
+        rData["customCostumeCount"] = data.costumeCount in CostumeCount ? null : data.costumeCount;
+    }
+    return rData
+}
+
+const handleUpdateData = (data: SampleData): any => {
+    const rData = {
+        ...data,
+        covers: JSON.stringify(data.covers),
+        details: JSON.stringify(data.details),
+    }
+    if (rData.costumeOffer && `${rData.costumeCount}` === '0') rData.costumeCount = rData.customCostumeCount;
+    if (`${rData.shootingTime}` === '0') rData.shootingTime = rData.customShootingTime;
+    return rData
+};
+
 
 const SampleCreate = ({ t }: { t: any }) => {
+    const [fieldValues, setFieldValues] = React.useState<Partial<SampleData>>(defaultValue);
     const location = useLocation();
     const searchParams = strToObj(location.search);
     const user = useGlobalStore(state => state.user);
     const activeTab = useSampleCreateStore(state => state.activeTab);
     const updateActiveTab = useSampleCreateStore(state => state.updateActiveTab);
-    const sample = useSampleCreateStore(state => state.sample);
-    const curTemp = useSampleCreateStore(state => state.templateState.curTemp);
-    const updateSample = useSampleCreateStore(state => state.updateSample);
     const { data: labels } = useQuery({ queryFn: sampleLabels, queryKey: ['sampleLabels'] });
     const retriveDraftMutation = useMutation({
         mutationFn: retriveDraft,
         onSuccess: (data) => {
-            if (data) updateSample(handleRetriveData(data));
-            else updateSample({ ...initialSample, id: null });
+            if (data) {
+                Form.setValues(handleRetriveData(data));
+            }
+            else {
+                Form.clear(defaultValue);
+                setFieldValues(defaultValue);
+            }
         }
     });
     const retriveSampleMutation = useMutation({
         mutationFn: retriveSample,
-        onSuccess: (data) => updateSample(handleRetriveData(data))
+        onSuccess: (data) => Form.setValues(handleRetriveData(data))
     })
     const fetchInitialData = React.useCallback(() => {
         if (searchParams?.sampleId) {
@@ -62,61 +101,27 @@ const SampleCreate = ({ t }: { t: any }) => {
     React.useEffect(() => {
         fetchInitialData()
     }, []);
-    const handleRetriveData = React.useCallback((data: any): SampleData => {
-        let rData = {
-            ...data,
-            covers: JSON.parse(data.covers),
-            details: JSON.parse(data.details),
-            shootingTime: data.shootingTime in ShootingTime ? data.shootingTime : 0,
-            customShootingTime: data.shootingTime in ShootingTime ? null : data.shootingTime,
-        }
-        if (rData.costumeOffer) {
-            rData["costumeCount"] = data.costumeCount in CostumeCount ? data.costumeCount : 0;
-            rData["customCostumeCount"] = data.costumeCount in CostumeCount ? null : data.costumeCount;
-        }
-        return rData
-    }, [])
-    const handleUpdateData = React.useCallback((data: SampleData): any => {
-        let temp = Object.assign({}, curTemp, {});
-        delete temp.id;
-        delete temp.name
-        const rData = {
-            ...data,
-            covers: JSON.stringify(data.covers),
-            details: JSON.stringify(data.details),
-            ...temp
-        }
-        if (rData.costumeOffer && `${rData.costumeCount}` === '0') rData.costumeCount = rData.customCostumeCount;
-        if (`${rData.shootingTime}` === '0') rData.shootingTime = rData.customShootingTime;
-        return rData
-    }, [curTemp]);
+
+
     const saveSampleMutation = useMutation({
         mutationFn: saveSample,
-        onSuccess: (data) => {
-            message.success('提交成功', {
-                closeCallback: fetchInitialData
-            })
-        },
+        onSuccess: (data) => message.success('提交成功', { closeCallback: fetchInitialData }),
         onError: (error) => message.error(error.message)
     })
 
     const updateSampleMutation = useMutation({
         mutationFn: updateSampleFn,
-        onSuccess: (data) => {
-            message.success('提交成功', {
-                closeCallback: fetchInitialData
-            })
-        },
-        onError: (error) => message.error(error.message)
+        onSuccess: (data) =>  message.success('提交成功', { closeCallback: fetchInitialData }),
+        onError: (error) => message.error(error.message),
     });
     const submit = (sample: SampleData, isDraft: boolean) => {
-        if (sample.id) {
-            updateSampleMutation.mutate({ ...handleUpdateData(sample), userId: user.id, isDraft });
+        if (fieldValues.id) {
+            updateSampleMutation.mutate({ ...handleUpdateData(sample), userId: user.id, isDraft, id: fieldValues.id });
         } else {
             saveSampleMutation.mutate({ ...handleUpdateData(sample), userId: user.id, isDraft });
         }
     }
-
+    console.log(fieldValues)
     return (
         <Box className={styles.create}>
             {/* {t('aaa')} */}
@@ -130,23 +135,16 @@ const SampleCreate = ({ t }: { t: any }) => {
             </Box>
             <Content>
                 <Stack spacing={2}>
-                    <SampleName
-                        data={sample}
-                        updateData={updateSample}
-                        labels={labels}
-                    />
-                    <SamplePrice
-                        data={sample}
-                        updateData={updateSample}
-                    />
-                    <SampleService
-                        data={sample}
-                        updateData={updateSample}
-                    />
-                    <SampleExtra
-                        data={sample}
-                        updateData={updateSample}
-                    />
+                    <Form
+                        initialValues={fieldValues}
+                        onValuesChange={(prev, cur) => setFieldValues(cur)}
+                    >
+                        <SampleName labels={labels} />
+                        <SamplePrice fields={fieldValues} />
+                        <SampleService fields={fieldValues} />
+                        <SampleExtra />
+                    </Form>
+
                     <Box className={styles.btns}>
                         {
                             !searchParams?.sampleId && (
@@ -155,21 +153,23 @@ const SampleCreate = ({ t }: { t: any }) => {
                                         variant='outlined'
                                         className={styles.btn}
                                         onClick={fetchInitialData}
-                                    >重置</Button>
+                                    >重置
+                                    </Button>
                                     <Button
                                         variant='contained'
                                         className={styles.btn}
-                                        onClick={() => submit(sample, true)}>{sample?.id ? '修改草稿' : '保存为草稿'}
+                                        onClick={() => Form.validates((errors, values) => !errors && submit(values, true))}
+                                    >{fieldValues?.id ? '修改草稿' : '保存为草稿'}
                                     </Button>
                                 </>
                             )
                         }
-
                         <Button
                             variant='contained'
                             color='success'
                             className={styles.btn}
-                            onClick={() => submit(sample, false)}>{searchParams?.sampleId ? '更新样片' : '提交样片'}</Button>
+                            onClick={() => Form.validates((errors, values) => !errors && submit(values, false))}
+                        >{searchParams?.sampleId ? '更新样片' : '提交样片'}</Button>
                     </Box>
                 </Stack>
             </Content>

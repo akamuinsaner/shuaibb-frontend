@@ -4,7 +4,7 @@ import { PageInfo } from 'components/ListTable';
 
 
 type State = {
-    name: string;
+    filterParams: { [name: string]: any };
     selectKeys: number[];
     curEditRecord: Permission;
     createDialogOpen: boolean;
@@ -18,7 +18,7 @@ type Action = {
 
 
 const initialState: State = {
-    name: '',
+    filterParams: {},
     selectKeys: [],
     curEditRecord: null,
     createDialogOpen: false,

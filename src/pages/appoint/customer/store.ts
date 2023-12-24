@@ -3,7 +3,7 @@ import { Customer } from 'declare/customer';
 import { PageInfo } from 'components/ListTable';
 
 type State = {
-    keyword: string;
+    filterParams: { [name: string]: any };
     selectKeys: number[];
     curEditRecord: Customer;
     createDialogOpen: boolean;
@@ -17,7 +17,7 @@ type Action = {
 
 
 const initialState: State = {
-    keyword: '',
+    filterParams: {},
     selectKeys: [],
     curEditRecord: null,
     createDialogOpen: false,

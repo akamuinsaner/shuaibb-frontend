@@ -21,10 +21,11 @@ import Stack from '@mui/material/Stack'
 import CreateGroupDialog from './createGroupDialog';
 import { confirm } from 'components/confirmDialog';
 import { message } from 'components/globalMessage';
+import FilterFields from 'components/FilterFields';
 
 const Groups = () => {
     const {
-        name,
+        filterParams,
         selectKeys,
         curEditRecord,
         createDialogOpen,
@@ -34,30 +35,33 @@ const Groups = () => {
     } = useAuthStore(state => state);
     const listGroupsMutation = useMutation({
         mutationFn: listGroups,
-        onSuccess: (data) => updateState({ groups: data })
+        onSuccess: (data) => updateState({
+            groups: data,
+            selectKeys: [],
+        })
     })
     const createGroupMutation = useMutation({
         mutationFn: createGroup,
         onSuccess: (data) => message.success('创建成功', {
-            closeCallback: () => listGroupsMutation.mutate({ name })
+            closeCallback: () => listGroupsMutation.mutate(filterParams)
         })
     })
     const updateGroupMutation = useMutation({
         mutationFn: updateGroup,
         onSuccess: (data) => message.success('更新成功', {
-            closeCallback: () => listGroupsMutation.mutate({ name })
+            closeCallback: () => listGroupsMutation.mutate(filterParams)
         })
     })
     const deleteGroupMutation = useMutation({
         mutationFn: deleteGroup,
         onSettled: () => message.success('删除成功', {
-            closeCallback: () => listGroupsMutation.mutate({ name })
+            closeCallback: () => listGroupsMutation.mutate(filterParams)
         })
     })
     const batchDeleteGroupMutation = useMutation({
         mutationFn: batchDeleteGroup,
         onSuccess: () => message.success('批量删除成功', {
-            closeCallback: () => listGroupsMutation.mutate({ name })
+            closeCallback: () => listGroupsMutation.mutate(filterParams)
         })
     })
     const listPermissionsMutation = useMutation({
@@ -69,37 +73,18 @@ const Groups = () => {
         listPermissionsMutation.mutate({})
     }, [])
     return (
-        <Box sx={{ padding: '20px' }}>
-            <Paper sx={{ padding: '24px', marginBottom: '20px' }}>
-                <Grid container spacing={2}>
-                    <Grid item sm={3}>
-                        <TextField
-                            size="small"
-                            fullWidth
-                            label="群组名称"
-                            placeholder='请输入群组名称'
-                            value={name}
-                            onChange={(e) => updateState({ name: e.target.value })}
-                        />
-                    </Grid>
-                    <Grid item sm={3}>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={() => {
-                                updateState({ name: '' });
-                                listGroupsMutation.mutate({})
-                            }}
-                        >清空搜索条件</Button>
-                        <Button
-                            variant="contained"
-                            sx={{ marginLeft: '16px' }}
-                            onClick={() => listGroupsMutation.mutate({ name })}
-                        >搜索</Button>
-                    </Grid>
-                </Grid>
-            </Paper>
-            <Stack spacing={2} direction="row-reverse" sx={{ marginBottom: '20px' }}>
+        <Stack sx={{ padding: '20px' }} direction="column" spacing={2}>
+            <FilterFields
+                data={filterParams}
+                onChange={(key, value) => updateState({ filterParams: { ...filterParams, [key]: value } })}
+                configs={[{ key: 'name', label: '群组名称', placeholder: '请输入群组名称' }]}
+                reset={() => {
+                    updateState({ filterParams: {} });
+                    listGroupsMutation.mutate({});
+                }}
+                search={() => listGroupsMutation.mutate(filterParams)}
+            />
+            <Stack spacing={2} direction="row-reverse">
                 <Button variant="contained" onClick={() => updateState({ createDialogOpen: true })}>创建群组</Button>
                 <Button
                     variant="contained"
@@ -165,7 +150,7 @@ const Groups = () => {
                 permissions={permissions}
                 submit={updateGroupMutation.mutate}
             />
-        </Box>
+        </Stack>
     )
 }
 

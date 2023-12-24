@@ -74,7 +74,7 @@ const FilterFields = ({
                             helperText: errors?.[config.key]
                         },
                     }}
-                    value={data?.key ? dayjs(data['key']) : null}
+                    value={data[config.key] ? dayjs(data[config.key]) : null}
                     onChange={(value) => onChange(config.key, value.format('YYYY-MM-DD'))}
                 />
             case 'input':
@@ -84,7 +84,7 @@ const FilterFields = ({
                     size='small'
                     label={config.label}
                     placeholder={config.placeholder || config.label}
-                    value={data?.key}
+                    value={data[config.key]}
                     onChange={(e) => onChange(config.key, e.target.value)}
                     error={!!errors?.[config.key]}
                     helperText={errors?.[config.key]}

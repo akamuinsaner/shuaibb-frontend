@@ -3,7 +3,7 @@ import { Group, Permission } from 'declare/auth';
 
 
 type State = {
-    name: string;
+    filterParams: { [name: string]: any };
     selectKeys: number[];
     curEditRecord: Group;
     createDialogOpen: boolean;
@@ -17,7 +17,7 @@ type Action = {
 
 
 const initialState: State = {
-    name: '',
+    filterParams: {},
     selectKeys: [],
     curEditRecord: null,
     createDialogOpen: false,

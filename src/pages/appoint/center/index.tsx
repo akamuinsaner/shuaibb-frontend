@@ -49,25 +49,12 @@ const AppointmentCenter = () => {
     React.useEffect(() => {
         searchSchedulesMutation.mutate({ ...filterParams, ...pageInfo })
     }, [])
-    console.log(errors)
     return (
         <Stack className={styles.page} spacing={2}>
             <FilterFields
                 errors={errors}
                 data={filterParams}
-                onChange={(key, value) => {
-                    if (key === 'startDate'
-                        && filterParams['endDate']
-                        && dayjs(value).isAfter(filterParams['endDate'])) {
-                        updateState({ errors: { ...errors, startDate: '开始日期不能晚于结束日期' } });
-                    } else if (key === 'endDate'
-                        && filterParams['startDate']
-                        && dayjs(value).isBefore(filterParams['startDate'])) {
-                        updateState({ errors: { ...errors, endDate: '结束日期不能早于开始日期' } });
-                    } else {
-                        updateState({ filterParams: { ...filterParams, [key]: value }, errors: {} })
-                    }
-                }}
+                onChange={(key, value) => updateState({ filterParams: { ...filterParams, [key]: value } })}
                 reset={() => updateState({ filterParams: {}, errors: {} })}
                 search={() => {
                     updateState({

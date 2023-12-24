@@ -15,7 +15,8 @@ export type SampleData = {
 
     name: string;
     desc: string;
-    tags: SampleLabel[];
+    tagIds?: number[];
+    tags?: SampleLabel[];
     covers: string[];
     details: string[];
 
