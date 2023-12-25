@@ -3,8 +3,6 @@ import { RuleConfig, ruleCheck } from './rules';
 import { Form } from './form';
 import { TextFieldProps } from '@mui/material';
 
-
-
 export type FormItemProps = {
     name: string;
     children: JSX.Element | { (props: Partial<TextFieldProps & { onChange: (value: any) => void }>): JSX.Element };
@@ -41,7 +39,6 @@ export const FormItem: FormItemComponent<FormItemProps> = ({
         setError(error);
     }, []);
     const _setValue = React.useCallback((v) => {
-        console.log(name, v)
         setValue((!v && multiple) ? [] : v)
     }, []);
     const _getValue = React.useCallback(() => {

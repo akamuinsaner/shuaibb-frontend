@@ -66,8 +66,18 @@ const OrderDetail = () => {
     return (
         <Stack direction="column" spacing={2} className={styles.page}>
             <Breadcrumbs sx={{ marginBottom: '16px' }}>
-                <Link underline="hover" color="inherit">订单日历</Link>
-                <Link underline="hover" color="inherit">订单中心</Link>
+                <Link
+                    sx={{ cursor: 'pointer' }}
+                    underline="hover"
+                    color="inherit"
+                    onClick={() => navigate('/appointment/schedule')}
+                >订单日历</Link>
+                <Link
+                    sx={{ cursor: 'pointer' }}
+                    underline="hover"
+                    color="inherit"
+                    onClick={() => navigate('/appointment/center')}
+                >订单中心</Link>
                 <Typography color="text.primary">订单详情</Typography>
             </Breadcrumbs>
             <Stack direction="row" spacing={2} sx={{ height: '200px' }} >

@@ -121,7 +121,7 @@ const SampleCreate = ({ t }: { t: any }) => {
             saveSampleMutation.mutate({ ...handleUpdateData(sample), userId: user.id, isDraft });
         }
     }
-    console.log(fieldValues)
+    
     return (
         <Box className={styles.create}>
             {/* {t('aaa')} */}

@@ -3,7 +3,6 @@ import camelcaseKeys from 'camelcase-keys';
 import decamelizeKeys from 'decamelize-keys';
 import { objToStr } from './funcTools';
 
-
 type options = {
     method?: string;
     data?: any;
@@ -50,6 +49,7 @@ export default (url: string, {
         deCamelize: true,
         camelize: true
     }) => {
+
     if (method === 'GET' && data) {
         url = `${url}${objToStr(data)}`
     }

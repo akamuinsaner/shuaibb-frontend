@@ -308,7 +308,7 @@ const AddScheduleDialog = ({
                         onClick={() => {
                             const data: Schedule = {
                                 customerId, customerName, customerPhone, shootDate,
-                                startTime, endTime, dateSettled, sampleId: sample.id,
+                                startTime, endTime, dateSettled, sampleId: sample?.id,
                                 price, deposit, payStatus, location,
                                 executorIds: executors.map(item => item.id),
                                 _change_reason: `${user.showName}创建了订单`

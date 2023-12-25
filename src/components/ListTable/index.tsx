@@ -136,8 +136,7 @@ const ListTableBody = <T,>({
         <TableBody>
             {data.map((row: any, index) => {
                 const actualKey = typeof rowKey === 'function' ? rowKey(row) : row[rowKey]
-                return (
-                    <>
+                return ([
                         <TableRow
                             hover
                             sx={{ cursor: 'pointer' }}
@@ -186,15 +185,13 @@ const ListTableBody = <T,>({
                                     {renderText}
                                 </TableCell>
                             })}
-                        </TableRow>
-                        {expandRows.includes(actualKey)  ? <TableRow>
+                        </TableRow>,
+                        expandRows.includes(actualKey)  ? <TableRow key={`${actualKey}-history`} >
                             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headers.length + 1}>
                                 {expandContent(row)}
                             </TableCell>
-                        </TableRow> : null}
-                    </>
-
-                )
+                        </TableRow> : null
+                ])
             })}
         </TableBody>
     )

@@ -11,10 +11,12 @@ import Appoint from 'pages/appoint';
 import { useNavigate, useLocation } from 'react-router';
 import PersonIcon from '@mui/icons-material/Person';
 import Auth from '../auth';
+import { withTranslation } from 'react-i18next';
 
 export type MenuItem = {
     key: string
     text: string;
+    langKey: string;
     icon: any;
     path: string;
     element: React.ReactNode;
@@ -23,6 +25,7 @@ export type MenuItem = {
 export const MENUCONFIG: MenuItem[] = [
     {
         key: 'home',
+        langKey: 'home',
         path: '/home',
         text: '首页',
         icon: <HomeIcon />,
@@ -31,6 +34,7 @@ export const MENUCONFIG: MenuItem[] = [
     {
         key: 'sample',
         path: '/sample/*',
+        langKey: 'sample manage',
         text: '样片管理',
         icon: <ProductionQuantityLimitsIcon />,
         element: <Sample />
@@ -38,6 +42,7 @@ export const MENUCONFIG: MenuItem[] = [
     {
         key: 'appointment',
         path: '/appointment/*',
+        langKey: 'appointment manage',
         text: '预约管理',
         icon: <CalendarMonthIcon />,
         element: <Appoint />
@@ -45,13 +50,14 @@ export const MENUCONFIG: MenuItem[] = [
     {
         key: 'auth',
         path: '/auth/*',
+        langKey: 'perms manage',
         text: '用户管理',
         icon: <PersonIcon />,
         element: <Auth />
     }
 ]
 
-const LeftBar = () => {
+const LeftBar = ({ t }: { t: any }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const menu = MENUCONFIG.map((menuItem: MenuItem) => {
@@ -62,7 +68,7 @@ const LeftBar = () => {
                 onClick={() => navigate(`/${menuItem.key}`)}
             >
                 <ListItemIcon>{menuItem.icon}</ListItemIcon>
-                <ListItemText>{menuItem.text}</ListItemText>
+                <ListItemText>{t(menuItem.langKey)}</ListItemText>
             </ListItemButton>
         )
     })
@@ -74,4 +80,4 @@ const LeftBar = () => {
     )
 }
 
-export default LeftBar;
+export default withTranslation()(LeftBar);

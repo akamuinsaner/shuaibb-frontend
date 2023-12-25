@@ -2,10 +2,12 @@ import { create } from 'zustand';
 import { User } from 'declare/user';
 
 export type state = {
+    darkMode: boolean;
     token: string;
     user?: User;
     languages?: null;
-    curLang?: 'ch' | 'en'
+    curLang?: 'ch' | 'en';
+    loadCount: number;
 }
 
 export type action = {
@@ -16,9 +18,9 @@ const token = localStorage.getItem('__token__')
 
 const curLang: state["curLang"] = (localStorage.getItem('__lang__') || 'ch') as state["curLang"];
 
-
-
 const useGlobalStore = create<state & action>((set) => ({
+    darkMode: false,
+    loadCount: 0,
     token: token,
     user: null,
     languages: null,

@@ -62,28 +62,25 @@ const SelectCustomerDialog = ({
                 />
                 <List>
                     {showUsers.map(c => (
-                        <>
-                            <ListItem
-                                key={c.id}
-                                secondaryAction={
-                                    <FormControlLabel label="" value={c.id} control={<Checkbox
-                                        checked={selectedUserIds.includes(c.id)}
-                                        onChange={(e) => {
-                                            if (e.target.checked) setSelectedUserIds([...selectedUserIds, c.id]);
-                                            else setSelectedUserIds(selectedUserIds.filter(id => id !== c.id));
-                                        }}
-                                    />} />
-                                }
-                            >
-                                <ListItemAvatar>
-                                    <Avatar src={c.avatar} >{!c.avatar ? c.showName.charAt(0) : null}</Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={c.showName}
-                                />
-                            </ListItem>
-                            <Divider />
-                        </>
+                        <ListItem
+                            key={c.id}
+                            secondaryAction={
+                                <FormControlLabel label="" value={c.id} control={<Checkbox
+                                    checked={selectedUserIds.includes(c.id)}
+                                    onChange={(e) => {
+                                        if (e.target.checked) setSelectedUserIds([...selectedUserIds, c.id]);
+                                        else setSelectedUserIds(selectedUserIds.filter(id => id !== c.id));
+                                    }}
+                                />} />
+                            }
+                        >
+                            <ListItemAvatar>
+                                <Avatar src={c.avatar} >{!c.avatar ? c.showName.charAt(0) : null}</Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={c.showName}
+                            />
+                        </ListItem>
                     ))}
                 </List>
 
