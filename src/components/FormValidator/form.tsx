@@ -25,7 +25,7 @@ const Form: FormComponent<FormProps> = ({
     initialValues = {},
     onValuesChange
 }) => {
-    const fieldValues = React.useRef<any>(initialValues || {});
+    const fieldValues = React.useRef<any>(Object.assign({}, initialValues));
 
     const fieldsChange = (values: any) => {
         onValuesChange && onValuesChange(fieldValues.current, values);
@@ -60,7 +60,7 @@ const Form: FormComponent<FormProps> = ({
     }, []);
 
     Form.setValues = React.useCallback((values: any) => {
-        fieldsChange({ ...fieldValues.current, ...values});
+        fieldValues.current = values;
         Object.entries(values).forEach(([key, value]) => {
             wired.current[key]?.current.setValue(value);
         })
@@ -76,7 +76,7 @@ const Form: FormComponent<FormProps> = ({
                 _this.current.setValue('')
             }
         })
-        fieldsChange({ ...fieldValues.current, ...newFields});
+        fieldValues.current = { ...fieldValues.current, ...newFields}
     }, []);
 
     Form.validates = React.useCallback((cb) => {

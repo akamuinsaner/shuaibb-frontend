@@ -10,8 +10,10 @@ import Sample from '../sample';
 import Appoint from 'pages/appoint';
 import { useNavigate, useLocation } from 'react-router';
 import PersonIcon from '@mui/icons-material/Person';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import Auth from '../auth';
 import { withTranslation } from 'react-i18next';
+import Profile from 'pages/profile';
 
 export type MenuItem = {
     key: string
@@ -54,6 +56,14 @@ export const MENUCONFIG: MenuItem[] = [
         text: '用户管理',
         icon: <PersonIcon />,
         element: <Auth />
+    },
+    {
+        key: 'profile',
+        path: '/profile/*',
+        langKey: 'profile setting',
+        text: '资料设置',
+        icon: <AccountBoxIcon />,
+        element: <Profile />
     }
 ]
 

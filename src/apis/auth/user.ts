@@ -21,11 +21,21 @@ export const createUser = (data: User) => {
     )
 }
 
-export const updateUser = (data: User) => {
+export const updateUser = (data: Partial<User>) => {
     return request(
         `/api/users/${data.id}/`,
         {
             method: 'PUT',
+            data
+        }
+    )
+}
+
+export const editUser = (data: Partial<User>) => {
+    return request(
+        `/api/users/${data.id}/`,
+        {
+            method: 'PATCH',
             data
         }
     )

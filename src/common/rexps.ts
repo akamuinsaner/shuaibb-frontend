@@ -7,9 +7,9 @@ export const NAME_REXP = /^[\S^\r\n]{1,20}$/;
 
 export const SAMPLE_TEMPLATE_NAME = /^[\S^\r\n]{1,20}$/;
 
-export const PICTURE_FOLDER_NAME = /^[\S^\r\n]{1,20}$/;
+export const PICTURE_FOLDER_NAME = /^[\S^\r\n]{0,20}$/;
 
-export const STANDARD_NAME = /^[\S^\r\n]{1,20}$/;
+export const STANDARD_NAME = /^[\S^\r\n]{0,20}$/;
 
 export const STANDARD_NUMBER = /^[1-9][0-9]{0,}(\.\d+)?$/;
 

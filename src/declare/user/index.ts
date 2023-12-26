@@ -9,7 +9,12 @@ export type User = {
     avatar?: string;
     role?: ERole;
     showName?: string;
-    groups?: Group[]
+    groups?: Group[];
+    nickname?: string;
+    signature?: string;
+    region?: string;
+    address?: string;
+    introduction?: string;
 }
 
 export enum ERole {
