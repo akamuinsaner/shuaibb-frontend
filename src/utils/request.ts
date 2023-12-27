@@ -2,6 +2,7 @@ import { HOST } from 'common/contants';
 import camelcaseKeys from 'camelcase-keys';
 import decamelizeKeys from 'decamelize-keys';
 import { objToStr } from './funcTools';
+import { message } from 'components/globalMessage';
 
 type options = {
     method?: string;
@@ -63,6 +64,7 @@ export default (url: string, {
         if (res.code === 0) {
             return camelize ? camelcaseKeys(res.data, { deep: true }) : res.data;
         } else {
+            message.error(res.message);
             throw (new Error(res.message))
         }
     })

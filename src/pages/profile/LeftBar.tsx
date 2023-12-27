@@ -4,6 +4,7 @@ import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { useLocation } from 'react-router';
 import Info from './Info';
+import Cover from './Cover';
 
 export type MenuItem = {
     key: string
@@ -17,7 +18,11 @@ export const MENUCONFIG: MenuItem[] = [
         text: '基本信息',
         element: <Info />
     },
-
+    {
+        key: 'cover',
+        text: '封面',
+        element: <Cover />
+    },
 ]
 
 const LeftBar = ({

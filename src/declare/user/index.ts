@@ -15,6 +15,7 @@ export type User = {
     region?: string;
     address?: string;
     introduction?: string;
+    covers?: string;
 }
 
 export enum ERole {

@@ -1,0 +1,39 @@
+.page {
+    padding: 20px;
+    .uploadItem {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    .imgItem {
+        position: relative;
+        cursor: pointer;
+        .cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+
+        }
+        &:hover {
+            .mask {
+                display: flex;
+            }
+        }
+        .mask {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            padding-bottom: 20px;
+            display: none;
+        }
+    }
+}

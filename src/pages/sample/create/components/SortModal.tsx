@@ -136,7 +136,7 @@ const SortModal = ({
                 <Button variant='contained' onClick={() => {
                     save(currentList);
                     toggleOpen(false);
-                }}>保存并下一步</Button>
+                }}>确定</Button>
             </DialogActions>
         </Dialog>
     )

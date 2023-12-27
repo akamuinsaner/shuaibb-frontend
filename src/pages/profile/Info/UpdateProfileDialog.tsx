@@ -93,7 +93,11 @@ const UpdateProfileDialog = ({
                 <Button variant='contained' onClick={() => {
                     Form.validates((errors, values) => {
                         if (!errors) {
-                            submit({ ...values, id: userInfo.id });
+                            submit({
+                                ...values,
+                                id: userInfo.id,
+                                region: values.region && JSON.stringify(values.region),
+                            });
                             close();
                         }
                     })

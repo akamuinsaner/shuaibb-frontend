@@ -59,3 +59,34 @@ export const batchDeleteGroup = (ids: number[]) => {
         }
     )
 }
+
+export const addCover = (data: any) => {
+    return request(
+        `/api/users/cover/add/`,
+        {
+            method: 'POST',
+            data: data
+        }
+    )
+}
+
+export const removeCover = (data: any) => {
+    return request(
+        `/api/users/cover/remove/`,
+        {
+            method: 'POST',
+            data: data
+        }
+    )
+}
+
+export const replaceCover = (data: any) => {
+    return request(
+        `/api/users/cover/replace/`,
+        {
+            method: 'POST',
+            data: data
+        }
+    )
+}
+
