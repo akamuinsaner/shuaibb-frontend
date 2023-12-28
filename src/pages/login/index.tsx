@@ -12,24 +12,10 @@ import { useNavigate } from 'react-router-dom';
 import { MOBILE_REXP, EMAIL_REXP } from 'common/rexps';
 import { message } from 'components/globalMessage'
 import { useLoginStore } from './store';
+import { Form } from 'components/FormValidator';
+
 
 const LoginPage = () => {
-    const {
-        uField,
-        password,
-        uFieldErrText,
-        pwErrText
-    } = useLoginStore(state => state);
-    const updateState = useLoginStore(state => state.updateState);
-    React.useEffect(() => {
-        if (uField &&
-            !MOBILE_REXP.test(uField) &&
-            !EMAIL_REXP.test(uField)) {
-            updateState({ uFieldErrText: '请输入正确的账号' })
-        } else {
-            updateState({ uFieldErrText: '' })
-        }
-    }, [uField]);
     const navigate = useNavigate();
     const loginMutation = useMutation({
         mutationFn: loginAPI,
@@ -43,13 +29,10 @@ const LoginPage = () => {
             message.error(error.message)
         }
     });
-    const onLoginClick = () => {
-        if (uFieldErrText || pwErrText) return;
-        if (!uField) { updateState({ uFieldErrText: '账号不能为空' }); return; }
-        if (!password) { updateState({ pwErrText: '密码不能为空' }); return; }
+    const onLoginClick = (values) => {
         loginMutation.mutate({
-            [MOBILE_REXP.test(uField) ? "mobile" : "email"]: uField,
-            password
+            [MOBILE_REXP.test(values.uField) ? "mobile" : "email"]: values.uField,
+            password: values.password
         })
     }
     return (
@@ -61,37 +44,47 @@ const LoginPage = () => {
                     <LockOpenIcon color='info' fontSize='large' sx={{ margin: '8px' }} />
                     <Typography variant='h5' >登录</Typography>
                     <Box sx={{ marginTop: '8px', width: '100%' }}>
-                        <TextField
-                            error={!!uFieldErrText}
-                            required
-                            label="手机号或邮箱"
-                            fullWidth
-                            margin="normal"
-                            value={uField}
-                            placeholder="请输入手机号或邮箱登录"
-                            onChange={(e) => updateState({ uField: e.target.value })}
-                            helperText={uFieldErrText}
-                        />
-                        <TextField
-                            error={!!pwErrText}
-                            type="password"
-                            required
-                            label="密码"
-                            fullWidth
-                            margin="normal"
-                            autoComplete="current-password"
-                            value={password}
-                            onChange={e => updateState({ password: e.target.value })}
-                            helperText={pwErrText}
-                        />
-                        <Button
-                            variant="contained"
-                            fullWidth
-                            size='medium'
-                            sx={{ marginTop: '24px', marginBottom: '16px' }}
-                            onClick={onLoginClick}
-                        >登录</Button>
-                        <Box className={styles.btmLink}>
+                        <Form
+                            submit={onLoginClick}
+                        >
+                            <Form.Item
+                                name="uField"
+                                rules={[
+                                    { required: true, msg: '请输入手机号' },
+                                    { regex: MOBILE_REXP, msg: '请输入标准格式的手机号' }
+                                ]}
+                            >
+                                <TextField
+                                    label="手机号"
+                                    margin="normal"
+                                    placeholder="请输入手机号"
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                name="password"
+                                rules={[
+                                    { required: true, msg: '请输入密码' },
+                                ]}
+                            >
+                                <TextField
+                                    type="password"
+                                    label="密码"
+                                    margin="normal"
+                                    autoComplete="current-password"
+                                />
+                            </Form.Item>
+                            <Form.Submit>
+                                <Button
+                                    variant="contained"
+                                    fullWidth
+                                    size='medium'
+                                    sx={{ marginTop: '24px', marginBottom: '16px' }}
+                                >登录</Button>
+                            </Form.Submit>
+
+                        </Form>
+
+                        {/* <Box className={styles.btmLink}>
                             <Link
                                 component="button"
                                 onClick={() => navigate('/fgtpw')}
@@ -102,7 +95,7 @@ const LoginPage = () => {
                                 onClick={() => navigate('/signup')}
                             >没有账号？去注册
                             </Link>
-                        </Box>
+                        </Box> */}
                     </Box>
                 </Box>
             </Box>

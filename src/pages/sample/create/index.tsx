@@ -158,37 +158,36 @@ const SampleCreate = ({ t }: { t: any }) => {
                         <SampleService fields={fieldValues} form={form} ref={refs[2]} />
                         <SampleExtra ref={refs[3]} />
                     </Form>
-
-                    <Box className={styles.btns}>
-                        {
-                            !searchParams?.sampleId && (
-                                <>
-                                    <Button
-                                        variant='outlined'
-                                        className={styles.btn}
-                                        onClick={fetchInitialData}
-                                    >重置
-                                    </Button>
-                                    <Form.Submit
-                                        data={formatSubmitData(true)}
-                                    >
-                                        <Button variant='contained' className={styles.btn}>
-                                            {fieldValues?.id ? '修改草稿' : '保存为草稿'}
-                                        </Button>
-                                    </Form.Submit>
-                                </>
-                            )
-                        }
-                        <Form.Submit
-                            data={formatSubmitData(false)}
-                        >
-                            <Button variant='contained' color='success' className={styles.btn}
-                            >{searchParams?.sampleId ? '更新样片' : '提交样片'}</Button>
-                        </Form.Submit>
-
-                    </Box>
                 </Stack>
             </Content>
+            <Box className={styles.btns}>
+                {
+                    !searchParams?.sampleId && (
+                        <>
+                            <Button
+                                variant='outlined'
+                                className={styles.btn}
+                                onClick={fetchInitialData}
+                            >重置
+                            </Button>
+                            <Form.Submit
+                                data={formatSubmitData(true)}
+                            >
+                                <Button variant='contained' className={styles.btn}>
+                                    {fieldValues?.id ? '修改草稿' : '保存为草稿'}
+                                </Button>
+                            </Form.Submit>
+                        </>
+                    )
+                }
+                <Form.Submit
+                    data={formatSubmitData(false)}
+                >
+                    <Button variant='contained' color='success' className={styles.btn}
+                    >{searchParams?.sampleId ? '更新样片' : '提交样片'}</Button>
+                </Form.Submit>
+
+            </Box>
         </Box>
     )
 }
