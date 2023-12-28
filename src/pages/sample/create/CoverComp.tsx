@@ -9,6 +9,7 @@ import { useMutation } from '@tanstack/react-query';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { message } from 'components/globalMessage';
+import { useTranslation } from 'react-i18next';
 
 const StyledImgMask = styled('div')({
     width: '100%',
@@ -45,11 +46,12 @@ const CoverComp = ({
     value?: string[];
     onChange?: (value: string[]) => void;
 }) => {
+    const { t } = useTranslation();
     const coverRef = React.useRef(null);
     const uploadMutation = useMutation({
         mutationFn: uploadFileCommon,
         onSettled: (d, e) => {
-            message.success('上传成功');
+            message.success(t('upload success'));
             onChange([...value, d.url]);
         },
     })
@@ -57,7 +59,7 @@ const CoverComp = ({
     return (
         <>
             <Typography>
-                样片封面图：封面图将显示在xxxx，图片大小不能超过3MB，尺寸使用3:4，最多上传4张
+                {t('sample sovers')}：{t('sample sovers tips')}
                 <Button
                     sx={{ marginLeft: '16px' }}
                     component="label"
@@ -65,7 +67,7 @@ const CoverComp = ({
                     startIcon={<CloudUploadIcon />}
                     disabled={value.length >= 4}
                 >
-                    上传图片
+                    {t('upload')}
                     <VisuallyHiddenInput ref={coverRef} type="file" onChange={e => {
                         if (e.target?.files?.length) {
                             const file = e.target?.files[0]

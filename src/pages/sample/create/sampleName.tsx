@@ -11,28 +11,30 @@ import { NAME_REXP } from 'common/rexps';
 import CoverComp from './CoverComp';
 import DetailComp from './DetailComp';
 import CascadeSelect from 'components/CascadeSelect';
+import { useTranslation } from 'react-i18next';
 
 const SampleName = React.forwardRef(({
     labels = []
 }: {
     labels: SampleLabel[]
 }, ref: any) => {
+    const { t }  = useTranslation()
     return (
         <Item elevation={3} ref={ref}>
             <Stack spacing={2}>
-                <Typography>样片名称</Typography>
+                <Typography>{t('sample name')}</Typography>
                 <Form.Item
                     name="name"
                     rules={[
-                        { required: true, msg: '请输入样片名称' },
-                        { regex: NAME_REXP, msg: '请输入20位以内的字符' }
+                        { required: true, msg: `${t('please input')}${t('sample name')}`},
+                        { regex: NAME_REXP, msg: `${t('please input')}${t('characters limited in 20')}`}
                     ]}
                 >
                     <TextField
                         required
                         fullWidth
-                        label="样片名称"
-                        placeholder='请输入样片名称'
+                        label={t('sample name')}
+                        placeholder={`${t('please input')}${t('sample name')}`}
                         size='small'
                     />
                 </Form.Item>
@@ -40,8 +42,8 @@ const SampleName = React.forwardRef(({
                     name="tagIds"
                 >
                     <CascadeSelect
-                        label="样片标签"
-                        placeholder='请选择样片标签'
+                        label={t('sample labels')}
+                        placeholder={`${t('please select')}${t('sample labels')}`}
                         multiple
                         options={labels.filter(l => !l.parentId)}
                     />
@@ -51,8 +53,8 @@ const SampleName = React.forwardRef(({
                 >
                     <TextField
                         fullWidth
-                        label="样片描述"
-                        placeholder='请为大家介绍一下样片吧'
+                        label={t('sample description')}
+                        placeholder={t('introduce to others')}
                         size='small'
                     />
                 </Form.Item>

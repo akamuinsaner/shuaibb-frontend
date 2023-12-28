@@ -6,12 +6,11 @@ import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import { useLocation } from 'react-router';
 import PictureSpace from './picture';
-import { withTranslation } from 'react-i18next';
 import SampleLabel from './label';
+import { useTranslation } from 'react-i18next';
 
 export type MenuItem = {
     key: string
-    text: string;
     element: React.ReactNode;
     langKey: string;
 }
@@ -19,37 +18,32 @@ export type MenuItem = {
 export const MENUCONFIG: MenuItem[] = [
     {
         key: 'create',
-        text: '新建样片',
         langKey: 'new sample',
         element: <SampleCreate />
     },
     {
         key: 'center',
-        text: '样片中心',
         langKey: 'sample center',
         element: <SampleCenter />
     },
     {
         key: 'picture',
-        text: '图片空间',
         langKey: 'photo space',
         element: <PictureSpace />
     },
     {
         key: 'label',
-        text: '样片标签',
-        langKey: 'sample label',
+        langKey: 'sample labels',
         element: <SampleLabel />
     },
 ]
 
 const LeftBar = ({
     toPage,
-    t
 }: {
     toPage: (path: string) => void;
-    t: any
 }) => {
+    const { t } = useTranslation();
     const location = useLocation();
     const menu = MENUCONFIG.map((menuItem: MenuItem) => {
         return (
@@ -70,4 +64,4 @@ const LeftBar = ({
     )
 }
 
-export default withTranslation()(React.memo(LeftBar));
+export default React.memo(LeftBar);

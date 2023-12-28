@@ -11,6 +11,7 @@ import {
     DropResult,
 } from 'react-beautiful-dnd';
 import styled from '@mui/material/styles/styled';
+import { useTranslation } from 'react-i18next';
 
 const reOrder = (list: any[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -59,6 +60,7 @@ const SortModal = ({
     imgList: string[];
     save: (details: string[]) => void;
 }) => {
+    const { t } = useTranslation();
     const [currentList, setCurrentList] = React.useState<string[]>([]);
 
     const onDragEnd = React.useCallback((result: DropResult) => {
@@ -111,7 +113,7 @@ const SortModal = ({
             maxWidth="md"
         >
             <DialogTitle sx={{ m: 0, p: 2 }}>
-                排序（拖动排序）
+                {t('sort')}（{t('sort by dragging')}）
             </DialogTitle>
             <DialogContent>
                 <DragDropContext onDragEnd={onDragEnd}>
@@ -132,11 +134,11 @@ const SortModal = ({
                 <Button variant='outlined' onClick={() => {
                     toggleOpen(false);
                     setCurrentList(imgList);
-                }}>取消</Button>
+                }}>{t('cancel')}</Button>
                 <Button variant='contained' onClick={() => {
                     save(currentList);
                     toggleOpen(false);
-                }}>确定</Button>
+                }}>{t('confirm')}</Button>
             </DialogActions>
         </Dialog>
     )

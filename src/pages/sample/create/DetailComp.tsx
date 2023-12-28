@@ -15,7 +15,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import SortModal from './components/SortModal'
+import SortModal from './components/SortModal';
+import { useTranslation } from 'react-i18next';
 
 const StyledImgMask = styled('div')({
     width: '100%',
@@ -52,6 +53,7 @@ const DetailComp = ({
     value?: string[];
     onChange?: (value: string[]) => void;
 }) => {
+    const { t } = useTranslation();
     const detailRef = React.useRef(null)
     const [anchorEl, setAnchorEl] = React.useState<any>(null);
     const [currentDetailImg, setCurrentDetailImg] = React.useState<string>('');
@@ -66,14 +68,14 @@ const DetailComp = ({
     return (
         <>
             <Typography>
-                样片详情图
+                {t('sample details')}
                 <Button
                     startIcon={<SortIcon />}
                     variant="contained"
                     sx={{ marginLeft: '16px' }}
                     onClick={() => setSortDialogOpen(true)}
                 >
-                    排序
+                    {t('sort')}
                 </Button>
                 <Button
                     sx={{ marginLeft: '16px' }}
@@ -82,7 +84,7 @@ const DetailComp = ({
                     startIcon={<CloudUploadIcon />}
                     disabled={value.length >= 80}
                 >
-                    上传图片
+                    {t('upload')}
                     <VisuallyHiddenInput ref={detailRef} type="file" onChange={e => {
                         if (e.target?.files?.length) {
                             const file = e.target?.files[0]
@@ -148,23 +150,7 @@ const DetailComp = ({
                     </>
                 ) : null
             }
-            <Typography variant="overline">备注：套系详情图，最多不超过80张</Typography>
-            <Dialog
-                open={sortDialogOpen}
-                fullWidth
-                maxWidth="md"
-            >
-                <DialogTitle sx={{ m: 0, p: 2 }}>
-                    排序（拖动排序）
-                </DialogTitle>
-                <DialogContent>
-
-                </DialogContent>
-                <DialogActions>
-                    <Button variant='outlined' onClick={() => setSortDialogOpen(false)}>取消</Button>
-                    <Button variant='contained'>保存并下一步</Button>
-                </DialogActions>
-            </Dialog>
+            <Typography variant="overline">{t('tip')}：{t('no more than 80')}</Typography>
             <SortModal
                 open={sortDialogOpen}
                 toggleOpen={setSortDialogOpen}

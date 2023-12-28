@@ -26,6 +26,7 @@ import { withTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { strToObj } from 'utils/funcTools';
 import { Form } from 'components/FormValidator';
+import { useTranslation } from 'react-i18next';
 
 const Content = styled(Box)(({ theme }: any) => ({
     padding: theme.spacing(2),
@@ -67,7 +68,8 @@ const handleUpdateData = (data: SampleData): any => {
 };
 
 
-const SampleCreate = ({ t }: { t: any }) => {
+const SampleCreate = () => {
+    const { t }  = useTranslation()
     const form = Form.useForm();
     const refs = [React.useRef(null), React.useRef(null), React.useRef(null), React.useRef(null)];
     const [fieldValues, setFieldValues] = React.useState<Partial<SampleData>>(defaultValue);
@@ -139,10 +141,10 @@ const SampleCreate = ({ t }: { t: any }) => {
             {/* {t('aaa')} */}
             <Box className={styles.tabsBox}>
                 <Tabs value={activeTab} onChange={(e, value) => updateActiveTab(value)}>
-                    <Tab label="样片名称" />
-                    <Tab label="样片价格" />
-                    <Tab label="服务内容" />
-                    <Tab label="其他内容" />
+                    <Tab label={t('sample name')} />
+                    <Tab label={t('sample price')} />
+                    <Tab label={t('sample service')} />
+                    <Tab label={t('sample others')} />
                 </Tabs>
             </Box>
             <Content>
@@ -168,13 +170,13 @@ const SampleCreate = ({ t }: { t: any }) => {
                                 variant='outlined'
                                 className={styles.btn}
                                 onClick={fetchInitialData}
-                            >重置
+                            >{t('reset')}
                             </Button>
                             <Form.Submit
                                 data={formatSubmitData(true)}
                             >
                                 <Button variant='contained' className={styles.btn}>
-                                    {fieldValues?.id ? '修改草稿' : '保存为草稿'}
+                                    {fieldValues?.id ? t('edit draft') : t('save draft')}
                                 </Button>
                             </Form.Submit>
                         </>
@@ -184,7 +186,7 @@ const SampleCreate = ({ t }: { t: any }) => {
                     data={formatSubmitData(false)}
                 >
                     <Button variant='contained' color='success' className={styles.btn}
-                    >{searchParams?.sampleId ? '更新样片' : '提交样片'}</Button>
+                    >{searchParams?.sampleId ? t('edit sample') : t('save sample')}</Button>
                 </Form.Submit>
 
             </Box>
@@ -192,4 +194,4 @@ const SampleCreate = ({ t }: { t: any }) => {
     )
 }
 
-export default withTranslation()(React.memo((SampleCreate)));
+export default React.memo(SampleCreate);

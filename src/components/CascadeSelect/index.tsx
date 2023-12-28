@@ -79,6 +79,7 @@ const CascadeSelect = ({
     label,
     multiple = false,
     onChange,
+    placeholder
 }: Partial<TextFieldProps> & {
     value?: any[];
     options: Option[];
@@ -237,6 +238,7 @@ const CascadeSelect = ({
                     {...params}
                     label={label}
                     required={required}
+                    placeholder={placeholder}
                     onClick={e => e.stopPropagation()}
                     size={size}
                     error={error}
