@@ -89,7 +89,7 @@ const Form: FormComponent<FormProps> = ({
 
     const setValues = React.useCallback((values: any) => {
         Object.entries(values).forEach(([key, value]) => {
-            wiredFields.current[key]?.current.setValue(value);
+            if (key in values) wiredFields.current[key]?.current.setValue(value);
         })
         fieldsChange(values);
     }, []);
@@ -97,6 +97,7 @@ const Form: FormComponent<FormProps> = ({
     const clear = React.useCallback((values) => {
         const newFields = {};
         Object.entries(wiredFields.current).forEach(([key, _this]) => {
+            _this.current.setError('');
             if (key in values) {
                 _this.current.setValue(values[key]);
                 newFields[key] = values[key];

@@ -34,12 +34,12 @@ export const FormItem: FormItemComponent<FormItemProps> = ({
     const _this = React.useRef<FormItemExtraProps>({ });
     const [value, setValue] = React.useState<any>((multiple ? [] : ''));
     const [error, setError] = React.useState<string>(null);
-    const [visible, setVisible] = React.useState<boolean>(true);
     const _setError = React.useCallback((error) => {
         setError(error);
     }, []);
     const _setValue = React.useCallback((v) => {
-        setValue((!v && multiple) ? [] : v)
+        const value = (!v && multiple) ? [] : v
+        setValue(value)
     }, []);
     const _getValue = React.useCallback(() => {
         return value;
@@ -81,11 +81,6 @@ export const FormItem: FormItemComponent<FormItemProps> = ({
     }, []);
 
     const required = !!rules.find(item => item.required);
-
-    if (!visible) {
-        Form.unRegister(name);
-        return null;
-    }
 
     if (typeof children === 'function') {
         const jsx = children({

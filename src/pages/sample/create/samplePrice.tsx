@@ -13,26 +13,28 @@ import FormHelperText from '@mui/material/FormHelperText';
 import { SampleData } from 'declare/sample';
 import { Form } from 'components/FormValidator';
 import { STANDARD_NUMBER } from 'common/rexps';
+import { useTranslation } from 'react-i18next';
 
 const SamplePrice = React.forwardRef(({
     fields
 }: { fields: Partial<SampleData> }, ref: any) => {
+    const { t } = useTranslation();
     return (
         <Item ref={ref}>
             <Stack spacing={2}>
-                <Typography>样片价格</Typography>
+                <Typography>{t('sample price')}</Typography>
                 <Form.Item
                     name="price"
                     rules={[
-                        { required: true, msg: '请输入价格' },
-                        { regex: STANDARD_NUMBER, msg: '请输入标准格式的数字' }
+                        { required: true, msg: `${t('please input')}${t('price')}` },
+                        { regex: STANDARD_NUMBER, msg: `${t('please input')}${t('standard number')}` }
                     ]}
                 >
                     {({ value, onChange, helperText }) => (<FormControl sx={{ m: 1 }}>
-                        <InputLabel htmlFor="my-input">价格</InputLabel>
+                        <InputLabel htmlFor="my-input">{t('price')}</InputLabel>
                         <OutlinedInput
-                            label="价格"
-                            placeholder='请输入套系价格'
+                            label={t('price')}
+                            placeholder={`${t('please input')}${t('price')}`}
                             type={fields.priceVisible ? 'text' : 'password'}
                             value={value}
                             onChange={onChange}
@@ -49,22 +51,22 @@ const SamplePrice = React.forwardRef(({
                             }
                         />
                         <FormHelperText>
-                            {helperText || '常规价格值范围在1.00-500000.00元之间，请规范标价行为'}
+                            {helperText || t('sample price tip')}
                         </FormHelperText>
                     </FormControl>)}
                 </Form.Item>
                 <Form.Item
                     name="deposit"
                     rules={[
-                        { required: true, msg: '请输入价格' },
-                        { regex: STANDARD_NUMBER, msg: '请输入标准格式的数字' }
+                        { required: true, msg: `${t('please input')}${t('deposit')}` },
+                        { regex: STANDARD_NUMBER, msg: `${t('please input')}${t('standard number')}` }
                     ]}
                 >
                     {({ value, onChange, helperText }) => (<FormControl sx={{ m: 1 }}>
-                        <InputLabel htmlFor="my-input">定金</InputLabel>
+                        <InputLabel htmlFor="my-input">{t('deposit')}</InputLabel>
                         <OutlinedInput
-                            label="定金"
-                            placeholder='请输入套系定金价格'
+                            label={t('deposit')}
+                            placeholder={`${t('please input')}${t('deposit')}`}
                             type={fields.depositVisible ? 'text' : 'password'}
                             value={value}
                             onChange={onChange}

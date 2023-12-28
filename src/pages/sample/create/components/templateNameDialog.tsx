@@ -12,12 +12,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useGlobalStore from 'globalStore';
 import { message } from 'components/globalMessage';
 import { Form } from 'components/FormValidator';
+import { useTranslation } from 'react-i18next';
 
 const TemplateNameDialog = ({
     fields,
 }: {
     fields: any;
 }) => {
+    const { t } = useTranslation()
     const queryClient = useQueryClient();
     const templateState = useSampleCreateStore(state => state.templateState);
     const user = useGlobalStore(state => state.user);
@@ -26,7 +28,7 @@ const TemplateNameDialog = ({
         mutationFn: sampleTemplateCreateFn,
         onSuccess: (data) => {
             updateTemplateState({ nameText: '', dialogOpen: false });
-            message.success('模板创建成功', {
+            message.success(t('create success'), {
                 closeCallback: () => queryClient.invalidateQueries({ queryKey: ['sampleTemplatesFn'] })
             });
         },
@@ -38,7 +40,7 @@ const TemplateNameDialog = ({
         mutationFn: sampleTemplateUpdateFn,
         onSuccess: (data) => {
             updateTemplateState({ nameText: '', dialogOpen: false });
-            message.success('更新模板成功', {
+            message.success(t('update success'), {
                 closeCallback: () => { queryClient.invalidateQueries({ queryKey: ['sampleTemplatesFn'] }) }
             })
         }
@@ -65,14 +67,18 @@ const TemplateNameDialog = ({
                     }
                 }}
             >
-                <DialogTitle>{templateState.dialogType === 'create' ? '新建模板' : '编辑模板'}</DialogTitle>
+                <DialogTitle>
+                    {templateState.dialogType === 'create'
+                        ? t('create template')
+                        : t('update template')}
+                </DialogTitle>
                 <DialogContent>
 
                     <Form.Item
                         name="name"
                         rules={[
-                            { required: true, msg: '请输入模板名称' },
-                            { regex: STANDARD_NAME, msg: '请输入20位以内的模板名称' }
+                            { required: true, msg: `${t('please input')}${t('template name')}` },
+                            { regex: STANDARD_NAME, msg: `${t('please input')}${t('characters limited in 20')}` }
                         ]}
                     >
                         <TextField />
@@ -81,14 +87,15 @@ const TemplateNameDialog = ({
 
                 </DialogContent>
                 <DialogActions>
-                    <Button variant='outlined' onClick={() => updateTemplateState({
-                        nameText: '',
-                        dialogOpen: false
-                    })}>取消</Button>
+                    <Button
+                        variant='outlined'
+                        onClick={() => updateTemplateState({
+                            nameText: '',
+                            dialogOpen: false
+                        })}
+                    >{t('cancel')}</Button>
                     <Form.Submit>
-                        <Button
-                            variant='contained'
-                        >确定</Button>
+                        <Button variant='contained'>{t('confirm')}</Button>
                     </Form.Submit>
 
                 </DialogActions>

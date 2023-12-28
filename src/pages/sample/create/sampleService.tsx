@@ -16,6 +16,7 @@ import { useSampleCreateStore } from './store';
 import { Form } from 'components/FormValidator';
 import { STANDARD_INTEGER, STANDARD_NUMBER } from 'common/rexps';
 import { formInstance } from 'components/FormValidator/form';
+import { useTranslation } from 'react-i18next';
 
 export const templateValidateFields = [
     'basicInfoVisible',
@@ -39,6 +40,7 @@ const SampleService = React.forwardRef(({
     fields: Partial<SampleData>;
     form: formInstance
 }, ref: any) => {
+    const { t } = useTranslation();
     const templateState = useSampleCreateStore(state => state.templateState);
     const tempData = templateState.curTemp
     console.log(tempData)
@@ -53,21 +55,21 @@ const SampleService = React.forwardRef(({
                 <Typography
                     sx={{ display: 'flex', alignItems: 'center' }}
                 >
-                    服务内容
+                    {t('sample service')}
                     <Template form={form} />
                 </Typography>
                 <Form.Item
                     name="basicInfoVisible"
                 >
                     {({ value, onChange }) => (<FormControl >
-                        <FormLabel>基础服务内容</FormLabel>
+                        <FormLabel>{t('basic services')}</FormLabel>
                         <RadioGroup
                             row
                             value={value ? '1' : '0'}
                             onChange={(e) => onChange(!!Number(e.target.value))}
                         >
-                            <FormControlLabel value={`1`} control={<Radio />} label="显示信息" />
-                            <FormControlLabel value={`0`} control={<Radio />} label="暂不显示" />
+                            <FormControlLabel value={`1`} control={<Radio />} label={t('show basic services')} />
+                            <FormControlLabel value={`0`} control={<Radio />} label={t('hide basic services')} />
                         </RadioGroup>
                     </FormControl>)}
                 </Form.Item>
@@ -83,16 +85,16 @@ const SampleService = React.forwardRef(({
                         <Grid xs={4} item>
                             <Form.Item
                                 name="costumeOffer"
-                                rules={[{ required: true, msg: '请选择是否提供服装造型' }]}
+                                rules={[{ required: true, msg: `${t('please select')}${t('costume')}` }]}
                             >
                                 {({ value, onChange }) => (<TextField
-                                    label="服装造型"
+                                    label={t('costume')}
                                     select
                                     value={typeof value === 'boolean' ? (value ? 1 : 0) : ''}
                                     onChange={(e) => onChange(!!Number(e.target.value))}
                                 >
-                                    <MenuItem value={0}>不提供</MenuItem>
-                                    <MenuItem value={1}>提供</MenuItem>
+                                    <MenuItem value={0}>{t('not provide')}</MenuItem>
+                                    <MenuItem value={1}>{t('provide')}</MenuItem>
                                 </TextField>)}
 
                             </Form.Item>
@@ -101,20 +103,20 @@ const SampleService = React.forwardRef(({
                         <Grid xs={4} item>
                             {fields.costumeOffer ? <Form.Item
                                 name="costumeCount"
-                                rules={[{ required: true, msg: '请选择是否提供服装套数' }]}
+                                rules={[{ required: true, msg: `${t('please select')}${t('costume count')}` }]}
                             >
                                 {({ value, onChange }) => (<TextField
-                                    label="服装套数"
+                                    label={t('costume count')}
                                     select
                                     value={value}
                                     onChange={(e) => onChange(Number(e.target.value))}
                                 >
-                                    <MenuItem value={1}>1套</MenuItem>
-                                    <MenuItem value={2}>2套</MenuItem>
-                                    <MenuItem value={3}>3套</MenuItem>
-                                    <MenuItem value={4}>4套</MenuItem>
-                                    <MenuItem value={5}>5套</MenuItem>
-                                    <MenuItem value={0}>自定义</MenuItem>
+                                    <MenuItem value={1}>1</MenuItem>
+                                    <MenuItem value={2}>2</MenuItem>
+                                    <MenuItem value={3}>3</MenuItem>
+                                    <MenuItem value={4}>4</MenuItem>
+                                    <MenuItem value={5}>5</MenuItem>
+                                    <MenuItem value={0}>{t('custom')}</MenuItem>
                                 </TextField>)}
                             </Form.Item> : null}
                         </Grid>
@@ -122,13 +124,13 @@ const SampleService = React.forwardRef(({
                             {(`${fields.costumeCount}` === '0' && fields.costumeOffer) ? <Form.Item
                                 name="customCostumeCount"
                                 rules={[
-                                    { required: true, msg: '请输入底片数量' },
-                                    { regex: STANDARD_INTEGER, msg: '请输入标准格式的整数' }
+                                    { required: true, msg: `${t('please input')}${t('custom costume count')}` },
+                                    { regex: STANDARD_INTEGER, msg: `${t('please input')}${t('standard number')}` }
                                 ]}
                             >
                                 <TextField
-                                    label="自定义套数"
-                                    placeholder='请填写套系数量'
+                                    label={t('custom costume count')}
+                                    placeholder={`${t('please input')}${t('custom costume count')}`}
                                 />
                             </Form.Item> : null}
                         </Grid>
@@ -136,26 +138,26 @@ const SampleService = React.forwardRef(({
                             <Form.Item
                                 name="negativeFilmCount"
                                 rules={[
-                                    { required: true, msg: '请输入底片数量' },
-                                    { regex: STANDARD_INTEGER, msg: '请输入标准格式的整数' }
+                                    { required: true, msg: `${t('please input')}${t('negative film count')}` },
+                                    { regex: STANDARD_INTEGER, msg: `${t('please input')}${t('standard number')}` }
                                 ]}
                             >
-                                <TextField label="底片数量" />
+                                <TextField label={t('negative film count')} />
                             </Form.Item>
                         </Grid>
                         <Grid xs={4} item>
                             <Form.Item
                                 name="negaFilmAllOffer"
-                                rules={[{ required: true, msg: '请选择是否底片全送' }]}
+                                rules={[{ required: true, msg: `${t('please select')}${t('negative film all sent')}` }]}
                             >
                                 {({ value, onChange }) => (<TextField
-                                    label="底片全送"
+                                    label={t('negative film all sent')}
                                     select
                                     value={typeof value === 'boolean' ? (value ? 1 : 0) : ''}
                                     onChange={(e) => onChange(!!Number(e.target.value))}
                                 >
-                                    <MenuItem value={0}>否</MenuItem>
-                                    <MenuItem value={1}>是</MenuItem>
+                                    <MenuItem value={0}>{t('no')}</MenuItem>
+                                    <MenuItem value={1}>{t('yes')}</MenuItem>
                                 </TextField>)}
                             </Form.Item>
 
@@ -164,15 +166,15 @@ const SampleService = React.forwardRef(({
                         <Grid xs={4} item>
                             <Form.Item
                                 name="shootingTime"
-                                rules={[{ required: true, msg: '请选择拍摄时长' }]}
+                                rules={[{ required: true, msg: `${t('please select')}${t('shooting time')}` }]}
                             >
-                                <TextField label="拍摄时长" select>
-                                    <MenuItem value={0.5}>半小时</MenuItem>
-                                    <MenuItem value={1}>1小时</MenuItem>
-                                    <MenuItem value={2}>2小时</MenuItem>
-                                    <MenuItem value={4}>4小时</MenuItem>
-                                    <MenuItem value={8}>8小时</MenuItem>
-                                    <MenuItem value={0}>自定义</MenuItem>
+                                <TextField label={t('shooting time')} select>
+                                    <MenuItem value={0.5}>{t('0.5h')}</MenuItem>
+                                    <MenuItem value={1}>{t('1h')}</MenuItem>
+                                    <MenuItem value={2}>{t('2h')}</MenuItem>
+                                    <MenuItem value={4}>{t('4h')}</MenuItem>
+                                    <MenuItem value={8}>{t('8h')}</MenuItem>
+                                    <MenuItem value={0}>{t('custom')}</MenuItem>
                                 </TextField>
                             </Form.Item>
                         </Grid>
@@ -180,11 +182,11 @@ const SampleService = React.forwardRef(({
                             {`${fields.shootingTime}` === '0' ? <Form.Item
                                 name="customShootingTime"
                                 rules={[
-                                    { required: true, msg: '请输入底片数量' },
-                                    { regex: STANDARD_NUMBER, msg: '请输入标准格式的数字' }
+                                    { required: true, msg: `${t('please input')}${t('shooting time')}` },
+                                    { regex: STANDARD_NUMBER, msg: `${t('please input')}${t('standard number')}` }
                                 ]}
                             >
-                                <TextField label="自定义时长" />
+                                <TextField label={`${t('custom')} ${t('shooting time')}`} />
                             </Form.Item> : null}
                         </Grid>
                         <Grid xs={4} item></Grid>
@@ -192,27 +194,27 @@ const SampleService = React.forwardRef(({
                             <Form.Item
                                 name="refineCount"
                                 rules={[
-                                    { required: true, msg: '请输入底片数量' },
-                                    { regex: STANDARD_INTEGER, msg: '请输入标准格式的整数' }
+                                    { required: true, msg: `${t('please input')}${t('refine count')}` },
+                                    { regex: STANDARD_INTEGER, msg: `${t('please input')}${t('standard number')}` }
                                 ]}
                             >
-                                <TextField label="精修数量" />
+                                <TextField label={t('refine count')} />
                             </Form.Item>
 
                         </Grid>
                         <Grid xs={4} item>
                             <Form.Item
                                 name="shootingIndoor"
-                                rules={[{ required: true, msg: '请选择拍摄场景' }]}
+                                rules={[{ required: true, msg: `${t('please input')}${t('shooting scene')}` }]}
                             >
                                 {({ value, onChange }) => (<TextField
-                                    label="拍摄场景"
+                                    label={t('shooting scene')}
                                     select
                                     value={typeof value === 'boolean' ? (value ? 1 : 0) : ''}
                                     onChange={(e) => onChange(!!Number(e.target.value))}
                                 >
-                                    <MenuItem value={1}>内景</MenuItem>
-                                    <MenuItem value={0}>外景</MenuItem>
+                                    <MenuItem value={1}>{t('shooting indoor')}</MenuItem>
+                                    <MenuItem value={0}>{t('shooting outdoor')}</MenuItem>
                                 </TextField>)}
 
                             </Form.Item>
@@ -221,11 +223,11 @@ const SampleService = React.forwardRef(({
                             {fields.shootingIndoor ? <Form.Item
                                 name="shootingSceneIndoorCount"
                                 rules={[
-                                    { required: true, msg: '请填写内景数量' },
-                                    { regex: STANDARD_INTEGER, msg: '请输入标准格式的整数' }
+                                    { required: true, msg: `${t('please input')}${t('indoor count')}` },
+                                    { regex: STANDARD_INTEGER, msg: `${t('please input')}${t('standard number')}` }
                                 ]}
                             >
-                                <TextField label="内景数量" />
+                                <TextField label={t('indoor count')} />
                             </Form.Item> : null}
                         </Grid>
                     </Grid>
@@ -234,11 +236,10 @@ const SampleService = React.forwardRef(({
                     name="customDetail"
                 >
                     <TextField
-                        label="自定义服务详情"
+                        label={t('custom detail')}
                         rows={9}
                         multiline
-                        placeholder="【拍摄服务】&#10;可拍摄两次&#10;提供专业服装店内任选（可定制）并赠送服装一套&#10;【贴心服务】&#10;1：专业摄影师一对一服务&#10;2：全程摄影师，引导师全程跟拍&#10;3：免费享受首页影棚拍摄或者外景拍摄，可上门定制拍摄&#10;【尊贵享受】&#10;40张精修片，方10寸相册一本，入册24张底片（12p精修时尚设计）&#10;
-                    "
+                        placeholder={t('custom detail tip')}
                     />
                 </Form.Item>
 

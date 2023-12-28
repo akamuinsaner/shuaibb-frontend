@@ -26,12 +26,14 @@ import { confirm } from 'components/confirmDialog';
 import { SampleData, CostumeCount, ShootingTime } from 'declare/sample';
 import { formInstance } from 'components/FormValidator/form';
 import { templateValidateFields } from '../sampleService';
+import { useTranslation } from 'react-i18next';
 
 const Template = ({
     form
 }: {
     form: formInstance
 }) => {
+    const { t }  = useTranslation()
     const [curTemplateValues, setCurTemplateValues] = React.useState<any>(null);
     const queryClient = useQueryClient();
     const templateState = useSampleCreateStore(state => state.templateState);
@@ -52,7 +54,7 @@ const Template = ({
     const deleteTemplateMutation = useMutation({
         mutationFn: sampleTemplateDeleteFn,
         onSettled: (data) => {
-            message.success('删除模板成功', {
+            message.success(t('delete success'), {
                 closeCallback: () => queryClient.invalidateQueries({ queryKey: ['sampleTemplatesFn'] })
             })
         }
@@ -60,7 +62,7 @@ const Template = ({
     const updateTemplateMutation = useMutation({
         mutationFn: sampleTemplateUpdateFn,
         onSuccess: (data) => {
-            message.success('更新模板成功', {
+            message.success(t('update success'), {
                 closeCallback: () => queryClient.invalidateQueries({ queryKey: ['sampleTemplatesFn'] })
             })
         }
@@ -121,8 +123,8 @@ const Template = ({
                                 e.stopPropagation();
                                 e.preventDefault();
                                 confirm.confirm({
-                                    title: `是否删除模板${templateState.curTemp?.name || temp.name}`,
-                                    content: '操作不可恢复，确认继续？',
+                                    title: t('delete'),
+                                    content: t('operation cannot be revoked'),
                                     confirmCallback: () => {
                                         deleteTemplateMutation.mutate({ id: temp.id });
                                     }
@@ -138,7 +140,7 @@ const Template = ({
                 variant="contained"
                 onClick={() => {
                     if (!templateState?.curTemp) {
-                        message.warning('请先选择一个模板');
+                        message.warning(t('please select one first'));
                         return;
                     }
                     const { id, name, user, userId, ...fields } = templateState.curTemp;
@@ -155,7 +157,7 @@ const Template = ({
                     }, templateValidateFields)
 
                 }}
-            >更新模板</Button>
+            >{t('update template')}</Button>
             <Button
                 variant="contained"
                 onClick={() => {
@@ -170,7 +172,7 @@ const Template = ({
                     }, templateValidateFields)
 
                 }}
-            >存为新模板</Button>
+            >{t('save new template')}</Button>
             <TemplateNameDialog fields={curTemplateValues} />
         </Stack>
     ) : (
@@ -190,8 +192,8 @@ const Template = ({
                     }, templateValidateFields)
 
                 }}
-            >存为新模板</Button>
-            <Box>第一次查看新模板时，请<Button variant='text'>点此查看详情</Button>学习</Box>
+            >{t('save new template')}</Button>
+            <Box>{t('first here')}，{t('please')}<Button variant='text'>{t('click here')}</Button>{t('learn more')}</Box>
             <TemplateNameDialog fields={curTemplateValues} />
         </Box>
     )
