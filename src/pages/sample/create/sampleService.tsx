@@ -15,37 +15,45 @@ import Template from './components/template';
 import { useSampleCreateStore } from './store';
 import { Form } from 'components/FormValidator';
 import { STANDARD_INTEGER, STANDARD_NUMBER } from 'common/rexps';
+import { formInstance } from 'components/FormValidator/form';
 
-const SampleService = ({
+export const templateValidateFields = [
+    'basicInfoVisible',
+    'costumeOffer',
+    'costumeCount',
+    'customCostumeCount',
+    'negativeFilmCount',
+    'negaFilmAllOffer',
+    'shootingTime',
+    'customShootingTime',
+    'refineCount',
+    'shootingIndoor',
+    'shootingSceneIndoorCount',
+]
+
+
+const SampleService = React.forwardRef(({
     fields,
+    form
 }: {
     fields: Partial<SampleData>;
-}) => {
+    form: formInstance
+}, ref: any) => {
     const templateState = useSampleCreateStore(state => state.templateState);
     const tempData = templateState.curTemp
     React.useEffect(() => {
-        if (tempData) Form.setValues({
-            basicInfoVisible: tempData.basicInfoVisible,
-            costumeOffer: tempData.costumeOffer,
-            costumeCount: tempData.costumeCount,
-            customCostumeCount: tempData.customCostumeCount,
-            negativeFilmCount: tempData.negativeFilmCount,
-            negaFilmAllOffer: tempData.negaFilmAllOffer,
-            shootingTime: tempData.shootingTime,
-            customShootingTime: tempData.customShootingTime,
-            refineCount: tempData.refineCount,
-            shootingIndoor: tempData.shootingIndoor,
-            shootingSceneIndoorCount: tempData.shootingSceneIndoorCount,
-        });
+        if (!tempData) return;
+        const { id, name, user, userId, ...updateData } = tempData;
+        form.setValues(updateData);
     }, [tempData])
     return (
-        <Item>
+        <Item ref={ref}>
             <Stack spacing={2}>
                 <Typography
                     sx={{ display: 'flex', alignItems: 'center' }}
                 >
                     服务内容
-                    <Template />
+                    <Template form={form} />
                 </Typography>
                 <Form.Item
                     name="basicInfoVisible"
@@ -236,6 +244,6 @@ const SampleService = ({
             </Stack>
         </Item>
     )
-}
+})
 
-export default React.memo(SampleService);
+export default SampleService;

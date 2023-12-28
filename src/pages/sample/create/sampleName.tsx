@@ -11,13 +11,13 @@ import { NAME_REXP } from 'common/rexps';
 import CoverComp from './CoverComp';
 import DetailComp from './DetailComp';
 
-const SampleName = ({
+const SampleName = React.forwardRef(({
     labels = []
 }: {
     labels: SampleLabel[]
-}) => {
+}, ref: any) => {
     return (
-        <Item elevation={3}>
+        <Item elevation={3} ref={ref}>
             <Stack spacing={2}>
                 <Typography>样片名称</Typography>
                 <Form.Item
@@ -84,6 +84,6 @@ const SampleName = ({
 
         </Item>
     )
-}
+})
 
-export default React.memo(SampleName);
+export default SampleName;

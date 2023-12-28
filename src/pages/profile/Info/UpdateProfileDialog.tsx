@@ -30,10 +30,21 @@ const UpdateProfileDialog = ({
             maxWidth="sm"
             fullWidth
         >
-            <DialogTitle>更新资料</DialogTitle>
-            <DialogContent sx={{ padding: '20px !important' }}>
-                <Stack direction="column" spacing={2}>
-                    <Form initialValues={userInfo} >
+            <Form
+                initialValues={userInfo}
+                submit={(values) => {
+                    submit({
+                        ...values,
+                        id: userInfo.id,
+                        region: values.region && JSON.stringify(values.region),
+                    });
+                    close();
+                }}
+            >
+                <DialogTitle>更新资料</DialogTitle>
+                <DialogContent sx={{ padding: '20px !important' }}>
+                    <Stack direction="column" spacing={2}>
+
                         <Form.Item
                             name="nickname"
                             rules={[{ regex: STANDARD_NAME, msg: '请输入标准格式的昵称（1-20）' }]}
@@ -85,25 +96,15 @@ const UpdateProfileDialog = ({
                                 rows={5}
                             />
                         </Form.Item>
-                    </Form>
-                </Stack>
-            </DialogContent>
-            <DialogActions>
-                <Button variant='outlined' onClick={close}>取消</Button>
-                <Button variant='contained' onClick={() => {
-                    Form.validates((errors, values) => {
-                        if (!errors) {
-                            submit({
-                                ...values,
-                                id: userInfo.id,
-                                region: values.region && JSON.stringify(values.region),
-                            });
-                            close();
-                        }
-                    })
-                }}>确定</Button>
-            </DialogActions>
-        </Dialog>
+
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant='outlined' onClick={close}>取消</Button>
+                    <Form.Submit><Button variant='contained'>确定</Button></Form.Submit>
+                </DialogActions>
+            </Form>
+        </Dialog >
     )
 }
 

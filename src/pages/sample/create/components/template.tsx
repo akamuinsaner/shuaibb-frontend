@@ -24,8 +24,15 @@ import {
 import { message } from 'components/globalMessage';
 import { confirm } from 'components/confirmDialog';
 import { SampleData, CostumeCount, ShootingTime } from 'declare/sample';
+import { formInstance } from 'components/FormValidator/form';
+import { templateValidateFields } from '../sampleService';
 
-const Template = () => {
+const Template = ({
+    form
+}: {
+    form: formInstance
+}) => {
+    const [curTemplateValues, setCurTemplateValues] = React.useState<any>(null);
     const queryClient = useQueryClient();
     const templateState = useSampleCreateStore(state => state.templateState);
     const updateTemplateState = useSampleCreateStore(state => state.updateTemplateState);
@@ -63,6 +70,11 @@ const Template = () => {
             updateTemplateState({ curTemp: null })
         }
     }, [templates?.length])
+    const getData = React.useCallback((values) => {
+        if (values.costumeOffer && `${values.costumeCount}` === '0') values.costumeCount = values.customCostumeCount;
+        if (`${values.shootingTime}` === '0') values.shootingTime = values.customShootingTime;
+        return values;
+    }, [])
     return templates?.length ? (
         <Stack sx={{ paddingLeft: '20px' }} spacing={2} direction="row">
             <TextField
@@ -109,7 +121,7 @@ const Template = () => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 confirm.confirm({
-                                    title: `是否删除模板${templateState.curTemp?.name}`,
+                                    title: `是否删除模板${templateState.curTemp?.name || temp.name}`,
                                     content: '操作不可恢复，确认继续？',
                                     confirmCallback: () => {
                                         deleteTemplateMutation.mutate({ id: temp.id });
@@ -129,34 +141,58 @@ const Template = () => {
                         message.warning('请先选择一个模板');
                         return;
                     }
-                    updateTemplateMutation.mutate({
-                        ...templateState.curTemp
-                    })
+                    const { id, name, user, userId, ...fields } = templateState.curTemp;
+                    form.validates((errors, values) => {
+                        if (!errors) {
+                            updateTemplateMutation.mutate({
+                                ...getData(values),
+                                name: templateState.curTemp['name'],
+                                id: templateState.curTemp['id'],
+                                user: templateState.curTemp['user'],
+                                userId: templateState.curTemp['userId'],
+                            })
+                        }
+                    }, templateValidateFields)
+
                 }}
             >更新模板</Button>
             <Button
                 variant="contained"
                 onClick={() => {
-                    updateTemplateState({
-                        dialogOpen: true,
-                        dialogType: 'create'
-                    })
+                    form.validates((errors, values) => {
+                        if (!errors) {
+                            setCurTemplateValues(values);
+                            updateTemplateState({
+                                dialogOpen: true,
+                                dialogType: 'create'
+                            })
+                        }
+                    }, templateValidateFields)
+
                 }}
             >存为新模板</Button>
-            <TemplateNameDialog />
+            <TemplateNameDialog fields={curTemplateValues} />
         </Stack>
     ) : (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Button
                 sx={{ margin: '0 16px' }}
                 variant='outlined'
-                onClick={() => updateTemplateState({
-                    dialogOpen: true,
-                    dialogType: 'create'
-                })}
+                onClick={() => {
+                    form.validates((errors, values) => {
+                        if (!errors) {
+                            setCurTemplateValues(values);
+                            updateTemplateState({
+                                dialogOpen: true,
+                                dialogType: 'create'
+                            })
+                        }
+                    }, templateValidateFields)
+
+                }}
             >存为新模板</Button>
             <Box>第一次查看新模板时，请<Button variant='text'>点此查看详情</Button>学习</Box>
-            <TemplateNameDialog />
+            <TemplateNameDialog fields={curTemplateValues} />
         </Box>
     )
 }

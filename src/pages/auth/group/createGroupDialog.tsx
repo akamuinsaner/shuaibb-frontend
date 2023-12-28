@@ -30,61 +30,56 @@ const CreateGroupDialog = ({
             fullWidth
             maxWidth="sm"
         >
+            <Form
+                initialValues={!record ? null : {
+                    name: record.name,
+                    permissionIds: record.permissions.map(item => item.id)
+                }}
+                submit={(values) => {
+                    submit({ ...values, id: record?.id });
+                    close();
+                }}
+            >
             <DialogTitle>创建群组</DialogTitle>
             <DialogContent sx={{ paddingTop: '20px !important' }}>
                 <Stack spacing={2}>
-                    <Form
-                        initialValues={!record ? null : {
-                            name: record.name,
-                            permissionIds: record.permissions.map(item => item.id)
-                        }}
+
+                    <Form.Item
+                        name="name"
+                        rules={[
+                            { required: true, msg: '请输入群组名称' }
+                        ]}
                     >
-                        <Form.Item
-                            name="name"
-                            rules={[
-                                { required: true, msg: '请输入群组名称' }
-                            ]}
+                        <TextField
+                            required
+                            label="群组名称"
+                            placeholder='请输入群组名称'
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        name="permissionIds"
+                        multiple
+                    >
+                        <TextField
+                            label="权限"
+                            placeholder='请选择权限'
+                            select
+                            SelectProps={{
+                                multiple: true,
+                            }}
                         >
-                            <TextField
-                                required
-                                label="群组名称"
-                                placeholder='请输入群组名称'
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            name="permissionIds"
-                            multiple
-                        >
-                            <TextField
-                                label="权限"
-                                placeholder='请选择权限'
-                                select
-                                SelectProps={{
-                                    multiple: true,
-                                }}
-                            >
-                                {permissions.map(perm => (
-                                    <MenuItem key={perm.id} value={perm.id}>{perm.name}</MenuItem>
-                                ))}
-                            </TextField>
-                        </Form.Item>
-
-                    </Form>
-
+                            {permissions.map(perm => (
+                                <MenuItem key={perm.id} value={perm.id}>{perm.name}</MenuItem>
+                            ))}
+                        </TextField>
+                    </Form.Item>
                 </Stack>
             </DialogContent>
             <DialogActions>
                 <Button variant='outlined' onClick={close}>取消</Button>
-                <Button variant='contained' onClick={() => {
-                    Form.validates((errors, values) => {
-                        if (!errors) {
-                            close();
-                            submit({ ...values, id: record?.id });
-                        }
-                    })
-
-                }}>确定</Button>
+                <Form.Submit><Button variant='contained'>确定</Button></Form.Submit>
             </DialogActions>
+        </Form>
         </Dialog>
     )
 }

@@ -5,6 +5,8 @@ import List from '@mui/material/List';
 import { useLocation } from 'react-router';
 import Info from './Info';
 import Cover from './Cover';
+import Video from './Video';
+import Protocal from './Protocal';
 
 export type MenuItem = {
     key: string
@@ -22,6 +24,16 @@ export const MENUCONFIG: MenuItem[] = [
         key: 'cover',
         text: '封面',
         element: <Cover />
+    },
+    {
+        key: 'video',
+        text: '首页视频',
+        element: <Video />
+    },
+    {
+        key: 'protocal',
+        text: '服务协议',
+        element: <Protocal />
     },
 ]
 

@@ -18,9 +18,9 @@ export const saveSample = (data: SampleData) => request(
 )
 
 export const updateSample = (data: SampleData) => request(
-    `/api/samples/update/`,
+    `/api/samples/${data.id}/`,
     {
-        method: 'POST',
+        method: 'PUT',
         data
     }
 )
@@ -34,7 +34,7 @@ export const batchDeleteSample = (data: { ids: any[]}) => request(
 )
 
 export const retriveSample = (data: { sampleId: number }) => request(
-    `/api/samples/${data.sampleId}`,
+    `/api/samples/${data.sampleId}/`,
     {
         method: 'GET',
     }

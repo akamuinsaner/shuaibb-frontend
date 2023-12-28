@@ -68,6 +68,8 @@ const handleUpdateData = (data: SampleData): any => {
 
 
 const SampleCreate = ({ t }: { t: any }) => {
+    const form = Form.useForm();
+    const refs = [React.useRef(null), React.useRef(null), React.useRef(null), React.useRef(null)];
     const [fieldValues, setFieldValues] = React.useState<Partial<SampleData>>(defaultValue);
     const location = useLocation();
     const searchParams = strToObj(location.search);
@@ -79,17 +81,17 @@ const SampleCreate = ({ t }: { t: any }) => {
         mutationFn: retriveDraft,
         onSuccess: (data) => {
             if (data) {
-                Form.setValues(handleRetriveData(data));
+                form.setValues(handleRetriveData(data));
             }
             else {
-                Form.clear(defaultValue);
+                form.clear(defaultValue);
                 setFieldValues(defaultValue);
             }
         }
     });
     const retriveSampleMutation = useMutation({
         mutationFn: retriveSample,
-        onSuccess: (data) => Form.setValues(handleRetriveData(data))
+        onSuccess: (data) => form.setValues(handleRetriveData(data))
     })
     const fetchInitialData = React.useCallback(() => {
         if (searchParams?.sampleId) {
@@ -102,6 +104,13 @@ const SampleCreate = ({ t }: { t: any }) => {
         fetchInitialData()
     }, []);
 
+    React.useEffect(() => refs[activeTab].current.scrollIntoView({
+        behavior: 'smooth'
+    }), [activeTab])
+
+    React.useEffect(() => {
+
+    }, [])
 
     const saveSampleMutation = useMutation({
         mutationFn: saveSample,
@@ -111,17 +120,22 @@ const SampleCreate = ({ t }: { t: any }) => {
 
     const updateSampleMutation = useMutation({
         mutationFn: updateSampleFn,
-        onSuccess: (data) =>  message.success('提交成功', { closeCallback: fetchInitialData }),
+        onSuccess: (data) => message.success('提交成功', { closeCallback: fetchInitialData }),
         onError: (error) => message.error(error.message),
     });
-    const submit = (sample: SampleData, isDraft: boolean) => {
-        if (fieldValues.id) {
-            updateSampleMutation.mutate({ ...handleUpdateData(sample), userId: user.id, isDraft, id: fieldValues.id });
+
+    const formatSubmitData = React.useCallback((isDraft: boolean) => (values: any) => {
+        return ({ ...handleUpdateData(values), userId: user.id, id: fieldValues?.id, isDraft });
+    }, [fieldValues]);
+
+    const submit = (data: any) => {
+        if (data.id) {
+            updateSampleMutation.mutate(data);
         } else {
-            saveSampleMutation.mutate({ ...handleUpdateData(sample), userId: user.id, isDraft });
+            saveSampleMutation.mutate(data);
         }
     }
-    
+
     return (
         <Box className={styles.create}>
             {/* {t('aaa')} */}
@@ -138,11 +152,13 @@ const SampleCreate = ({ t }: { t: any }) => {
                     <Form
                         initialValues={fieldValues}
                         onValuesChange={(prev, cur) => setFieldValues(cur)}
+                        submit={submit}
+                        form={form}
                     >
-                        <SampleName labels={labels} />
-                        <SamplePrice fields={fieldValues} />
-                        <SampleService fields={fieldValues} />
-                        <SampleExtra />
+                        <SampleName labels={labels} ref={refs[0]} />
+                        <SamplePrice fields={fieldValues} ref={refs[1]} />
+                        <SampleService fields={fieldValues} form={form} ref={refs[2]} />
+                        <SampleExtra ref={refs[3]} />
                     </Form>
 
                     <Box className={styles.btns}>
@@ -155,21 +171,23 @@ const SampleCreate = ({ t }: { t: any }) => {
                                         onClick={fetchInitialData}
                                     >重置
                                     </Button>
-                                    <Button
-                                        variant='contained'
-                                        className={styles.btn}
-                                        onClick={() => Form.validates((errors, values) => !errors && submit(values, true))}
-                                    >{fieldValues?.id ? '修改草稿' : '保存为草稿'}
-                                    </Button>
+                                    <Form.Submit
+                                        data={formatSubmitData(true)}
+                                    >
+                                        <Button variant='contained' className={styles.btn}>
+                                            {fieldValues?.id ? '修改草稿' : '保存为草稿'}
+                                        </Button>
+                                    </Form.Submit>
                                 </>
                             )
                         }
-                        <Button
-                            variant='contained'
-                            color='success'
-                            className={styles.btn}
-                            onClick={() => Form.validates((errors, values) => !errors && submit(values, false))}
-                        >{searchParams?.sampleId ? '更新样片' : '提交样片'}</Button>
+                        <Form.Submit
+                            data={formatSubmitData(false)}
+                        >
+                            <Button variant='contained' color='success' className={styles.btn}
+                            >{searchParams?.sampleId ? '更新样片' : '提交样片'}</Button>
+                        </Form.Submit>
+
                     </Box>
                 </Stack>
             </Content>

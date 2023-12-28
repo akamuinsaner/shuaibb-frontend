@@ -14,11 +14,11 @@ import { SampleData } from 'declare/sample';
 import { Form } from 'components/FormValidator';
 import { STANDARD_NUMBER } from 'common/rexps';
 
-const SamplePrice = ({
+const SamplePrice = React.forwardRef(({
     fields
-}: { fields: Partial<SampleData> }) => {
+}: { fields: Partial<SampleData> }, ref: any) => {
     return (
-        <Item>
+        <Item ref={ref}>
             <Stack spacing={2}>
                 <Typography>样片价格</Typography>
                 <Form.Item
@@ -87,6 +87,6 @@ const SamplePrice = ({
             </Stack>
         </Item>
     )
-}
+})
 
-export default React.memo(SamplePrice);
+export default SamplePrice;

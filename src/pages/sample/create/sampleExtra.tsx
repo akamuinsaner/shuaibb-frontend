@@ -8,9 +8,9 @@ import Switch from '@mui/material/Switch';
 import { SampleData } from 'declare/sample';
 import { Form } from 'components/FormValidator';
 
-const SampleExtra = () => {
+const SampleExtra = React.forwardRef((props, ref: any) => {
     return (
-        <Item>
+        <Item ref={ref}>
             <Stack spacing={2}>
                 <Typography>其他内容</Typography>
                 <FormControlLabel
@@ -35,6 +35,6 @@ const SampleExtra = () => {
             </Stack>
         </Item>
     )
-}
+})
 
-export default React.memo(SampleExtra);
+export default SampleExtra;

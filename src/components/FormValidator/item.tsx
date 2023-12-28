@@ -34,7 +34,7 @@ export const FormItem: FormItemComponent<FormItemProps> = ({
     const _this = React.useRef<FormItemExtraProps>({ });
     const [value, setValue] = React.useState<any>((multiple ? [] : ''));
     const [error, setError] = React.useState<string>(null);
-
+    const [visible, setVisible] = React.useState<boolean>(true);
     const _setError = React.useCallback((error) => {
         setError(error);
     }, []);
@@ -48,6 +48,7 @@ export const FormItem: FormItemComponent<FormItemProps> = ({
         setError(errorCheck(value));
         cb(errorCheck(value), value);
     }, [value]);
+
 
     _this.current = {
         ..._this.current,
@@ -79,6 +80,11 @@ export const FormItem: FormItemComponent<FormItemProps> = ({
     }, []);
 
     const required = !!rules.find(item => item.required);
+
+    if (!visible) {
+        Form.unRegister(name);
+        return null;
+    }
 
     if (typeof children === 'function') {
         const jsx = children({

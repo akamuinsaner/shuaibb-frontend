@@ -29,10 +29,17 @@ const CreatePermissionDialog = ({
             fullWidth
             maxWidth="sm"
         >
-            <DialogTitle>{record ? '编辑权限' : '新增权限'}</DialogTitle>
-            <DialogContent sx={{ paddingTop: '20px !important' }}>
-                <Stack spacing={2}>
-                    <Form initialValues={record}>
+            <Form
+                initialValues={record}
+                submit={(values) => {
+                    submit({ ...values, id: record?.id });
+                    close();
+                }}
+            >
+                <DialogTitle>{record ? '编辑权限' : '新增权限'}</DialogTitle>
+                <DialogContent sx={{ paddingTop: '20px !important' }}>
+                    <Stack spacing={2}>
+
                         <Form.Item
                             name="chineseName"
                             rules={[
@@ -75,24 +82,14 @@ const CreatePermissionDialog = ({
                                 })}
                             </TextField>
                         </Form.Item>
-
-                    </Form>
-
-
-                </Stack>
-            </DialogContent>
-            <DialogActions>
-                <Button variant='outlined' onClick={close}>取消</Button>
-                <Button variant='contained' onClick={() => {
-                    Form.validates((errors, values) => {
-                        if (!errors) {
-                            close();
-                            submit({ ...values, id: record?.id })
-                        }
-                    })
-                }}>确定</Button>
-            </DialogActions>
-        </Dialog>
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant='outlined' onClick={close}>取消</Button>
+                    <Form.Submit><Button variant='contained'>确定</Button></Form.Submit>
+                </DialogActions>
+            </Form>
+        </Dialog >
     )
 }
 

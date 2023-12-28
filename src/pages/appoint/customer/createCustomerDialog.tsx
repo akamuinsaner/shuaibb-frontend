@@ -30,23 +30,32 @@ const CreateCustomerDialog = ({
 }) => {
     const { user } = useGlobalStore(state => state)
     const [name, setName] = React.useState<string>('');
+    const form = Form.useForm();
     return (
         <Dialog
             open={open}
             fullWidth
             maxWidth="sm"
         >
-            <DialogTitle>创建群组</DialogTitle>
-            <DialogContent sx={{ paddingTop: '20px !important' }}>
-                <Stack spacing={2} sx={{ alignItems: 'center' }}>
-                    <Form initialValues={record}>
+            <Form
+                initialValues={record}
+                form={form}
+                submit={(values) => {
+                    submit({ ...values, userId: user?.id, id: record?.id });
+                    close();
+                }}
+            >
+                <DialogTitle>创建群组</DialogTitle>
+                <DialogContent sx={{ paddingTop: '20px !important' }}>
+                    <Stack spacing={2} sx={{ alignItems: 'center' }}>
+
                         <FormItem
                             name="avatar"
                         >
                             <AvatarUpload
                                 showLetter={true}
                                 letter={name.charAt(0)}
-                                onDelete={() => Form.setValues({ avatar: null })}
+                                onDelete={() => form.setValues({ avatar: null })}
                             />
                         </FormItem>
                         <FormItem
@@ -87,21 +96,14 @@ const CreateCustomerDialog = ({
                                 placeholder='请输入客户描述'
                             />
                         </FormItem>
-                    </Form>
-                </Stack>
-            </DialogContent>
-            <DialogActions>
-                <Button variant='outlined' onClick={close}>取消</Button>
-                <Button variant='contained' onClick={() => {
-                    Form.validates((errors, values) => {
-                        console.log(errors, values)
-                        if (!errors) {
-                            close();
-                            submit({ ...values, userId: user?.id, id: record?.id });
-                        }
-                    })
-                }}>确定</Button>
-            </DialogActions>
+
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant='outlined' onClick={close}>取消</Button>
+                    <Form.Submit><Button variant='contained'>确定</Button></Form.Submit>
+                </DialogActions>
+            </Form>
         </Dialog >
     )
 }

@@ -26,20 +26,25 @@ const CreateGroupDialog = ({
     record?: User;
     groups: Group[]
 }) => {
-    const [permissionIds, setPermissionIds] = React.useState<number[]>([]);
-
     return (
         <Dialog
             open={open}
             fullWidth
             maxWidth="sm"
         >
-            <DialogTitle>创建用户</DialogTitle>
-            <DialogContent sx={{ paddingTop: '20px !important' }}>
-                <Stack spacing={2}>
-                    <Form initialValues={record? {
-                        ...record, groups: record.groups.map(item => item.id)
-                    } : null}>
+            <Form
+                initialValues={record ? {
+                    ...record, groups: record.groups.map(item => item.id)
+                } : null}
+                submit={(values) => {
+                    submit({ ...values, id: record?.id });
+                    close();
+                }}
+            >
+                <DialogTitle>创建用户</DialogTitle>
+                <DialogContent sx={{ paddingTop: '20px !important' }}>
+                    <Stack spacing={2}>
+
                         <Form.Item
                             name="mobile"
                             rules={[
@@ -86,22 +91,15 @@ const CreateGroupDialog = ({
                                 {groups.map(group => <MenuItem key={group.id} value={group.id}>{group.name}</MenuItem>)}
                             </TextField>
                         </Form.Item>
-                    </Form>
 
-                </Stack>
-            </DialogContent>
-            <DialogActions>
-                <Button variant='outlined' onClick={close}>取消</Button>
-                <Button variant='contained' onClick={() => {
-                    Form.validates((errors, values) => {
-                        if (!errors) {
-                            close();
-                            submit({ ...values, id: record?.id });
-                        }
-                    })
 
-                }}>确定</Button>
-            </DialogActions>
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant='outlined' onClick={close}>取消</Button>
+                    <Form.Submit><Button variant='contained'>确定</Button></Form.Submit>
+                </DialogActions>
+            </Form>
         </Dialog>
     )
 }
