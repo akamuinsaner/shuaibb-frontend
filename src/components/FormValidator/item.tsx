@@ -71,12 +71,13 @@ export const FormItem: FormItemComponent<FormItemProps> = ({
         return ruleCheck(value, rules);
     }, []);
 
-
     const valueOnChange = React.useCallback((e: any) => {
         const value = valueHelper(e);
         setError(errorCheck(value));
         setValue(value);
-        _this.current.emitValue(value);
+        if (_this.current?.emitValue) {
+            _this.current?.emitValue(value);
+        }
     }, []);
 
     const required = !!rules.find(item => item.required);

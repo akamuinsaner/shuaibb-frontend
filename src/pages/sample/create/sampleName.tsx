@@ -10,6 +10,7 @@ import { Form } from 'components/FormValidator';
 import { NAME_REXP } from 'common/rexps';
 import CoverComp from './CoverComp';
 import DetailComp from './DetailComp';
+import CascadeSelect from 'components/CascadeSelect';
 
 const SampleName = React.forwardRef(({
     labels = []
@@ -37,21 +38,13 @@ const SampleName = React.forwardRef(({
                 </Form.Item>
                 <Form.Item
                     name="tagIds"
-                    multiple
-                    rules={[
-                        { max: 5, msg: '最多选择5个标签' }
-                    ]}
                 >
-                    <TextField
-                        fullWidth
+                    <CascadeSelect
                         label="样片标签"
                         placeholder='请选择样片标签'
-                        size='small'
-                        select
-                        SelectProps={{ multiple: true }}
-                    >
-                        {labels.map((label) => (<MenuItem key={label.id} value={label.id}>{label.name}</MenuItem>))}
-                    </TextField>
+                        multiple
+                        options={labels.filter(l => !l.parentId)}
+                    />
                 </Form.Item>
                 <Form.Item
                     name="desc"

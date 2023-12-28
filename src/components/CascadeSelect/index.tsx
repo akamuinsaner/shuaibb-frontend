@@ -5,7 +5,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Autocomplete from '@mui/material/Autocomplete';
 import Paper from '@mui/material/Paper';
-import { TextFieldProps, Typography } from '@mui/material';
+import { avatarClasses, TextFieldProps, Typography } from '@mui/material';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Checkbox from '@mui/material/Checkbox';
@@ -98,16 +98,17 @@ const CascadeSelect = ({
     const optionMap = idOptionMap(options);
     const allChildrenMap = idAllChildrenMap(options);
 
-    const closeOptions = React.useCallback((valueList?: any) => {
+    const closeOptions = React.useCallback(() => {
         setAnchorEl(null);
-        typeof onChange === 'function' && onChange(valueList || actualValueList);
     }, [multipleValueList, valueList, multiple]);
     React.useEffect(() => {
-        document.addEventListener('click', closeOptions);
-        return () => {
+        if (anchorEl) document.addEventListener('click', closeOptions);
+        else {
             document.removeEventListener('click', closeOptions);
+            console.log(actualValueList)
+            onChange(actualValueList)
         }
-    }, [])
+    }, [anchorEl])
 
     React.useEffect(() => {
         if (!value) value = [];
@@ -122,8 +123,7 @@ const CascadeSelect = ({
         setValueList([...newValueList, o.id]);
         const hasChildren = o.children && o.children.length;
         if (!hasChildren) {
-            closeOptions([...newValueList, o.id]);
-
+            closeOptions()
         }
     }, [valueList])
 
@@ -133,8 +133,8 @@ const CascadeSelect = ({
     const renderMultipleCheckbox = React.useCallback((o) => {
         if (!multiple) return null;
         const hasChildren = o.children && o.children.length;
-        const acwcIds = allChildrenMap
-            .get(o.id)
+        const acwcIds = (allChildrenMap
+            .get(o.id) || [])
             .filter(c => !(c.children && c.children.length))
             .map(c => c.id);
         return <Checkbox

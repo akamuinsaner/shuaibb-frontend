@@ -45,11 +45,11 @@ const handleRetriveData = (data: any): SampleData => {
         covers: JSON.parse(data.covers),
         details: JSON.parse(data.details),
         tagIds: data.tags.map(tag => tag.id),
-        shootingTime: data.shootingTime in ShootingTime ? data.shootingTime : 0,
+        shootingTime: data.shootingTime in ShootingTime ? data.shootingTime : '0',
         customShootingTime: data.shootingTime in ShootingTime ? null : data.shootingTime,
     }
     if (rData.costumeOffer) {
-        rData["costumeCount"] = data.costumeCount in CostumeCount ? data.costumeCount : 0;
+        rData["costumeCount"] = data.costumeCount in CostumeCount ? data.costumeCount : '0';
         rData["customCostumeCount"] = data.costumeCount in CostumeCount ? null : data.costumeCount;
     }
     return rData
@@ -76,7 +76,7 @@ const SampleCreate = ({ t }: { t: any }) => {
     const user = useGlobalStore(state => state.user);
     const activeTab = useSampleCreateStore(state => state.activeTab);
     const updateActiveTab = useSampleCreateStore(state => state.updateActiveTab);
-    const { data: labels } = useQuery({ queryFn: sampleLabels, queryKey: ['sampleLabels'] });
+    const { data: labels = [] } = useQuery({ queryFn: sampleLabels, queryKey: ['sampleLabels'] });
     const retriveDraftMutation = useMutation({
         mutationFn: retriveDraft,
         onSuccess: (data) => {
@@ -115,13 +115,11 @@ const SampleCreate = ({ t }: { t: any }) => {
     const saveSampleMutation = useMutation({
         mutationFn: saveSample,
         onSuccess: (data) => message.success('提交成功', { closeCallback: fetchInitialData }),
-        onError: (error) => message.error(error.message)
     })
 
     const updateSampleMutation = useMutation({
         mutationFn: updateSampleFn,
         onSuccess: (data) => message.success('提交成功', { closeCallback: fetchInitialData }),
-        onError: (error) => message.error(error.message),
     });
 
     const formatSubmitData = React.useCallback((isDraft: boolean) => (values: any) => {

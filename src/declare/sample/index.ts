@@ -3,6 +3,8 @@ import type { User } from '../user';
 export type SampleLabel = {
     id: number;
     name: string;
+    parentId?: number;
+    children?: SampleLabel[];
 }
 
 export type SampleData = {

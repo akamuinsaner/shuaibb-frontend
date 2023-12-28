@@ -7,6 +7,7 @@ import List from '@mui/material/List';
 import { useLocation } from 'react-router';
 import PictureSpace from './picture';
 import { withTranslation } from 'react-i18next';
+import SampleLabel from './label';
 
 export type MenuItem = {
     key: string
@@ -33,6 +34,12 @@ export const MENUCONFIG: MenuItem[] = [
         text: '图片空间',
         langKey: 'photo space',
         element: <PictureSpace />
+    },
+    {
+        key: 'label',
+        text: '样片标签',
+        langKey: 'sample label',
+        element: <SampleLabel />
     },
 ]
 

@@ -41,6 +41,7 @@ const SampleService = React.forwardRef(({
 }, ref: any) => {
     const templateState = useSampleCreateStore(state => state.templateState);
     const tempData = templateState.curTemp
+    console.log(tempData)
     React.useEffect(() => {
         if (!tempData) return;
         const { id, name, user, userId, ...updateData } = tempData;

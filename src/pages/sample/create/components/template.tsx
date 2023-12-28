@@ -40,11 +40,11 @@ const Template = ({
     templates = templates.map(data => {
         let rData = {
             ...data,
-            shootingTime: data.shootingTime in ShootingTime ? data.shootingTime : 0,
+            shootingTime: data.shootingTime in ShootingTime ? data.shootingTime : '0',
             customShootingTime: data.shootingTime in ShootingTime ? null : data.shootingTime,
         }
         if (rData.costumeOffer) {
-            rData["costumeCount"] = data.costumeCount in CostumeCount ? data.costumeCount : 0;
+            rData["costumeCount"] = data.costumeCount in CostumeCount ? data.costumeCount : '0';
             rData["customCostumeCount"] = data.costumeCount in CostumeCount ? null : data.costumeCount;
         }
         return rData

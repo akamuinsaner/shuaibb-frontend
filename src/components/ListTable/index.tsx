@@ -62,44 +62,46 @@ const ListTableHeader = <T,>({
 
     return (
         <TableHead>
-            {expandable ? <TableCell></TableCell> : null}
-            {checkable ? <TableCell padding='checkbox'>
-                <Checkbox
-                    color="primary"
-                    checked={selectedKeys.length === curRowCount}
-                    indeterminate={selectedKeys.length > 0 && selectedKeys.length < curRowCount}
-                    onChange={(e: any) => {
-                        if (e.target.checked) {
-                            onSelectRows(data.map((item: any) =>
-                                typeof rowKey === 'function' ? rowKey(item) : item[rowKey]))
-                        } else {
-                            onSelectRows([])
+            <TableRow>
+                {expandable ? <TableCell></TableCell> : null}
+                {checkable ? <TableCell padding='checkbox'>
+                    <Checkbox
+                        color="primary"
+                        checked={selectedKeys.length === curRowCount}
+                        indeterminate={selectedKeys.length > 0 && selectedKeys.length < curRowCount}
+                        onChange={(e: any) => {
+                            if (e.target.checked) {
+                                onSelectRows(data.map((item: any) =>
+                                    typeof rowKey === 'function' ? rowKey(item) : item[rowKey]))
+                            } else {
+                                onSelectRows([])
+                            }
+                        }}
+                    />
+                </TableCell> : null}
+                {headers.map((headCell) => {
+                    const supportSort = ['number', 'date'].includes(headCell.type)
+                    return <TableCell
+                        sx={{ whiteSpace: 'nowrap' }}
+                        key={String(headCell.id)}
+                        align={supportSort ? 'right' : 'left'}
+                        sortDirection={orderParams?.orderBy === headCell.id ? orderParams.order : false}
+                    >
+                        {
+                            !(supportSort && orderParams) ?
+                                headCell.label : (
+                                    <TableSortLabel
+                                        active={orderParams.orderBy === headCell.id}
+                                        direction={orderParams.orderBy === headCell.id ? orderParams.order : 'asc'}
+                                        onClick={(e) => onOrderChange(headCell.id)}
+                                    >
+                                        {headCell.label}
+                                    </TableSortLabel>
+                                )
                         }
-                    }}
-                />
-            </TableCell> : null}
-            {headers.map((headCell) => {
-                const supportSort = ['number', 'date'].includes(headCell.type)
-                return <TableCell
-                    sx={{ whiteSpace: 'nowrap' }}
-                    key={String(headCell.id)}
-                    align={supportSort ? 'right' : 'left'}
-                    sortDirection={orderParams?.orderBy === headCell.id ? orderParams.order : false}
-                >
-                    {
-                        !(supportSort && orderParams) ?
-                            headCell.label : (
-                                <TableSortLabel
-                                    active={orderParams.orderBy === headCell.id}
-                                    direction={orderParams.orderBy === headCell.id ? orderParams.order : 'asc'}
-                                    onClick={(e) => onOrderChange(headCell.id)}
-                                >
-                                    {headCell.label}
-                                </TableSortLabel>
-                            )
-                    }
-                </TableCell>
-            })}
+                    </TableCell>
+                })}
+            </TableRow>
         </TableHead>
     )
 }
@@ -137,60 +139,60 @@ const ListTableBody = <T,>({
             {data.map((row: any, index) => {
                 const actualKey = typeof rowKey === 'function' ? rowKey(row) : row[rowKey]
                 return ([
-                        <TableRow
-                            hover
-                            sx={{ cursor: 'pointer' }}
-                            tabIndex={-1}
-                            key={actualKey}
-                            onContextMenu={(e) => rowEvents?.onContextMenu && rowEvents.onContextMenu(e, row)}
-                            onDoubleClick={(e) => rowEvents?.onDoubleClick && rowEvents.onDoubleClick(e, row)}
-                        >
-                            {expandable ? <TableCell>
-                                <IconButton
-                                    aria-label="expand row"
-                                    size="small"
-                                    onClick={() => setExpandRows(expandRows.includes(actualKey)
-                                        ? expandRows.filter(key => key !== actualKey) 
-                                        : [...expandRows, actualKey])}
-                                >
-                                    {expandRows.includes(actualKey) ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                                </IconButton>
-                            </TableCell> : null}
-                            {checkable ? <TableCell padding="checkbox">
-                                <Checkbox
-                                    color="primary"
-                                    checked={selectedKeys.includes(actualKey)}
-                                    onClick={(e: any) => {
-                                        if (e.target.checked) {
-                                            onSelectRows([...selectedKeys, actualKey])
-                                        } else {
-                                            onSelectRows(selectedKeys.filter(item => item !== actualKey))
-                                        }
-                                    }}
-                                />
-                            </TableCell> : null}
-                            {headers.map((headCell, cIndex) => {
-                                const supportSort = ['number', 'date'].includes(headCell.type)
-                                const render = headCell.render;
-                                let renderText = row[String(headCell.id)];
-                                if (render) {
-                                    renderText = render(renderText, row, index)
-                                }
-                                return <TableCell
-                                    sx={{ whiteSpace: headCell.multiLine ? 'normal' : 'nowrap' }}
-                                    id={String(headCell.id)}
-                                    key={String(headCell.id)}
-                                    align={supportSort ? 'right' : 'left'}
-                                >
-                                    {renderText}
-                                </TableCell>
-                            })}
-                        </TableRow>,
-                        expandRows.includes(actualKey)  ? <TableRow key={`${actualKey}-history`} >
-                            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headers.length + 1}>
-                                {expandContent(row)}
+                    <TableRow
+                        hover
+                        sx={{ cursor: 'pointer' }}
+                        tabIndex={-1}
+                        key={actualKey}
+                        onContextMenu={(e) => rowEvents?.onContextMenu && rowEvents.onContextMenu(e, row)}
+                        onDoubleClick={(e) => rowEvents?.onDoubleClick && rowEvents.onDoubleClick(e, row)}
+                    >
+                        {expandable ? <TableCell>
+                            <IconButton
+                                aria-label="expand row"
+                                size="small"
+                                onClick={() => setExpandRows(expandRows.includes(actualKey)
+                                    ? expandRows.filter(key => key !== actualKey)
+                                    : [...expandRows, actualKey])}
+                            >
+                                {expandRows.includes(actualKey) ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                            </IconButton>
+                        </TableCell> : null}
+                        {checkable ? <TableCell padding="checkbox">
+                            <Checkbox
+                                color="primary"
+                                checked={selectedKeys.includes(actualKey)}
+                                onClick={(e: any) => {
+                                    if (e.target.checked) {
+                                        onSelectRows([...selectedKeys, actualKey])
+                                    } else {
+                                        onSelectRows(selectedKeys.filter(item => item !== actualKey))
+                                    }
+                                }}
+                            />
+                        </TableCell> : null}
+                        {headers.map((headCell, cIndex) => {
+                            const supportSort = ['number', 'date'].includes(headCell.type)
+                            const render = headCell.render;
+                            let renderText = row[String(headCell.id)];
+                            if (render) {
+                                renderText = render(renderText, row, index)
+                            }
+                            return <TableCell
+                                sx={{ whiteSpace: headCell.multiLine ? 'normal' : 'nowrap' }}
+                                id={String(headCell.id)}
+                                key={String(headCell.id)}
+                                align={supportSort ? 'right' : 'left'}
+                            >
+                                {renderText}
                             </TableCell>
-                        </TableRow> : null
+                        })}
+                    </TableRow>,
+                    expandRows.includes(actualKey) ? <TableRow key={`${actualKey}-history`} >
+                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={headers.length + 1}>
+                            {expandContent(row)}
+                        </TableCell>
+                    </TableRow> : null
                 ])
             })}
         </TableBody>

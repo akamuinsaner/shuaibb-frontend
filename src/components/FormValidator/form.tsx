@@ -62,7 +62,7 @@ const Form: FormComponent<FormProps> = ({
     }, []);
 
     Form.register = React.useCallback((key: string, _this: React.MutableRefObject<FormItemExtraProps>) => {
-        if (key in fieldValues.current) _this.current.setValue(fieldValues.current?.[key] || '');
+        if (key in fieldValues.current) _this.current.setValue(fieldValues.current?.[key] || null);
         _this.current.emitValue = (value) => fieldsChange({ ...fieldValues.current, [key]: value });
         wiredFields.current[key] = _this;
     }, []);

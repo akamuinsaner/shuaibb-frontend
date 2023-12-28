@@ -52,6 +52,37 @@ export const sampleLabels = () => request(
     }
 )
 
+export const createSampleLabels = (data: any) => request(
+    `/api/samples/labels/`,
+    {
+        method: 'POST',
+        data
+    }
+)
+
+export const searchSampleLabel = (data: any) => request(
+    `/api/samples/labels/search/`,
+    {
+        method: 'POST',
+        data
+    }
+)
+
+export const deleteSampleLabel = (id: number) => request(
+    `/api/samples/labels/${id}/`,
+    {
+        method: 'DELETE',
+    }
+)
+
+export const updateSampleLabel = (data: any) => request(
+    `/api/samples/labels/${data.id}/`,
+    {
+        method: 'PUT',
+        data
+    }
+)
+
 export const sampleTemplatesFn = () => request(
     `/api/samples/templates/`,
     {
