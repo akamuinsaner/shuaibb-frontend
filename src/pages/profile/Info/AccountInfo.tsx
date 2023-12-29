@@ -10,9 +10,9 @@ import { User } from 'declare/user';
 import AddIcon from '@mui/icons-material/Add';
 import AvatarCropDailog from './AvatarCropDailog';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import { getBase64Image } from 'utils/funcTools';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import UpdateProfileDialog from './UpdateProfileDialog';
+import Upload from 'components/Upload';
 
 const AccountInfo = ({
     userInfo,
@@ -23,43 +23,35 @@ const AccountInfo = ({
     uploadAvatar: (file: File) => void;
     updateInfo: (data: Partial<User>) => void;
 }) => {
-    const [avatarUrl, setAvatarUrl] = React.useState<string>(null);
+    const [avatar, setAvatar] = React.useState<File>(null);
     const [updateDialogOpen, setUpdateDialogOpen] = React.useState<boolean>(false);
-    const avatarRef = React.useRef(null);
-    const loadAvatar = React.useCallback((e) => {
-        setAvatarUrl(e.target.result);
-    }, []);
+
     return (
         <Paper sx={{ padding: '40px' }} className={styles.accountInfo}>
             <Typography variant='h5'>账号信息</Typography>
             <Divider sx={{ margin: '20px 0 40px' }} />
             <Box className={styles.mainContent}>
                 <Box className={styles.avatarBox}>
-                    <input type="file" accept="image/*" ref={avatarRef} onChange={(e) => {
-                        if (e.target?.files?.length) {
-                            const file = e.target?.files[0]
-                            avatarRef.current.value = null;
-                            const fr = new FileReader();
-                            fr.readAsDataURL(file);
-                            fr.onload = loadAvatar;
-                        }
-                    }} />
                     {!userInfo?.avatar
-                        ? <Box
-                            className={styles.addAvatar}
-                            onClick={() => avatarRef.current.click()}
-                        ><AddIcon /></Box>
+                        ? <Upload
+                            accept="image/*"
+                            onChange={setAvatar}
+                        ><Box className={styles.addAvatar}><AddIcon /></Box></Upload>
                         : null}
                     {userInfo?.avatar ? <img src={userInfo.avatar} className={styles.avatar} /> : null}
-                    {userInfo?.avatar ? <Box
-                        className={styles.editBtn}
-                        onClick={() => getBase64Image(userInfo.avatar, {
-                            loadCb: setAvatarUrl
-                        })}
-                    >
-                        <CameraAltIcon />
-                        <Typography>修改头像</Typography>
-                    </Box> : null}
+                    {userInfo?.avatar ?
+                        <Upload
+                            accept="image/*"
+                            onChange={setAvatar}
+                        >
+                            <Box
+                                className={styles.editBtn}
+                            >
+                                <CameraAltIcon />
+                                <Typography>修改头像</Typography>
+                            </Box>
+                        </Upload>
+                        : null}
                 </Box>
                 <Stack direction="column" spacing={3}>
                     <Box className={styles.profileItem}>
@@ -69,7 +61,7 @@ const AccountInfo = ({
                     <Box className={styles.profileItem}>
                         <Typography className={styles.label}>手机号</Typography>
                         <Typography>{userInfo.mobile || '未设置'}</Typography>
-                    </Box>                    
+                    </Box>
                     <Box className={styles.profileItem}>
                         <Typography className={styles.label}>邮箱</Typography>
                         <Typography>{userInfo.email || '未设置'}</Typography>
@@ -103,9 +95,9 @@ const AccountInfo = ({
                 >修改</Button>
             </Box>
             <AvatarCropDailog
-                open={!!avatarUrl}
-                close={() => setAvatarUrl(null)}
-                avatar={avatarUrl}
+                open={!!avatar}
+                close={() => setAvatar(null)}
+                avatar={avatar}
                 submit={uploadAvatar}
             />
             <UpdateProfileDialog

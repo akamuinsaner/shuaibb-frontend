@@ -16,13 +16,18 @@ const AvatarCropDialog = ({
 }: {
     open: boolean;
     close: () => void;
-    avatar: string;
+    avatar: File;
     submit: (file: File) => void;
 }) => {
-    const [curAvatar, setCurAvatar] = React.useState(avatar);
     const [curBlob, setCurBlob] = React.useState<File>(null);
     const cropperRef = React.useRef<ReactCropperElement>(null);
-    React.useEffect(() => setCurAvatar(avatar), [open]);
+    const [curAvatar, setCurAvatar] = React.useState<string>(null);
+    React.useEffect(() => {
+        if (open) setCurBlob(avatar);
+    }, [open]);
+    React.useEffect(() => {
+        if (curBlob) setCurAvatar(URL.createObjectURL(curBlob));
+    }, [curBlob]);
     return (
         <Dialog
             open={open}
@@ -33,21 +38,17 @@ const AvatarCropDialog = ({
             <DialogTitle>头像编辑</DialogTitle>
             <DialogContent sx={{display: 'flex' }}>
                 <Cropper
-                    src={avatar}
+                    src={avatar ? URL.createObjectURL(avatar) : ''}
                     style={{ height: 500, width: 500 }}
                     initialAspectRatio={1 / 1}
                     aspectRatio={1/1}
-                    checkCrossOrigin={false}
                     guides={false}
                     ref={cropperRef}
-                    cropmove={(e) => {
-                        console.log('move')
+                    cropend={(e) => {
                         const cropper = cropperRef.current?.cropper;
-                        const url = cropper.getCroppedCanvas().toDataURL();
                         cropper.getCroppedCanvas().toBlob((blob) => {
                             setCurBlob(blob as File);
                         }, 'image/jpeg', 1);
-                        setCurAvatar(url);
                     }}
                 />
                 <Stack direction="column" spacing={2} sx={{ marginLeft: '40px' }}>

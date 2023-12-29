@@ -8,7 +8,6 @@ import ImageListItem from '@mui/material/ImageListItem';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import useGlobalStore from 'globalStore';
 import { useMutation } from '@tanstack/react-query';
-import { uploadFileCommon } from 'apis/upload';
 import { addCover, removeCover, replaceCover, editUser } from 'apis/auth/user';
 import { message } from 'components/globalMessage';
 import Box from '@mui/material/Box';
@@ -19,12 +18,13 @@ import { confirm } from 'components/confirmDialog';
 import SortModal from 'pages/sample/create/components/SortModal';
 import SortIcon from '@mui/icons-material/Sort';
 import Button from '@mui/material/Button';
+import Upload from 'components/Upload';
+import Tooltip from '@mui/material/Tooltip';
 
 
 const Cover = () => {
     const user = useGlobalStore(state => state.user);
     const [sortOpen, setSortOpen] = React.useState<boolean>(false);
-    const [curReplacingCover, setCurReplacingCover] = React.useState<string>(null);
     const covers = user.covers ? JSON.parse(user.covers) : [];
     const updateGlobalState = useGlobalStore(state => state.updateState);
     const editUserMutation = useMutation({
@@ -51,7 +51,6 @@ const Cover = () => {
             closeCallback: () => updateGlobalState({ user: data })
         })
     })
-    const uploadRef = React.useRef(null);
     const imgListRef = React.useRef<HTMLUListElement>(null);
     const [colCount, setColCount] = React.useState(6);
     const [imgHeight, setImgHeight] = React.useState(0);
@@ -97,66 +96,49 @@ const Cover = () => {
 
                 <Divider sx={{ margin: '20px 0 40px' }} />
                 <ImageList cols={colCount} rowHeight={imgHeight} ref={imgListRef}>
-                    <ImageListItem
-                        component={Paper}
-                        className={styles.uploadItem}
-                        onClick={() => uploadRef.current.click()}
+                    <Upload
+                        accept="image/*"
+                        action={addCoverMutation.mutate}
                     >
-                        <CameraAltIcon />
-                        <Typography variant='body1'>点击上传</Typography>
-                    </ImageListItem>
+                        <ImageListItem
+                            component={Paper}
+                            className={styles.uploadItem}
+                        >
+                            <CameraAltIcon />
+                            <Typography variant='body1'>点击上传</Typography>
+                        </ImageListItem>
+                    </Upload>
                     {covers.map(cover => <ImageListItem
                         key={cover}
                         className={styles.imgItem}
                     >
                         <img src={cover} loading="lazy" className={styles.cover} />
                         <Box className={styles.mask}>
-                            <CloudUploadIcon
-                                htmlColor='#fff'
-                                onClick={() => confirm.confirm({
-                                    title: '重新上传',
-                                    content: '新封面将替换当前封面，确定重新上传这张封面吗？',
-                                    confirmCallback: () => {
-                                        setCurReplacingCover(cover);
-                                        uploadRef.current.click();
-                                    }
-                                })}
-                            />
-                            <DeleteOutlineIcon
-                                htmlColor='#fff'
-                                onClick={() => confirm.confirm({
-                                    title: '删除',
-                                    content: '删除后不可恢复，确认要删除这张封面吗？',
-                                    confirmCallback: () => removeCoverMutation.mutate({
-                                        cover,
-                                        id: user.id
-                                    })
-                                })}
-                            />
+                            <Upload
+                                accept="image/*"
+                                action={replaceCoverMutation.mutate}
+                                data={(file) => ({ file, old: cover })}
+                            >
+                                <Tooltip title="重新上传"><CloudUploadIcon htmlColor='#fff' /></Tooltip>
+                            </Upload>
+                            <Tooltip title="删除">
+                                <DeleteOutlineIcon
+                                    htmlColor='#fff'
+                                    onClick={() => confirm.confirm({
+                                        title: '删除',
+                                        content: '删除后不可恢复，确认要删除这张封面吗？',
+                                        confirmCallback: () => removeCoverMutation.mutate({
+                                            cover,
+                                            id: user.id
+                                        })
+                                    })}
+                                />
+                            </Tooltip>
+
                         </Box>
                     </ImageListItem>)}
                 </ImageList>
             </Paper>
-            <input
-                type="file"
-                ref={uploadRef}
-                accept="image/*"
-                style={{ display: 'none' }}
-                onChange={(e) => {
-                    if (e.target.files) {
-                        const file = e.target.files[0];
-                        const fd = new FormData();
-                        fd.append('file', file);
-                        if (curReplacingCover) {
-                            fd.append('old', curReplacingCover);
-                            replaceCoverMutation.mutate(fd);
-                            setCurReplacingCover(null);
-                        } else {
-                            addCoverMutation.mutate(fd);
-                        }
-                        e.target.value = null;
-                    }
-                }} />
             <SortModal
                 open={sortOpen}
                 toggleOpen={setSortOpen}

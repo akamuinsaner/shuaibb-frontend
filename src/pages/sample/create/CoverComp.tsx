@@ -10,6 +10,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { message } from 'components/globalMessage';
 import { useTranslation } from 'react-i18next';
+import Upload from 'components/Upload';
 
 const StyledImgMask = styled('div')({
     width: '100%',
@@ -27,18 +28,6 @@ const StyledImgMask = styled('div')({
     }
 })
 
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-});
-
 const CoverComp = ({
     value,
     onChange,
@@ -47,7 +36,6 @@ const CoverComp = ({
     onChange?: (value: string[]) => void;
 }) => {
     const { t } = useTranslation();
-    const coverRef = React.useRef(null);
     const uploadMutation = useMutation({
         mutationFn: uploadFileCommon,
         onSettled: (d, e) => {
@@ -60,24 +48,22 @@ const CoverComp = ({
         <>
             <Typography>
                 {t('sample sovers')}：{t('sample sovers tips')}
-                <Button
-                    sx={{ marginLeft: '16px' }}
-                    component="label"
-                    variant="contained"
-                    startIcon={<CloudUploadIcon />}
+                <Upload
+                    accept='image/*'
+                    data={(file) => ({ file, type: 'cover' })}
+                    action={uploadMutation.mutate}
                     disabled={value.length >= 4}
                 >
-                    {t('upload')}
-                    <VisuallyHiddenInput ref={coverRef} type="file" onChange={e => {
-                        if (e.target?.files?.length) {
-                            const file = e.target?.files[0]
-                            const formData = new FormData();
-                            formData.append('file', file);
-                            formData.append('type', 'cover');
-                            uploadMutation.mutate(formData)
-                        }
-                    }} />
-                </Button>
+                    <Button
+                        sx={{ marginLeft: '16px' }}
+                        component="label"
+                        variant="contained"
+                        startIcon={<CloudUploadIcon />}
+                    >
+                        {t('upload')}
+                    </Button>
+                </Upload>
+
             </Typography>
             {
                 value.length ? (

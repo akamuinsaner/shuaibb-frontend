@@ -84,7 +84,7 @@ const FilterFields = ({
                     size='small'
                     label={config.label}
                     placeholder={config.placeholder || config.label}
-                    value={data[config.key]}
+                    value={data[config.key] || ''}
                     onChange={(e) => onChange(config.key, e.target.value)}
                     error={!!errors?.[config.key]}
                     helperText={errors?.[config.key]}

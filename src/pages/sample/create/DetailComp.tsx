@@ -17,6 +17,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import SortModal from './components/SortModal';
 import { useTranslation } from 'react-i18next';
+import Upload from 'components/Upload';
 
 const StyledImgMask = styled('div')({
     width: '100%',
@@ -33,19 +34,6 @@ const StyledImgMask = styled('div')({
         opacity: 1
     }
 })
-
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-});
-
 const DetailComp = ({
     value,
     onChange,
@@ -54,7 +42,6 @@ const DetailComp = ({
     onChange?: (value: string[]) => void;
 }) => {
     const { t } = useTranslation();
-    const detailRef = React.useRef(null)
     const [anchorEl, setAnchorEl] = React.useState<any>(null);
     const [currentDetailImg, setCurrentDetailImg] = React.useState<string>('');
     const [sortDialogOpen, setSortDialogOpen] = React.useState<boolean>(false);
@@ -77,24 +64,22 @@ const DetailComp = ({
                 >
                     {t('sort')}
                 </Button>
-                <Button
-                    sx={{ marginLeft: '16px' }}
-                    component="label"
-                    variant="contained"
-                    startIcon={<CloudUploadIcon />}
+                <Upload
+                    accept='image/*'
+                    data={(file) => ({ file, type: 'detail' })}
+                    action={uploadMutation.mutate}
                     disabled={value.length >= 80}
                 >
-                    {t('upload')}
-                    <VisuallyHiddenInput ref={detailRef} type="file" onChange={e => {
-                        if (e.target?.files?.length) {
-                            const file = e.target?.files[0]
-                            const formData = new FormData();
-                            formData.append('file', file);
-                            formData.append('type', 'detail');
-                            uploadMutation.mutate(formData)
-                        }
-                    }} />
-                </Button>
+                    <Button
+                        sx={{ marginLeft: '16px' }}
+                        component="label"
+                        variant="contained"
+                        startIcon={<CloudUploadIcon />}
+                    >
+                        {t('upload')}
+                    </Button>
+                </Upload>
+
             </Typography>
             {
                 value.length ? (
