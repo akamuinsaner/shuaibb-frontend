@@ -17,14 +17,28 @@ import Upload from 'components/Upload';
 const AccountInfo = ({
     userInfo,
     uploadAvatar,
-    updateInfo
+    updateInfo,
+    areaList
 }: {
     userInfo: User;
     uploadAvatar: (file: File) => void;
     updateInfo: (data: Partial<User>) => void;
+    areaList: any[]
 }) => {
     const [avatar, setAvatar] = React.useState<File>(null);
     const [updateDialogOpen, setUpdateDialogOpen] = React.useState<boolean>(false);
+
+    const renderRegion = (areaList, list, result = []) => {
+        const code = list.shift();
+        const a = areaList.find(a => `${a.id}` === `${code}`);
+        if (!a) return result;
+        result.push(a.name)
+        if (a.children && a.children.length && list.length) {
+            return renderRegion(a.children, list, result);
+        } else {
+            return result;
+        }
+    }
 
     return (
         <Paper sx={{ padding: '40px' }} className={styles.accountInfo}>
@@ -76,7 +90,9 @@ const AccountInfo = ({
                     </Box>
                     <Box className={styles.profileItem}>
                         <Typography className={styles.label}>地区</Typography>
-                        <Typography>{userInfo.region || '未设置'}</Typography>
+                        <Typography>
+                            {userInfo.region && renderRegion(areaList, JSON.parse(userInfo.region)) || '未设置'}
+                        </Typography>
                     </Box>
                     <Box className={styles.profileItem}>
                         <Typography className={styles.label}>地址</Typography>
@@ -105,6 +121,7 @@ const AccountInfo = ({
                 close={() => setUpdateDialogOpen(false)}
                 userInfo={userInfo}
                 submit={updateInfo}
+                areaList={areaList}
             />
         </Paper>
     )

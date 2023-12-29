@@ -2,10 +2,11 @@ import React from 'react';
 import Stack from '@mui/material/Stack';
 import AccountInfo from './AccountInfo';
 import useGlobalStore from 'globalStore';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { uploadFileCommon } from 'apis/upload';
 import { editUser } from 'apis/auth/user';
 import { message } from 'components/globalMessage';
+import { areas } from 'apis/static';
 
 const Info = () => {
     const user = useGlobalStore(state => state.user);
@@ -20,6 +21,8 @@ const Info = () => {
         mutationFn: uploadFileCommon,
         onSuccess: (data) => updateUserMutation.mutate({ avatar: data.url, id: user.id })
     })
+
+    const { data: areaList = [] } = useQuery({ queryFn: areas, queryKey: ['areas'] })
     return (
         <Stack
             direction="column"
@@ -28,6 +31,7 @@ const Info = () => {
         >
             <AccountInfo
                 userInfo={user}
+                areaList={areaList}
                 uploadAvatar={(file) => {
                     const fd = new FormData();
                     fd.append('file', file);

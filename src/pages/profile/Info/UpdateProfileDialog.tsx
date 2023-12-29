@@ -15,12 +15,14 @@ const UpdateProfileDialog = ({
     open,
     close,
     userInfo,
-    submit
+    submit,
+    areaList
 }: {
     open: boolean;
     close: () => void;
     userInfo: User;
     submit: (data: Partial<User>) => void;
+    areaList: any[]
 }) => {
 
     return (
@@ -31,7 +33,10 @@ const UpdateProfileDialog = ({
             fullWidth
         >
             <Form
-                initialValues={userInfo}
+                initialValues={{
+                    ...userInfo,
+                    region: userInfo.region && JSON.parse(userInfo.region)
+                }}
                 submit={(values) => {
                     submit({
                         ...values,
@@ -60,22 +65,8 @@ const UpdateProfileDialog = ({
                             name="region"
                         >
                             <CascadeSelect
-                                multiple={true}
-                                options={[{
-                                    id: 1,
-                                    name: '111',
-                                    children: [{
-                                        id: 3,
-                                        name: '333',
-                                        children: [
-                                            { id: 4, name: '444' },
-                                            { id: 5, name: '555' }
-                                        ]
-                                    }]
-                                }, {
-                                    id: 2,
-                                    name: '222'
-                                }]}
+                                multiple={false}
+                                options={areaList}
                             />
                         </Form.Item>
                         <Form.Item

@@ -106,7 +106,6 @@ const CascadeSelect = ({
         if (anchorEl) document.addEventListener('click', closeOptions);
         else {
             document.removeEventListener('click', closeOptions);
-            console.log(actualValueList)
             onChange(actualValueList)
         }
     }, [anchorEl])
@@ -116,19 +115,23 @@ const CascadeSelect = ({
         actualSetMethod(value);
     }, [value]);
 
+    const onClear = React.useCallback(() => {
+        actualSetMethod([])
+    }, []);
 
+    const openDropDown = React.useCallback(() => {
+        setAnchorEl(eleRef.current)
+    }, [])
 
 
     const onSelect = React.useCallback((o: any, depth: number) => {
         const newValueList = valueList.slice(0, depth);
         setValueList([...newValueList, o.id]);
         const hasChildren = o.children && o.children.length;
-        if (!hasChildren) {
+        if (!hasChildren && !multiple) {
             closeOptions()
         }
     }, [valueList])
-
-
 
 
     const renderMultipleCheckbox = React.useCallback((o) => {
@@ -175,7 +178,7 @@ const CascadeSelect = ({
             placement="bottom-start"
             modifiers={[{ name: 'offset', options: { offset: [depth * 200, 0], }, }]}
         >
-            <List component={Paper}>
+            <List sx={{ maxHeight: '300px', overflowY: 'auto' }} component={Paper}>
                 {renderList.map(o => {
                     const hasChildren = o.children && o.children.length;
                     const isSelected = `${valueList[depth]}` === `${o.id}`;
@@ -211,6 +214,7 @@ const CascadeSelect = ({
         }
     }, [multiple, multipleValueList, valueList, options]);
 
+
     return (
         <>
             <Autocomplete
@@ -227,12 +231,12 @@ const CascadeSelect = ({
                         {...getTagProps({ index })}
                     />)
                 }}
-                onFocus={(e) => setAnchorEl(e.currentTarget)}
+                onFocus={openDropDown}
                 onMouseOver={e => setHovering(true)}
                 onMouseLeave={e => setHovering(false)}
                 popupIcon={hovering && actualValueList.length
-                    ? <CancelIcon onClick={() => actualSetMethod([])} />
-                    : <ArrowDropDownIcon onClick={() => setAnchorEl(eleRef.current)} />}
+                    ? <CancelIcon onClick={onClear} />
+                    : <ArrowDropDownIcon onClick={openDropDown} />}
                 readOnly
                 renderInput={(params) => <TextField
                     {...params}

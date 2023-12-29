@@ -7,3 +7,11 @@ export const languages = () => request(
         camelize: false,
     }
 )
+
+export const areas = () => request(
+    `/api/static/areas/`,
+    {
+        method: 'GET',
+        camelize: false,
+    }
+)
